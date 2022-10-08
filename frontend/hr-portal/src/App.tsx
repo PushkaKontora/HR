@@ -1,21 +1,27 @@
-import { useState } from 'react'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+import {incremented} from './features/example/example-slice';
+import {useAppDispatch, useAppSelector} from './app/hooks';
 
+function App() {
+  const count = useAppSelector((state) => state.example.valueCount);
+  const dispatch = useAppDispatch();
+
+  const handlerClick = () => {
+    dispatch(incremented());
+  }
   return (
     <div className="App">
       <div>
         <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
+          <img src="/vite.svg" className="logo" alt="Vite logo"/>
         </a>
         <a href="https://reactjs.org" target="_blank">
         </a>
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
+        <button onClick={handlerClick}>
           count is {count}
         </button>
         <p>
