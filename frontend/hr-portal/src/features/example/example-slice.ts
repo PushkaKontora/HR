@@ -13,10 +13,10 @@ const exampleSlice = createSlice({
   initialState,
   reducers: {
     incremented(state) {
-      state.valueCount++
+      state.valueCount++;
     },
     expl(state, action: PayloadAction<number>) {
-      state.valueCount += action.payload
+      state.valueCount += action.payload;
       // action.payload - то, что мы можем получить, если положем что-то в функцию в компоненте,
       //   state - внутреннее хранилище
     },
