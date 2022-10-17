@@ -1,7 +1,13 @@
-import './App.css'
+import './App.css';
 
 import {incremented} from './features/example/example-slice';
 import {useAppDispatch, useAppSelector} from './app/hooks';
+import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import DefaultLayout from './components/layouts/default-layout/default-layout';
+
+import {Root, NoAuthRoutes, AuthRoutes} from './const/app-routes';
+import LoginPage from './pages/login-page/login-page';
+import SignUpPage from './pages/sign-up-page/sign-up-page';
 
 function App() {
   const count = useAppSelector((state) => state.example.valueCount);
@@ -9,30 +15,17 @@ function App() {
 
   const handlerClick = () => {
     dispatch(incremented());
-  }
+  };
   return (
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo"/>
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={handlerClick}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Routes>
+        <Route path={Root} element={<DefaultLayout/>}>
+          <Route path={Root + NoAuthRoutes.Login} element={<LoginPage/>}/>
+          <Route path={Root + NoAuthRoutes.SignUp} element={<SignUpPage/>}/>
+        </Route>
+      </Routes>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

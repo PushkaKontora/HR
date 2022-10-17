@@ -1,0 +1,18 @@
+#parent {
+
+}
+
+#picture {
+    width: 38px;
+    height: 38px;
+
+    background-color: var(--dark-gray);
+    border-radius: 50%;
+}
+
+#title {
+    color: var(--dark-gray);
+    font-size: 20px;
+
+    margin-left: 9px;
+}
