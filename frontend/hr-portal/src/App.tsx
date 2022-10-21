@@ -1,4 +1,4 @@
-import './App.css'
+import './App.css';
 
 import {incremented} from './features/example/example-slice';
 import {useAppDispatch, useAppSelector} from './app/hooks';
@@ -9,14 +9,14 @@ function App() {
 
   const handlerClick = () => {
     dispatch(incremented());
-  }
+  };
   return (
     <div className="App">
       <div>
-        <a href="https://vitejs.dev" target="_blank">
+        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
           <img src="/vite.svg" className="logo" alt="Vite logo"/>
         </a>
-        <a href="https://reactjs.org" target="_blank">
+        <a href="https://reactjs.org" target="_blank" rel="noreferrer">
         </a>
       </div>
       <h1>Vite + React</h1>
@@ -32,7 +32,7 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
