@@ -48,5 +48,7 @@ class UserHandlers(IUserHandlers):
     ) -> SuccessResponse:
         pass
 
-    def rename(self, request: HttpRequest, user_id: int = Path(..., alias="userId"), body: NameIn = Body(...)) -> SuccessResponse:
+    def rename(
+        self, request: HttpRequest, user_id: int = Path(..., alias="userId"), body: NameIn = Body(...)
+    ) -> SuccessResponse:
         pass
