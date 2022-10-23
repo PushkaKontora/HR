@@ -36,7 +36,7 @@ class UserDepartmentOut(BaseSchema):
 
 class UserOut(BaseSchema):
     id: int
-    email: str
+    email: EmailStr
     permission: str
     surname: str
     name: str
