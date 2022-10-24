@@ -73,7 +73,7 @@ class ResumesRouter(Router):
         resumes_wishlist_router: Router,
         resumes_handlers: IResumesHandlers,
         resume_handlers: IResumeHandlers,
-        only_self: JWTBaseAuthentication,
+        any_user: JWTBaseAuthentication,
     ):
         super(ResumesRouter, self).__init__(tags=[RESUMES_TAG])
 
@@ -90,7 +90,7 @@ class ResumesRouter(Router):
             path="",
             methods=["POST"],
             view_func=resume_handlers.create_resume,
-            auth=[only_self],
+            auth=[any_user],
             response={200: SuccessResponse, 401: ErrorResponse, 422: ErrorResponse},
         )
 
@@ -99,7 +99,7 @@ class ResumesRouter(Router):
 
 
 class ResumeRouter(Router):
-    def __init__(self, resume_handlers: IResumeHandlers, only_owner: JWTBaseAuthentication):
+    def __init__(self, resume_handlers: IResumeHandlers, any_user: JWTBaseAuthentication):
         super(ResumeRouter, self).__init__(tags=[RESUMES_TAG])
 
         self.add_api_operation(
@@ -114,12 +114,11 @@ class ResumeRouter(Router):
             tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["PUT"],
-            auth=[only_owner],
+            auth=[any_user],
             view_func=resume_handlers.update_resume,
             response={
                 200: SuccessResponse,
                 401: ErrorResponse,
-                403: ErrorResponse,
                 404: ErrorResponse,
                 422: ErrorResponse,
             },
@@ -129,18 +128,18 @@ class ResumeRouter(Router):
             tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="/publish",
             methods=["PATCH"],
-            auth=[only_owner],
+            auth=[any_user],
             view_func=resume_handlers.publish_resume,
-            response={200: PublishingOut, 401: ErrorResponse, 403: ErrorResponse, 404: ErrorResponse},
+            response={200: PublishingOut, 401: ErrorResponse, 404: ErrorResponse},
         )
 
         self.add_api_operation(
             tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="/unpublish",
             methods=["PATCH"],
-            auth=[only_owner],
+            auth=[any_user],
             view_func=resume_handlers.unpublish_resume,
-            response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 404: ErrorResponse},
+            response={200: SuccessResponse, 401: ErrorResponse, 404: ErrorResponse},
         )
 
 
