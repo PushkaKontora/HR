@@ -6,11 +6,12 @@ from ninja import Body, Path, Query
 from api.internal.base import SuccessResponse
 from api.internal.v1.vacancies.domain.entities import (
     PublishingOut,
+    RequestOut,
     VacanciesFilters,
     VacanciesWishlistFilters,
     VacanciesWishlistIn,
     VacancyIn,
-    VacancyOut, RequestOut,
+    VacancyOut,
 )
 from api.internal.v1.vacancies.presentation.routers import (
     IVacanciesHandlers,

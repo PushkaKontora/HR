@@ -8,11 +8,12 @@ from api.internal.authentication import JWTBaseAuthentication
 from api.internal.base import NOT_IMPLEMENTED_TAG, ErrorResponse, SuccessResponse
 from api.internal.v1.vacancies.domain.entities import (
     PublishingOut,
+    RequestOut,
     VacanciesFilters,
     VacanciesWishlistFilters,
     VacanciesWishlistIn,
     VacancyIn,
-    VacancyOut, RequestOut,
+    VacancyOut,
 )
 
 VACANCIES_TAG = "vacancies"
@@ -111,7 +112,7 @@ class VacancyRouter(Router):
             methods=["GET"],
             view_func=vacancy_handlers.get_vacancy_request,
             auth=[any_user],
-            response={200: RequestOut, 401: ErrorResponse, 404: ErrorResponse}
+            response={200: RequestOut, 401: ErrorResponse, 404: ErrorResponse},
         )
 
         self.add_api_operation(
