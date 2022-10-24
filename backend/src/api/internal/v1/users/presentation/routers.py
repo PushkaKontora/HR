@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
 from django.http import HttpRequest
 from ninja import Body, File, Path, Router, UploadedFile
@@ -55,13 +56,17 @@ class IUserHandlers(ABC):
         pass
 
     @abstractmethod
+    def remove_photo(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
+        pass
+
+    @abstractmethod
     def change_email(
         self, request: HttpRequest, user_id: int = Path(...), body: EmailIn = Body(...)
     ) -> SuccessResponse:
         pass
 
     @abstractmethod
-    def rename(self, request: HttpRequest, user_id: int = Path(...), body: NameIn = Body(...)) -> SuccessResponse:
+    def rename_user(self, request: HttpRequest, user_id: int = Path(...), body: NameIn = Body(...)) -> SuccessResponse:
         pass
 
 
@@ -128,7 +133,20 @@ class UserRouter(Router):
                 401: ErrorResponse,
                 403: ErrorResponse,
                 404: ErrorResponse,
-                422: ErrorResponse,
+            },
+        )
+
+        self.add_api_operation(
+            tags=[USERS_TAG, NOT_READY_TAG],
+            path="/photo/remove",
+            methods=["PATCH"],
+            view_func=user_handlers.remove_photo,
+            auth=[only_self],
+            response={
+                200: SuccessResponse,
+                401: ErrorResponse,
+                403: ErrorResponse,
+                404: ErrorResponse,
             },
         )
 
@@ -151,7 +169,7 @@ class UserRouter(Router):
             tags=[USERS_TAG, NOT_READY_TAG],
             path="/rename",
             methods=["PATCH"],
-            view_func=user_handlers.rename,
+            view_func=user_handlers.rename_user,
             auth=[only_self],
             response={
                 200: SuccessResponse,

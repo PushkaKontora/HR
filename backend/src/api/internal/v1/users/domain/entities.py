@@ -4,6 +4,8 @@ from typing import Optional
 from ninja import Schema
 from pydantic import EmailStr
 
+from api.internal.models import Permissions
+
 PDF_RE = r"([^\\s]+(\\.(?i)(pdf))$)"
 
 
@@ -32,16 +34,21 @@ class UserDepartmentOut(Schema):
     id: int
 
 
+class PasswordOut(Schema):
+    updated_at: datetime
+
+
 class UserOut(Schema):
     id: int
     email: EmailStr
-    permission: str
+    permission: Permissions
     surname: str
     name: str
     patronymic: str
     photo: str
     resume: Optional[UserResumeOut]
     department: Optional[UserDepartmentOut]
+    password: PasswordOut
 
 
 class EmailIn(Schema):

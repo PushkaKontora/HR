@@ -19,7 +19,7 @@ class IDepartmentsHandlers(ABC):
 class IDepartmentHandlers(ABC):
     @abstractmethod
     def get_department(
-        self, request: HttpRequest, department_id: int = Path(..., alias="departmentId")
+        self, request: HttpRequest, department_id: int = Path(...)
     ) -> DepartmentOut:
         pass
 
@@ -36,7 +36,7 @@ class DepartmentsRouter(Router):
             response={200: List[DepartmentOut]},
         )
 
-        self.add_router("/{int:departmentId}", department_router)
+        self.add_router("/{int:department_id}", department_router)
 
 
 class DepartmentRouter(Router):

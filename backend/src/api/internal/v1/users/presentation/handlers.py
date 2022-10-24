@@ -32,6 +32,9 @@ class AuthHandlers(IAuthHandlers):
 
 
 class UserHandlers(IUserHandlers):
+    def remove_photo(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
+        pass
+
     def get_user(self, request: HttpRequest, user_id: int = Path(...)) -> UserOut:
         pass
 
@@ -48,5 +51,5 @@ class UserHandlers(IUserHandlers):
     ) -> SuccessResponse:
         pass
 
-    def rename(self, request: HttpRequest, user_id: int = Path(...), body: NameIn = Body(...)) -> SuccessResponse:
+    def rename_user(self, request: HttpRequest, user_id: int = Path(...), body: NameIn = Body(...)) -> SuccessResponse:
         pass
