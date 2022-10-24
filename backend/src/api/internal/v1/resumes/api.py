@@ -7,25 +7,19 @@ from api.internal.v1.resumes.presentation.handlers import ResumeHandlers, Resume
 from api.internal.v1.resumes.presentation.routers import ResumeRouter, ResumesRouter, ResumesWishlistRouter
 
 
-class OnlyOwnerStub(JWTBaseAuthentication):
-    def authorize(self, user: User) -> bool:
-        pass
-
-
 class OnlyEmployerStub(JWTBaseAuthentication):
     def authorize(self, user: User) -> bool:
         pass
 
 
-class OnlySelfStub(JWTBaseAuthentication):
+class AnyUserStub(JWTBaseAuthentication):
     def authorize(self, user: User) -> bool:
         pass
 
 
 class Container(containers.DeclarativeContainer):
-    only_owner = providers.Factory(OnlyOwnerStub)
     only_employer = providers.Factory(OnlyEmployerStub)
-    only_self = providers.Factory(OnlySelfStub)
+    any_user = providers.Factory(AnyUserStub)
 
     resume_handlers = providers.Singleton(ResumeHandlers)
     resumes_handlers = providers.Singleton(ResumesHandlers)
@@ -34,7 +28,7 @@ class Container(containers.DeclarativeContainer):
     resume_router = providers.Singleton(
         ResumeRouter,
         resume_handlers=resume_handlers,
-        only_owner=only_owner,
+        any_user=any_user,
     )
     resumes_wishlist_router = providers.Singleton(
         ResumesWishlistRouter, wishlist_resumes_handlers=wishlist_resumes_handlers, only_employer=only_employer
@@ -45,7 +39,7 @@ class Container(containers.DeclarativeContainer):
         resumes_wishlist_router=resumes_wishlist_router,
         resumes_handlers=resumes_handlers,
         resume_handlers=resume_handlers,
-        only_self=only_self,
+        any_user=any_user,
     )
 
 
