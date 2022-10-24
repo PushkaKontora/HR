@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from django.http import HttpRequest
 from ninja import Body, File, Path, Router, UploadedFile
@@ -102,7 +101,7 @@ class UsersRouter(Router):
 
 
 class UserRouter(Router):
-    def __init__(self, user_handlers: IUserHandlers, auth_handlers: IAuthHandlers, only_self: JWTBaseAuthentication):
+    def __init__(self, user_handlers: IUserHandlers, auth_handlers: IAuthHandlers, any_user: JWTBaseAuthentication):
         super(UserRouter, self).__init__(tags=[USERS_TAG])
 
         self.add_api_operation(
@@ -118,7 +117,7 @@ class UserRouter(Router):
             path="",
             methods=["DELETE"],
             view_func=user_handlers.delete_user,
-            auth=[only_self],
+            auth=[any_user],
             response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 404: ErrorResponse},
         )
 
@@ -127,7 +126,7 @@ class UserRouter(Router):
             path="/photo",
             methods=["PATCH"],
             view_func=user_handlers.change_photo,
-            auth=[only_self],
+            auth=[any_user],
             response={
                 200: SuccessResponse,
                 401: ErrorResponse,
@@ -141,7 +140,7 @@ class UserRouter(Router):
             path="/photo/remove",
             methods=["PATCH"],
             view_func=user_handlers.remove_photo,
-            auth=[only_self],
+            auth=[any_user],
             response={
                 200: SuccessResponse,
                 401: ErrorResponse,
@@ -155,7 +154,7 @@ class UserRouter(Router):
             path="/email",
             methods=["PATCH"],
             view_func=user_handlers.change_email,
-            auth=[only_self],
+            auth=[any_user],
             response={
                 200: SuccessResponse,
                 401: ErrorResponse,
@@ -170,7 +169,7 @@ class UserRouter(Router):
             path="/rename",
             methods=["PATCH"],
             view_func=user_handlers.rename_user,
-            auth=[only_self],
+            auth=[any_user],
             response={
                 200: SuccessResponse,
                 401: ErrorResponse,
@@ -185,7 +184,7 @@ class UserRouter(Router):
             path="/reset-password",
             methods=["PATCH"],
             view_func=auth_handlers.reset_password,
-            auth=[only_self],
+            auth=[any_user],
             response={
                 200: ResetPasswordOut,
                 401: ErrorResponse,
