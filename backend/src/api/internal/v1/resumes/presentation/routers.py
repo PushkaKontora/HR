@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from ninja import Body, File, Form, Path, Query, Router, UploadedFile
 
 from api.internal.authentication import JWTBaseAuthentication
-from api.internal.base import NOT_READY_TAG, ErrorResponse, SuccessResponse
+from api.internal.base import NOT_IMPLEMENTED_TAG, ErrorResponse, SuccessResponse
 from api.internal.v1.resumes.domain.entities import (
     PublishingOut,
     ResumeFormIn,
@@ -78,7 +78,7 @@ class ResumesRouter(Router):
         super(ResumesRouter, self).__init__(tags=[RESUMES_TAG])
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_READY_TAG],
+            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
             view_func=resumes_handlers.get_resumes,
@@ -86,7 +86,7 @@ class ResumesRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_READY_TAG],
+            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["POST"],
             view_func=resume_handlers.create_resume,
@@ -103,7 +103,7 @@ class ResumeRouter(Router):
         super(ResumeRouter, self).__init__(tags=[RESUMES_TAG])
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_READY_TAG],
+            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
             view_func=resume_handlers.get_resume,
@@ -111,7 +111,7 @@ class ResumeRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_READY_TAG],
+            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["PUT"],
             auth=[only_owner],
@@ -126,7 +126,7 @@ class ResumeRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_READY_TAG],
+            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="/publish",
             methods=["PATCH"],
             auth=[only_owner],
@@ -135,7 +135,7 @@ class ResumeRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_READY_TAG],
+            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="/unpublish",
             methods=["PATCH"],
             auth=[only_owner],
@@ -149,7 +149,7 @@ class ResumesWishlistRouter(Router):
         super(ResumesWishlistRouter, self).__init__(tags=[RESUMES_TAG])
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_READY_TAG],
+            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
             auth=[only_employer],
@@ -158,7 +158,7 @@ class ResumesWishlistRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_READY_TAG],
+            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["POST"],
             auth=[only_employer],

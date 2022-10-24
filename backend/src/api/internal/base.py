@@ -1,6 +1,6 @@
 from ninja import Schema
 
-NOT_READY_TAG = "not ready"
+NOT_IMPLEMENTED_TAG = "not implemented"
 
 
 class SuccessResponse(Schema):

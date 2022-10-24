@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from ninja import Body, File, Path, Router, UploadedFile
 
 from api.internal.authentication import JWTBaseAuthentication
-from api.internal.base import NOT_READY_TAG, ErrorResponse, SuccessResponse
+from api.internal.base import NOT_IMPLEMENTED_TAG, ErrorResponse, SuccessResponse
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
     AuthenticationOut,
@@ -75,7 +75,7 @@ class UsersRouter(Router):
         super(UsersRouter, self).__init__(tags=[USERS_TAG])
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_READY_TAG],
+            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["POST"],
             view_func=auth_handlers.register_user,
@@ -83,7 +83,7 @@ class UsersRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_READY_TAG],
+            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="/authenticate",
             methods=["POST"],
             view_func=auth_handlers.authenticate_user,
@@ -91,7 +91,7 @@ class UsersRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_READY_TAG],
+            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="/refresh-tokens",
             methods=["POST"],
             view_func=auth_handlers.refresh_tokens,
@@ -106,7 +106,7 @@ class UserRouter(Router):
         super(UserRouter, self).__init__(tags=[USERS_TAG])
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_READY_TAG],
+            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
             view_func=user_handlers.get_user,
@@ -114,7 +114,7 @@ class UserRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_READY_TAG],
+            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["DELETE"],
             view_func=user_handlers.delete_user,
@@ -123,7 +123,7 @@ class UserRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_READY_TAG],
+            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="/photo",
             methods=["PATCH"],
             view_func=user_handlers.change_photo,
@@ -137,7 +137,7 @@ class UserRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_READY_TAG],
+            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="/photo/remove",
             methods=["PATCH"],
             view_func=user_handlers.remove_photo,
@@ -151,7 +151,7 @@ class UserRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_READY_TAG],
+            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="/email",
             methods=["PATCH"],
             view_func=user_handlers.change_email,
@@ -166,7 +166,7 @@ class UserRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_READY_TAG],
+            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="/rename",
             methods=["PATCH"],
             view_func=user_handlers.rename_user,
@@ -181,7 +181,7 @@ class UserRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_READY_TAG],
+            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="/reset-password",
             methods=["PATCH"],
             view_func=auth_handlers.reset_password,

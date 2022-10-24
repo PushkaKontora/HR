@@ -11,6 +11,7 @@ from api.internal.models import Experiences
 class ResumesSortParameters(Enum):
     NAME = "name"
     PUBLISHED_AT = "published_at"
+    LIKED_AT = "liked_at"
 
 
 class ResumesFilters(Schema):
@@ -51,7 +52,7 @@ class ResumesWishlistFilters(Schema):
 
 
 class ResumesWishlistIn(Schema):
-    id: int
+    resume_id: int
 
 
 class PublishingOut(Schema):

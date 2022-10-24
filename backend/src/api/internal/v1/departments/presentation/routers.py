@@ -4,7 +4,7 @@ from typing import Iterable, List
 from django.http import HttpRequest
 from ninja import Path, Router
 
-from api.internal.base import NOT_READY_TAG, ErrorResponse
+from api.internal.base import NOT_IMPLEMENTED_TAG, ErrorResponse
 from api.internal.v1.departments.domain.entities import DepartmentOut
 
 DEPARTMENTS_TAG = "departments"
@@ -18,9 +18,7 @@ class IDepartmentsHandlers(ABC):
 
 class IDepartmentHandlers(ABC):
     @abstractmethod
-    def get_department(
-        self, request: HttpRequest, department_id: int = Path(...)
-    ) -> DepartmentOut:
+    def get_department(self, request: HttpRequest, department_id: int = Path(...)) -> DepartmentOut:
         pass
 
 
@@ -29,7 +27,7 @@ class DepartmentsRouter(Router):
         super(DepartmentsRouter, self).__init__(tags=[DEPARTMENTS_TAG])
 
         self.add_api_operation(
-            tags=[DEPARTMENTS_TAG, NOT_READY_TAG],
+            tags=[DEPARTMENTS_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
             view_func=departments_handlers.get_departments,
@@ -44,7 +42,7 @@ class DepartmentRouter(Router):
         super(DepartmentRouter, self).__init__(tags=[DEPARTMENTS_TAG])
 
         self.add_api_operation(
-            tags=[DEPARTMENTS_TAG, NOT_READY_TAG],
+            tags=[DEPARTMENTS_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
             view_func=department_handlers.get_department,
