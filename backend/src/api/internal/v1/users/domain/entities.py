@@ -1,15 +1,13 @@
 from datetime import datetime
 from typing import Optional
 
-from ninja import UploadedFile
+from ninja import Schema
 from pydantic import EmailStr
-
-from api.internal.base import BaseSchema
 
 PDF_RE = r"([^\\s]+(\\.(?i)(pdf))$)"
 
 
-class RegistrationIn(BaseSchema):
+class RegistrationIn(Schema):
     email: EmailStr
     password: str
     surname: str
@@ -17,24 +15,24 @@ class RegistrationIn(BaseSchema):
     patronymic: str
 
 
-class AuthenticationIn(BaseSchema):
+class AuthenticationIn(Schema):
     email: EmailStr
     password: str
 
 
-class AuthenticationOut(BaseSchema):
+class AuthenticationOut(Schema):
     access_token: str
 
 
-class UserResumeOut(BaseSchema):
+class UserResumeOut(Schema):
     id: int
 
 
-class UserDepartmentOut(BaseSchema):
+class UserDepartmentOut(Schema):
     id: int
 
 
-class UserOut(BaseSchema):
+class UserOut(Schema):
     id: int
     email: EmailStr
     permission: str
@@ -46,20 +44,20 @@ class UserOut(BaseSchema):
     department: Optional[UserDepartmentOut]
 
 
-class EmailIn(BaseSchema):
+class EmailIn(Schema):
     email: EmailStr
 
 
-class NameIn(BaseSchema):
+class NameIn(Schema):
     surname: str
     name: str
     patronymic: str
 
 
-class ResetPasswordIn(BaseSchema):
+class ResetPasswordIn(Schema):
     previous_password: str
     new_password: str
 
 
-class ResetPasswordOut(BaseSchema):
+class ResetPasswordOut(Schema):
     updated_at: datetime

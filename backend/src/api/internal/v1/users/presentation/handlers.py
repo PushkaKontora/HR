@@ -26,29 +26,27 @@ class AuthHandlers(IAuthHandlers):
         pass
 
     def reset_password(
-        self, request: HttpRequest, user_id: int = Path(..., alias="userId"), body: ResetPasswordIn = Body(...)
+        self, request: HttpRequest, user_id: int = Path(...), body: ResetPasswordIn = Body(...)
     ) -> ResetPasswordOut:
         pass
 
 
 class UserHandlers(IUserHandlers):
-    def get_user(self, request: HttpRequest, user_id: int = Path(..., alias="userId")) -> UserOut:
+    def get_user(self, request: HttpRequest, user_id: int = Path(...)) -> UserOut:
         pass
 
-    def delete_user(self, request: HttpRequest, user_id: int = Path(..., alias="userId")) -> SuccessResponse:
+    def delete_user(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
         pass
 
     def change_photo(
-        self, request: HttpRequest, user_id: int = Path(..., alias="userId"), photo: UploadedFile = File(...)
+        self, request: HttpRequest, user_id: int = Path(...), photo: UploadedFile = File(...)
     ) -> SuccessResponse:
         pass
 
     def change_email(
-        self, request: HttpRequest, user_id: int = Path(..., alias="userId"), body: EmailIn = Body(...)
+        self, request: HttpRequest, user_id: int = Path(...), body: EmailIn = Body(...)
     ) -> SuccessResponse:
         pass
 
-    def rename(
-        self, request: HttpRequest, user_id: int = Path(..., alias="userId"), body: NameIn = Body(...)
-    ) -> SuccessResponse:
+    def rename(self, request: HttpRequest, user_id: int = Path(...), body: NameIn = Body(...)) -> SuccessResponse:
         pass

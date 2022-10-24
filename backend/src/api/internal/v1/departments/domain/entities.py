@@ -1,9 +1,8 @@
+from ninja import Schema
 from pydantic import EmailStr
 
-from api.internal.base import BaseSchema
 
-
-class LeaderOut(BaseSchema):
+class LeaderOut(Schema):
     id: int
     surname: str
     name: str
@@ -11,7 +10,7 @@ class LeaderOut(BaseSchema):
     email: EmailStr
 
 
-class DepartmentOut(BaseSchema):
+class DepartmentOut(Schema):
     id: int
     name: str
     description: str

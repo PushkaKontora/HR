@@ -34,36 +34,34 @@ class IAuthHandlers(ABC):
 
     @abstractmethod
     def reset_password(
-        self, request: HttpRequest, user_id: int = Path(..., alias="userId"), body: ResetPasswordIn = Body(...)
+        self, request: HttpRequest, user_id: int = Path(...), body: ResetPasswordIn = Body(...)
     ) -> ResetPasswordOut:
         pass
 
 
 class IUserHandlers(ABC):
     @abstractmethod
-    def get_user(self, request: HttpRequest, user_id: int = Path(..., alias="userId")) -> UserOut:
+    def get_user(self, request: HttpRequest, user_id: int = Path(...)) -> UserOut:
         pass
 
     @abstractmethod
-    def delete_user(self, request: HttpRequest, user_id: int = Path(..., alias="userId")) -> SuccessResponse:
+    def delete_user(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
         pass
 
     @abstractmethod
     def change_photo(
-        self, request: HttpRequest, user_id: int = Path(..., alias="userId"), photo: UploadedFile = File(...)
+        self, request: HttpRequest, user_id: int = Path(...), photo: UploadedFile = File(...)
     ) -> SuccessResponse:
         pass
 
     @abstractmethod
     def change_email(
-        self, request: HttpRequest, user_id: int = Path(..., alias="userId"), body: EmailIn = Body(...)
+        self, request: HttpRequest, user_id: int = Path(...), body: EmailIn = Body(...)
     ) -> SuccessResponse:
         pass
 
     @abstractmethod
-    def rename(
-        self, request: HttpRequest, user_id: int = Path(..., alias="userId"), body: NameIn = Body(...)
-    ) -> SuccessResponse:
+    def rename(self, request: HttpRequest, user_id: int = Path(...), body: NameIn = Body(...)) -> SuccessResponse:
         pass
 
 
@@ -95,11 +93,11 @@ class UsersRouter(Router):
             response={200: AuthenticationOut, 401: ErrorResponse, 422: ErrorResponse},
         )
 
-        self.add_router("/{int:userId}", user_router)
+        self.add_router("/{int:user_id}", user_router)
 
 
 class UserRouter(Router):
-    def __init__(self, user_handlers: IUserHandlers, auth_handlers: IAuthHandlers, only_owner: JWTBaseAuthentication):
+    def __init__(self, user_handlers: IUserHandlers, auth_handlers: IAuthHandlers, only_self: JWTBaseAuthentication):
         super(UserRouter, self).__init__(tags=[USERS_TAG])
 
         self.add_api_operation(
@@ -115,7 +113,7 @@ class UserRouter(Router):
             path="",
             methods=["DELETE"],
             view_func=user_handlers.delete_user,
-            auth=[only_owner],
+            auth=[only_self],
             response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 404: ErrorResponse},
         )
 
@@ -124,7 +122,7 @@ class UserRouter(Router):
             path="/photo",
             methods=["PATCH"],
             view_func=user_handlers.change_photo,
-            auth=[only_owner],
+            auth=[only_self],
             response={
                 200: SuccessResponse,
                 401: ErrorResponse,
@@ -139,7 +137,7 @@ class UserRouter(Router):
             path="/email",
             methods=["PATCH"],
             view_func=user_handlers.change_email,
-            auth=[only_owner],
+            auth=[only_self],
             response={
                 200: SuccessResponse,
                 401: ErrorResponse,
@@ -154,7 +152,7 @@ class UserRouter(Router):
             path="/rename",
             methods=["PATCH"],
             view_func=user_handlers.rename,
-            auth=[only_owner],
+            auth=[only_self],
             response={
                 200: SuccessResponse,
                 401: ErrorResponse,
@@ -169,7 +167,7 @@ class UserRouter(Router):
             path="/reset-password",
             methods=["PATCH"],
             view_func=auth_handlers.reset_password,
-            auth=[only_owner],
+            auth=[only_self],
             response={
                 200: ResetPasswordOut,
                 401: ErrorResponse,
