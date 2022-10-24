@@ -1,13 +1,18 @@
 from dependency_injector import containers, providers
 from ninja import NinjaAPI
 
-from api.internal.authentication import JWTAuthenticationStub
+from api.internal.authentication import JWTBaseAuthentication
 from api.internal.v1.users.presentation.handlers import AuthHandlers, UserHandlers
 from api.internal.v1.users.presentation.routers import UserRouter, UsersRouter
 
 
+class OnlyOwnerStub(JWTBaseAuthentication):
+    def authorize(self, user: "User") -> bool:
+        pass
+
+
 class Container(containers.DeclarativeContainer):
-    only_owner = providers.Factory(JWTAuthenticationStub)
+    only_owner = providers.Factory(OnlyOwnerStub)
 
     auth_handlers = providers.Singleton(AuthHandlers)
     user_handlers = providers.Singleton(UserHandlers)

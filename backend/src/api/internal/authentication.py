@@ -14,8 +14,3 @@ class JWTBaseAuthentication(HttpBearer, ABC):
     @abstractmethod
     def authorize(self, user: User) -> bool:
         pass
-
-
-class JWTAuthenticationStub(JWTBaseAuthentication):
-    def authorize(self, user: User) -> bool:
-        pass
