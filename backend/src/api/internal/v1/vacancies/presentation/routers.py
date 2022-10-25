@@ -71,7 +71,11 @@ class IVacanciesWishlistHandlers(ABC):
 
 class VacanciesRouter(Router):
     def __init__(
-        self, vacancy_router: Router, vacancies_wishlist_router: Router, vacancies_handlers: IVacanciesHandlers, only_employer: JWTBaseAuthentication
+        self,
+        vacancy_router: Router,
+        vacancies_wishlist_router: Router,
+        vacancies_handlers: IVacanciesHandlers,
+        only_employer: JWTBaseAuthentication,
     ):
         super(VacanciesRouter, self).__init__(tags=[VACANCIES_TAG])
 
@@ -89,7 +93,7 @@ class VacanciesRouter(Router):
             methods=["POST"],
             view_func=vacancies_handlers.create_vacancy,
             auth=[only_employer],
-            response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 422: ErrorResponse}
+            response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 422: ErrorResponse},
         )
 
         self.add_router("/{int:vacancy_id}", vacancy_router)

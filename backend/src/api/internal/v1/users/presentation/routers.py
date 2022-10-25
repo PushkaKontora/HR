@@ -10,10 +10,11 @@ from api.internal.v1.users.domain.entities import (
     AuthenticationOut,
     EmailIn,
     NameIn,
+    PhotoOut,
     RegistrationIn,
     ResetPasswordIn,
     ResetPasswordOut,
-    UserOut, PhotoOut,
+    UserOut,
 )
 
 USERS_TAG = "users"
@@ -49,9 +50,7 @@ class IUserHandlers(ABC):
         pass
 
     @abstractmethod
-    def change_photo(
-        self, request: HttpRequest, user_id: int = Path(...), photo: UploadedFile = File(...)
-    ) -> PhotoOut:
+    def change_photo(self, request: HttpRequest, user_id: int = Path(...), photo: UploadedFile = File(...)) -> PhotoOut:
         pass
 
     @abstractmethod

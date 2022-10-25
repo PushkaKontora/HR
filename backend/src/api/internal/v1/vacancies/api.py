@@ -43,7 +43,7 @@ class Container(containers.DeclarativeContainer):
         vacancy_router=vacancy_router,
         vacancies_wishlist_router=vacancies_wishlist_router,
         vacancies_handlers=vacancies_handlers,
-        only_employer=only_employer
+        only_employer=only_employer,
     )
 
 
