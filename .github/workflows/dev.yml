@@ -1,0 +1,26 @@
+name: Code checks
+
+on:
+  push:
+    branches: [ci]
+
+jobs:
+  check_backend:
+    runs-on: ubuntu-20.04
+    environment: dev
+
+    steps:
+    - name: Clone the repository
+      uses: actions/checkout@v3
+
+    - name: Create .env
+      run: echo "${{ secrets.DOT_ENV }}" > backend/src/config/.env
+
+    - name: Build containers
+      run: make builddev
+
+    - name: Check code with linter
+      run: make checkdev
+
+    - name: Run tests
+      run: make testdev
