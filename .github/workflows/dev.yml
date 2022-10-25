@@ -1,0 +1,45 @@
+name: Lint and Tests for dev
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  backend:
+    runs-on: ubuntu-20.04
+    environment: dev
+
+    steps:
+    - name: Clone the repository
+      uses: actions/checkout@v3
+
+    - name: Create .env
+      run: echo "${{ secrets.DOT_ENV }}" > backend/src/config/.env
+
+    - name: Build containers
+      run: make builddev
+
+    - name: Check code
+      run: make checkdev
+
+    - name: Run tests
+      run: make testdev
+
+  frontend:
+    runs-on: ubuntu-20.04
+    environment: dev
+
+    steps:
+      - name: Clone the repository
+        uses: actions/checkout@v3
+
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.14.2
+
+      - name: Install dependencies
+        run: cd frontend/hr-portal && npm install
+
+      - name: Check code
+        run: frontend/hr-portal/node_modules/.bin/eslint .
