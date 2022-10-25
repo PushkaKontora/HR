@@ -21,6 +21,9 @@ from api.internal.v1.vacancies.presentation.routers import (
 
 
 class VacanciesHandlers(IVacanciesHandlers):
+    def create_vacancy(self, request: HttpRequest, body: VacancyIn = Body(...)) -> SuccessResponse:
+        pass
+
     def get_vacancies(self, request: HttpRequest, filters: VacanciesFilters = Query(...)) -> Iterable[VacancyOut]:
         pass
 
@@ -34,7 +37,7 @@ class VacancyHandlers(IVacancyHandlers):
     ) -> SuccessResponse:
         pass
 
-    def create_vacancy_request(self, request: HttpRequest, vacancy_id: int = Path(...)) -> SuccessResponse:
+    def create_vacancy_request(self, request: HttpRequest, vacancy_id: int = Path(...)) -> RequestOut:
         pass
 
     def publish_vacancy(self, request: HttpRequest, vacancy_id: int = Path(...)) -> PublishingOut:

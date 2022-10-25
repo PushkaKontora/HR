@@ -14,6 +14,6 @@ class DepartmentsHandlers(IDepartmentsHandlers):
 
 class DepartmentHandlers(IDepartmentHandlers):
     def get_department(
-        self, request: HttpRequest, department_id: int = Path(..., alias="departmentId")
+        self, request: HttpRequest, department_id: int = Path(...)
     ) -> DepartmentOut:
         pass

@@ -24,6 +24,10 @@ class IVacanciesHandlers(ABC):
     def get_vacancies(self, request: HttpRequest, filters: VacanciesFilters = Query(...)) -> Iterable[VacancyOut]:
         pass
 
+    @abstractmethod
+    def create_vacancy(self, request: HttpRequest, body: VacancyIn = Body(...)) -> SuccessResponse:
+        pass
+
 
 class IVacancyHandlers(ABC):
     @abstractmethod
@@ -37,7 +41,7 @@ class IVacancyHandlers(ABC):
         pass
 
     @abstractmethod
-    def create_vacancy_request(self, request: HttpRequest, vacancy_id: int = Path(...)) -> SuccessResponse:
+    def create_vacancy_request(self, request: HttpRequest, vacancy_id: int = Path(...)) -> RequestOut:
         pass
 
     @abstractmethod
@@ -67,7 +71,7 @@ class IVacanciesWishlistHandlers(ABC):
 
 class VacanciesRouter(Router):
     def __init__(
-        self, vacancy_router: Router, vacancies_wishlist_router: Router, vacancies_handlers: IVacanciesHandlers
+        self, vacancy_router: Router, vacancies_wishlist_router: Router, vacancies_handlers: IVacanciesHandlers, only_employer: JWTBaseAuthentication
     ):
         super(VacanciesRouter, self).__init__(tags=[VACANCIES_TAG])
 
@@ -77,6 +81,15 @@ class VacanciesRouter(Router):
             methods=["GET"],
             view_func=vacancies_handlers.get_vacancies,
             response={200: List[VacancyOut]},
+        )
+
+        self.add_api_operation(
+            tags=[VACANCIES_TAG, NOT_IMPLEMENTED_TAG],
+            path="",
+            methods=["POST"],
+            view_func=vacancies_handlers.create_vacancy,
+            auth=[only_employer],
+            response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 422: ErrorResponse}
         )
 
         self.add_router("/{int:vacancy_id}", vacancy_router)
@@ -121,7 +134,7 @@ class VacancyRouter(Router):
             methods=["POST"],
             view_func=vacancy_handlers.create_vacancy_request,
             auth=[any_user],
-            response={200: SuccessResponse, 401: ErrorResponse, 404: ErrorResponse},
+            response={200: RequestOut, 401: ErrorResponse, 404: ErrorResponse},
         )
 
         self.add_api_operation(

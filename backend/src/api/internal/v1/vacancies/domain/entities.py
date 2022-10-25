@@ -28,6 +28,7 @@ class VacanciesStatus(Enum):
 
 class VacanciesFilters(Schema):
     search: Optional[str] = None
+    department_id: Optional[int] = None
     department_name: Optional[str] = None
     experience: Optional[Experiences] = None
     salary_from: Optional[int] = Field(None, gte=0)

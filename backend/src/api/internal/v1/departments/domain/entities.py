@@ -1,5 +1,4 @@
 from ninja import Schema
-from pydantic import EmailStr
 
 
 class LeaderOut(Schema):
@@ -7,7 +6,6 @@ class LeaderOut(Schema):
     surname: str
     name: str
     patronymic: str
-    email: EmailStr
 
 
 class DepartmentOut(Schema):

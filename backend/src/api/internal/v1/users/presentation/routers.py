@@ -13,7 +13,7 @@ from api.internal.v1.users.domain.entities import (
     RegistrationIn,
     ResetPasswordIn,
     ResetPasswordOut,
-    UserOut,
+    UserOut, PhotoOut,
 )
 
 USERS_TAG = "users"
@@ -51,7 +51,7 @@ class IUserHandlers(ABC):
     @abstractmethod
     def change_photo(
         self, request: HttpRequest, user_id: int = Path(...), photo: UploadedFile = File(...)
-    ) -> SuccessResponse:
+    ) -> PhotoOut:
         pass
 
     @abstractmethod
@@ -118,7 +118,7 @@ class UserRouter(Router):
             methods=["DELETE"],
             view_func=user_handlers.delete_user,
             auth=[any_user],
-            response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 404: ErrorResponse},
+            response={200: SuccessResponse, 401: ErrorResponse, 404: ErrorResponse},
         )
 
         self.add_api_operation(
@@ -128,9 +128,8 @@ class UserRouter(Router):
             view_func=user_handlers.change_photo,
             auth=[any_user],
             response={
-                200: SuccessResponse,
+                200: PhotoOut,
                 401: ErrorResponse,
-                403: ErrorResponse,
                 404: ErrorResponse,
             },
         )
@@ -144,7 +143,6 @@ class UserRouter(Router):
             response={
                 200: SuccessResponse,
                 401: ErrorResponse,
-                403: ErrorResponse,
                 404: ErrorResponse,
             },
         )
@@ -158,7 +156,6 @@ class UserRouter(Router):
             response={
                 200: SuccessResponse,
                 401: ErrorResponse,
-                403: ErrorResponse,
                 404: ErrorResponse,
                 422: ErrorResponse,
             },
@@ -173,9 +170,7 @@ class UserRouter(Router):
             response={
                 200: SuccessResponse,
                 401: ErrorResponse,
-                403: ErrorResponse,
                 404: ErrorResponse,
-                422: ErrorResponse,
             },
         )
 
@@ -188,7 +183,6 @@ class UserRouter(Router):
             response={
                 200: ResetPasswordOut,
                 401: ErrorResponse,
-                403: ErrorResponse,
                 404: ErrorResponse,
                 422: ErrorResponse,
             },

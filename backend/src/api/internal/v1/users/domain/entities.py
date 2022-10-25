@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from ninja import Schema
-from pydantic import EmailStr
+from pydantic import EmailStr, HttpUrl
 
 from api.internal.models import Permissions
 
@@ -68,3 +68,7 @@ class ResetPasswordIn(Schema):
 
 class ResetPasswordOut(Schema):
     updated_at: datetime
+
+
+class PhotoOut(Schema):
+    photo: HttpUrl
