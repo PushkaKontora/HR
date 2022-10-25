@@ -5,7 +5,7 @@ from typing import List, Optional
 from ninja import Schema
 from pydantic import EmailStr, Field, HttpUrl
 
-from api.internal.models import Experiences
+from api.models import Experiences
 
 
 class ResumesSortParameters(Enum):

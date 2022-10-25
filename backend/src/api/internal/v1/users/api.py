@@ -2,9 +2,9 @@ from dependency_injector import containers, providers
 from ninja import NinjaAPI
 
 from api.internal.authentication import JWTBaseAuthentication
-from api.internal.models import User
 from api.internal.v1.users.presentation.handlers import AuthHandlers, UserHandlers
 from api.internal.v1.users.presentation.routers import UserRouter, UsersRouter
+from api.models import User
 
 
 class AnyUserStub(JWTBaseAuthentication):

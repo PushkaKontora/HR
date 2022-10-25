@@ -4,7 +4,7 @@ from typing import Optional
 from ninja import Schema
 from pydantic import EmailStr, HttpUrl
 
-from api.internal.models import Permissions
+from api.models import Permissions
 
 PDF_RE = r"([^\\s]+(\\.(?i)(pdf))$)"
 

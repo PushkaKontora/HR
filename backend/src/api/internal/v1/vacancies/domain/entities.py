@@ -5,7 +5,7 @@ from typing import Optional
 from ninja import Schema
 from pydantic import Field
 
-from api.internal.models import Experiences
+from api.models import Experiences
 
 
 class VacanciesSortParameters(Enum):

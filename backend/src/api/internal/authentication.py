@@ -4,7 +4,7 @@ from typing import Any, Optional
 from django.http import HttpRequest
 from ninja.security import HttpBearer
 
-from api.internal.models import User
+from api.models import User
 
 
 class JWTBaseAuthentication(HttpBearer, ABC):

@@ -2,13 +2,13 @@ from dependency_injector import containers, providers
 from ninja import NinjaAPI
 
 from api.internal.authentication import JWTBaseAuthentication
-from api.internal.models import User
 from api.internal.v1.vacancies.presentation.handlers import (
     VacanciesHandlers,
     VacanciesWishlistHandlers,
     VacancyHandlers,
 )
 from api.internal.v1.vacancies.presentation.routers import VacanciesRouter, VacanciesWishlistRouter, VacancyRouter
+from api.models import User
 
 
 class AnyUserStub(JWTBaseAuthentication):

@@ -1,6 +1,9 @@
 dev:
 	pipenv run python src/manage.py runserver
 
+run:
+	cd src && pipenv run gunicorn -c config/gunicorn.conf.py config.wsgi:application
+
 lint:
 	pipenv run isort . & \
 	pipenv run flake8 --config setup.cfg & \
