@@ -1,3 +1,5 @@
+@import url("styles/fonts-faces.css");
+
 * {
     padding: 0;
     margin: 0;
@@ -30,6 +32,14 @@ html, body {
     -ms-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
+
+    font-family: 'Graphik LCG', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+}
+
+#root, .App {
+    height: 100%;
 }
 
 input, button, textarea {
@@ -66,8 +76,34 @@ img {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-size: inherit;
-    font-weight: 400;
+    font-family: "Graphik LCG", sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+h1 {
+    font-size: 88px;
+    line-height: 88px;
+}
+
+h2 {
+    font-size: 64px;
+    line-height: 64px;
+}
+
+h3 {
+    font-size: 40px;
+    line-height: 40px;
+}
+
+h4 {
+    font-size: 24px;
+    line-height: 24px;
+}
+
+h5 {
+    font-size: 16px;
+    line-height: 16px;
 }
 
 /*--------------------*/

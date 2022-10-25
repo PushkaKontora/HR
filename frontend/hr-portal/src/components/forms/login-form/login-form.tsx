@@ -3,8 +3,8 @@ import {useForm} from 'react-hook-form';
 import {useState} from 'react';
 import FormInput from '../form-input/form-input';
 import {InputData} from '../types/form-input-props';
-
-const EmailRegex = /^(([^<>()[\]\\.,;:\s@\\"]+(\.[^<>()[\]\\.,;:\s@\\"]+)*)|(\\".+\\"))@(([^<>()[\]\\.,;:\s@\\"]+\.)+[^<>()[\]\\.,;:\s@\\"]{2,})$/i;
+import {FormSubmit} from '../../styled/forms/form-submit';
+import {EmailRegex} from '../../../const/email-regex';
 
 type LoginFormData = {
   email: string
@@ -59,7 +59,7 @@ function LoginForm() {
         <FormInput key={idx} {...item} errors={errors} register={register}/>
       ))}
 
-      <input type='submit' value='Далее'/>
+      <FormSubmit type='submit' value='Далее'/>
     </form>
   );
 }

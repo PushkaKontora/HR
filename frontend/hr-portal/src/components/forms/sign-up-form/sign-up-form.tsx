@@ -2,6 +2,8 @@ import FormInput from '../form-input/form-input';
 import {InputData} from '../types/form-input-props';
 import {useState} from 'react';
 import {useForm} from 'react-hook-form';
+import {FormSubmit} from '../../styled/forms/form-submit';
+import {EmailRegex} from '../../../const/email-regex';
 
 type SignUpFormData = {
   surname: string,
@@ -17,7 +19,7 @@ function SignUpForm() {
     handleSubmit,
     formState: {errors}
   } = useForm<SignUpFormData>({
-    mode: 'onBlur'
+    mode: 'onChange'
   });
 
   const [formData, setFormData] = useState({
@@ -57,7 +59,11 @@ function SignUpForm() {
       label: 'Email',
       type: 'email',
       options: {
-        required: 'Вы не ввели e-mail'
+        required: 'Вы не ввели e-mail',
+        pattern: {
+          value: EmailRegex,
+          message: 'Введите корректный e-mail'
+        }
       }
     },
     {
@@ -84,7 +90,7 @@ function SignUpForm() {
         <FormInput key={idx} {...item} errors={errors} register={register}/>
       ))}
 
-      <input type='submit' value='Далее'/>
+      <FormSubmit type='submit' value='Далее'/>
     </form>
   );
 }

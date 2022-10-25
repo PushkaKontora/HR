@@ -1,18 +1,44 @@
 import {Fragment} from 'react';
 import {Outlet} from 'react-router-dom';
 import Logo from '../../headers/logo/logo';
+import styled from 'styled-components';
+import Footer from '../../footer/footer';
+import {CONTENT_WIDTH} from '../../../const/styled/style-const';
+
+const Main = styled.main`
+  min-width: ${CONTENT_WIDTH};
+  width: ${CONTENT_WIDTH};
+  margin: 0 auto;
+  
+  flex-grow: 1;
+  
+  height: 100%;
+`;
+
+const Page = styled.div`
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  
+  min-height: 100vh;
+`;
 
 function DefaultLayout() {
+  const headerHeight = '120px';
+  const showFooter = false;
+
   return (
-    <Fragment>
-      <header>
+    <Page>
+      <header style={{height: headerHeight, backgroundColor: '#ddd'}}>
         <Logo></Logo>
       </header>
 
-      <main>
+      <Main>
         <Outlet/>
-      </main>
-    </Fragment>
+      </Main>
+
+      {showFooter && <Footer/>}
+    </Page>
   );
 }
 
