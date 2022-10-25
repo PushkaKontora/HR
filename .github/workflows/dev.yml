@@ -42,4 +42,4 @@ jobs:
         run: cd frontend/hr-portal && npm install
 
       - name: Check code
-        run: frontend/hr-portal/node_modules/.bin/eslint .
+        run: cd frontend/hr-portal && node_modules/.bin/eslint src/
