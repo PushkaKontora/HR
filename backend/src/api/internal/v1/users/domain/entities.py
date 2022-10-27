@@ -72,3 +72,15 @@ class ResetPasswordOut(Schema):
 
 class PhotoOut(Schema):
     photo: HttpUrl
+
+
+class Tokens(Schema):
+    access: str
+    refresh: str
+
+
+class Payload(Schema):
+    type: str
+    user_id: int
+    permission: Permissions
+    exp: int

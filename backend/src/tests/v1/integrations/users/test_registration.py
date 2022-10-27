@@ -5,11 +5,11 @@ from django.test import Client
 from ninja.responses import Response
 
 from api.models import Permissions, Resume, User
-from tests.conftest import get_422_error, post
+from tests.conftest import error_422, post, success
 from tests.v1.integrations.users.conftest import USERS
 
 
-def registrate(client: Client, body: dict) -> Response:
+def register(client: Client, body: dict) -> Response:
     return post(client, USERS, body=body)
 
 
@@ -23,7 +23,7 @@ def test_register_user(client: Client) -> None:
         "name": "Pety",
         "patronymic": "Sidorov",
     }
-    response = registrate(client, body)
+    response = register(client, body)
 
     assert response.status_code == 200
 
@@ -50,10 +50,10 @@ def test_register_user__where_email_has_already_taken(client: Client) -> None:
 
     user = User.objects.create(email=body["email"], surname="A", name="B", patronymic="C")
 
-    response = registrate(client, body)
+    response = register(client, body)
 
     assert response.status_code == 422
-    assert response.json() == get_422_error(1, "The email has already registered")
+    assert response.json() == error_422(1, "The email has already registered")
 
     assert User.objects.filter(email=user.email).count() == 1
     assert not User.objects.filter(surname=body["surname"], name=body["name"], patronymic=body["patronymic"]).exists()
@@ -69,9 +69,10 @@ def test_register_user__where_full_name_has_already_created(client: Client, anot
         "name": "Pety",
         "patronymic": "Sidorov",
     }
-    response = registrate(client, body)
+    response = register(client, body)
 
     assert response.status_code == 200
+    assert response.json() == success()
 
     user = User.objects.create(
         email=another_email, surname=body["surname"], name=body["name"], patronymic=body["patronymic"]

@@ -3,8 +3,9 @@ from abc import ABC, abstractmethod
 from django.http import HttpRequest
 from ninja import Body, File, Path, Router, UploadedFile
 
-from api.internal.authentication import JWTBaseAuthentication
-from api.internal.base import NOT_IMPLEMENTED_TAG, ErrorResponse, SuccessResponse
+from api.internal.v1.authentication import JWTBaseAuthentication
+from api.internal.v1.responses import ErrorResponse, SuccessResponse, MessageResponse
+from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
     AuthenticationOut,
@@ -80,11 +81,10 @@ class UsersRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="/authenticate",
             methods=["POST"],
             view_func=auth_handlers.authenticate_user,
-            response={200: AuthenticationOut, 401: ErrorResponse},
+            response={200: AuthenticationOut, 401: MessageResponse},
         )
 
         self.add_api_operation(

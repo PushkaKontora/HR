@@ -1,7 +1,7 @@
 from dependency_injector import containers, providers
 from ninja import NinjaAPI
 
-from api.internal.authentication import JWTBaseAuthentication
+from api.internal.v1.authentication import JWTBaseAuthentication
 from api.internal.v1.resumes.presentation.handlers import ResumeHandlers, ResumesHandlers, ResumesWishlistHandlers
 from api.internal.v1.resumes.presentation.routers import ResumeRouter, ResumesRouter, ResumesWishlistRouter
 from api.models import User

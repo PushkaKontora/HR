@@ -3,10 +3,10 @@ from typing import Type
 from dependency_injector import containers, providers
 from ninja import NinjaAPI
 
-from api.internal.authentication import JWTBaseAuthentication
-from api.internal.base import APIBaseException
-from api.internal.v1.users.db.repositories import PasswordRepository, UserRepository
-from api.internal.v1.users.domain.services import RegistrationService
+from api.internal.v1.authentication import JWTBaseAuthentication
+from api.internal.v1.exceptions import APIBaseException
+from api.internal.v1.users.db.repositories import IssuedTokenRepository, PasswordRepository, UserRepository
+from api.internal.v1.users.domain.services import AuthenticationService, RegistrationService
 from api.internal.v1.users.presentation.exceptions import PasswordHasAlreadyRegistered
 from api.internal.v1.users.presentation.handlers import AuthHandlers, UserHandlers
 from api.internal.v1.users.presentation.routers import UserRouter, UsersRouter
@@ -25,10 +25,14 @@ class Container(containers.DeclarativeContainer):
 
     user_repo = providers.Singleton(UserRepository)
     password_repo = providers.Singleton(PasswordRepository)
+    issued_token_repo = providers.Singleton(IssuedTokenRepository)
 
     registration_service = providers.Singleton(RegistrationService, user_repo=user_repo, password_repo=password_repo)
+    auth_service = providers.Singleton(AuthenticationService, user_repo=user_repo, issued_token_repo=issued_token_repo)
 
-    auth_handlers = providers.Singleton(AuthHandlers, registration_service=registration_service)
+    auth_handlers = providers.Singleton(
+        AuthHandlers, registration_service=registration_service, auth_service=auth_service
+    )
     user_handlers = providers.Singleton(UserHandlers)
 
     user_router = providers.Singleton(

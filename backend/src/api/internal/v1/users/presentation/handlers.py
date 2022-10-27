@@ -1,9 +1,14 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
+from typing import Optional
 
+from django.conf import settings
 from django.http import HttpRequest
 from ninja import Body, File, Path, UploadedFile
+from ninja.responses import Response
 
-from api.internal.base import SuccessResponse
+from api.internal.v1.exceptions import Unauthorized
+from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
     AuthenticationOut,
@@ -12,6 +17,7 @@ from api.internal.v1.users.domain.entities import (
     RegistrationIn,
     ResetPasswordIn,
     ResetPasswordOut,
+    Tokens,
     UserOut,
 )
 from api.internal.v1.users.presentation.exceptions import PasswordHasAlreadyRegistered
@@ -28,8 +34,19 @@ class IRegistrationService(ABC):
         pass
 
 
+class IAuthenticationService(ABC):
+    @abstractmethod
+    def authenticate(self, body: AuthenticationIn) -> Optional[Tokens]:
+        pass
+
+    @abstractmethod
+    def get_authentication_out(self, tokens: Tokens) -> AuthenticationOut:
+        pass
+
+
 class AuthHandlers(IAuthHandlers):
-    def __init__(self, registration_service: IRegistrationService):
+    def __init__(self, registration_service: IRegistrationService, auth_service: IAuthenticationService):
+        self.auth_service = auth_service
         self.registration_service = registration_service
 
     def register_user(self, request: HttpRequest, body: RegistrationIn = Body(...)) -> SuccessResponse:
@@ -40,8 +57,21 @@ class AuthHandlers(IAuthHandlers):
 
         return SuccessResponse()
 
-    def authenticate_user(self, request: HttpRequest, body: AuthenticationIn = Body(...)) -> AuthenticationOut:
-        raise NotImplementedError()
+    def authenticate_user(self, request: HttpRequest, body: AuthenticationIn = Body(...)) -> Response:
+        tokens = self.auth_service.authenticate(body)
+
+        if not tokens:
+            raise Unauthorized()
+
+        response = Response(self.auth_service.get_authentication_out(tokens))
+        response.set_cookie(
+            key=settings.REFRESH_TOKEN_COOKIE,
+            value=tokens.refresh,
+            httponly=True,
+            expires=datetime.utcnow() + settings.REFRESH_TOKEN_TTL,
+        )
+
+        return response
 
     def refresh_tokens(self, request: HttpRequest) -> AuthenticationOut:
         raise NotImplementedError()

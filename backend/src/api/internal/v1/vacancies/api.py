@@ -1,7 +1,7 @@
 from dependency_injector import containers, providers
 from ninja import NinjaAPI
 
-from api.internal.authentication import JWTBaseAuthentication
+from api.internal.v1.authentication import JWTBaseAuthentication
 from api.internal.v1.vacancies.presentation.handlers import (
     VacanciesHandlers,
     VacanciesWishlistHandlers,

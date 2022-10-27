@@ -4,8 +4,8 @@ from typing import Iterable, List
 from django.http import HttpRequest
 from ninja import Body, File, Form, Path, Query, Router, UploadedFile
 
-from api.internal.authentication import JWTBaseAuthentication
-from api.internal.base import NOT_IMPLEMENTED_TAG, ErrorResponse, SuccessResponse
+from api.internal.v1.authentication import JWTBaseAuthentication
+from api.internal.v1.responses import ErrorResponse, SuccessResponse
 from api.internal.v1.resumes.domain.entities import (
     PublishingOut,
     ResumeFormIn,
@@ -14,6 +14,7 @@ from api.internal.v1.resumes.domain.entities import (
     ResumesWishlistFilters,
     ResumesWishlistIn,
 )
+from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 
 RESUMES_TAG = "resumes"
 

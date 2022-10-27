@@ -3,7 +3,7 @@ from typing import Iterable
 from django.http import HttpRequest
 from ninja import Body, Path, Query
 
-from api.internal.base import SuccessResponse
+from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.vacancies.domain.entities import (
     PublishingOut,
     RequestOut,

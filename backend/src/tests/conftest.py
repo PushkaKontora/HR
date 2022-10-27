@@ -33,5 +33,13 @@ def delete(client: Client, uri: str, token: str = None) -> Response:
     return client.delete(uri, content_type=CONTENT_TYPE, **get_headers(token))
 
 
-def get_422_error(code: int, message: str) -> dict:
+def error_422(code: int, message: str) -> dict:
     return {"error": {"code": code, "msg": message}}
+
+
+def success() -> dict:
+    return {"msg": "Success"}
+
+
+def unauthorized_error() -> dict:
+    return {"msg": "Unauthorized"}

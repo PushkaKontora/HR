@@ -1,22 +1,8 @@
 from abc import ABC
 
-from ninja import Schema
 from ninja.responses import Response
 
-NOT_IMPLEMENTED_TAG = "not implemented"
-
-
-class SuccessResponse(Schema):
-    msg: str = "Success"
-
-
-class ErrorDetails(Schema):
-    code: int
-    msg: str
-
-
-class ErrorResponse(Schema):
-    error: ErrorDetails
+from api.internal.v1.responses import ErrorDetails, ErrorResponse
 
 
 class APIBaseException(Exception, ABC):
@@ -28,3 +14,7 @@ class APIBaseException(Exception, ABC):
     @classmethod
     def response(cls, exc: "APIBaseException") -> Response:
         return Response(ErrorResponse(error=ErrorDetails(code=exc.code, msg=exc.msg)), status=exc.status)
+
+
+class Unauthorized(Exception):
+    pass

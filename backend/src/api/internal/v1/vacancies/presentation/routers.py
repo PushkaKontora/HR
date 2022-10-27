@@ -4,8 +4,9 @@ from typing import Iterable, List
 from django.http import HttpRequest
 from ninja import Body, Path, Query, Router
 
-from api.internal.authentication import JWTBaseAuthentication
-from api.internal.base import NOT_IMPLEMENTED_TAG, ErrorResponse, SuccessResponse
+from api.internal.v1.authentication import JWTBaseAuthentication
+from api.internal.v1.responses import ErrorResponse, SuccessResponse
+from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 from api.internal.v1.vacancies.domain.entities import (
     PublishingOut,
     RequestOut,
