@@ -4,7 +4,7 @@ from django.http import HttpRequest
 from ninja import Body, File, Path, Router, UploadedFile
 
 from api.internal.v1.authentication import JWTBaseAuthentication
-from api.internal.v1.responses import ErrorResponse, SuccessResponse, MessageResponse
+from api.internal.v1.responses import ErrorResponse, MessageResponse, SuccessResponse
 from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
