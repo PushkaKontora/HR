@@ -17,17 +17,17 @@ from api.internal.v1.resumes.presentation.routers import IResumeHandlers, IResum
 
 class ResumesHandlers(IResumesHandlers):
     def get_resumes(self, request: HttpRequest, filters: ResumesFilters = Query(...)) -> Iterable[ResumeOut]:
-        pass
+        raise NotImplementedError()
 
 
 class ResumeHandlers(IResumeHandlers):
     def get_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> ResumeOut:
-        pass
+        raise NotImplementedError()
 
     def create_resume(
         self, request: HttpRequest, extra: ResumeFormIn = Form(...), document: UploadedFile = File(...)
     ) -> SuccessResponse:
-        pass
+        raise NotImplementedError()
 
     def update_resume(
         self,
@@ -36,20 +36,20 @@ class ResumeHandlers(IResumeHandlers):
         extra: ResumeFormIn = Form(...),
         document: UploadedFile = File(...),
     ) -> SuccessResponse:
-        pass
+        raise NotImplementedError()
 
     def publish_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> PublishingOut:
-        pass
+        raise NotImplementedError()
 
     def unpublish_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
-        pass
+        raise NotImplementedError()
 
 
 class ResumesWishlistHandlers(IResumesWishlistHandlers):
     def get_resumes_wishlist(
         self, request: HttpRequest, filters: ResumesWishlistFilters = Query(...)
     ) -> Iterable[ResumeOut]:
-        pass
+        raise NotImplementedError()
 
     def add_resume_to_wishlist(self, request: HttpRequest, body: ResumesWishlistIn = Body(...)) -> SuccessResponse:
-        pass
+        raise NotImplementedError()

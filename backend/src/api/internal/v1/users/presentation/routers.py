@@ -73,7 +73,6 @@ class UsersRouter(Router):
         super(UsersRouter, self).__init__(tags=[USERS_TAG])
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["POST"],
             view_func=auth_handlers.register_user,

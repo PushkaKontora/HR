@@ -9,9 +9,9 @@ from api.internal.v1.departments.presentation.routers import IDepartmentHandlers
 
 class DepartmentsHandlers(IDepartmentsHandlers):
     def get_departments(self, request: HttpRequest) -> Iterable[DepartmentOut]:
-        pass
+        raise NotImplementedError()
 
 
 class DepartmentHandlers(IDepartmentHandlers):
     def get_department(self, request: HttpRequest, department_id: int = Path(...)) -> DepartmentOut:
-        pass
+        raise NotImplementedError()

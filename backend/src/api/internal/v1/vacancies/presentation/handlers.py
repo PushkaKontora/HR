@@ -22,39 +22,39 @@ from api.internal.v1.vacancies.presentation.routers import (
 
 class VacanciesHandlers(IVacanciesHandlers):
     def create_vacancy(self, request: HttpRequest, body: VacancyIn = Body(...)) -> SuccessResponse:
-        pass
+        raise NotImplementedError()
 
     def get_vacancies(self, request: HttpRequest, filters: VacanciesFilters = Query(...)) -> Iterable[VacancyOut]:
-        pass
+        raise NotImplementedError()
 
 
 class VacancyHandlers(IVacancyHandlers):
     def get_vacancy(self, request: HttpRequest, vacancy_id: int = Path(...)) -> VacancyOut:
-        pass
+        raise NotImplementedError()
 
     def update_vacancy(
         self, request: HttpRequest, vacancy_id: int = Path(...), body: VacancyIn = Body(...)
     ) -> SuccessResponse:
-        pass
+        raise NotImplementedError()
 
     def create_vacancy_request(self, request: HttpRequest, vacancy_id: int = Path(...)) -> RequestOut:
-        pass
+        raise NotImplementedError()
 
     def publish_vacancy(self, request: HttpRequest, vacancy_id: int = Path(...)) -> PublishingOut:
-        pass
+        raise NotImplementedError()
 
     def unpublish_vacancy(self, request: HttpRequest, vacancy_id: int = Path(...)) -> SuccessResponse:
-        pass
+        raise NotImplementedError()
 
     def get_vacancy_request(self, request: HttpRequest, vacancy_id: int = Path(...)) -> RequestOut:
-        pass
+        raise NotImplementedError()
 
 
 class VacanciesWishlistHandlers(IVacanciesWishlistHandlers):
     def get_vacancies_wishlist(
         self, request: HttpRequest, filters: VacanciesWishlistFilters = Query(...)
     ) -> Iterable[VacancyOut]:
-        pass
+        raise NotImplementedError()
 
     def add_vacancy_to_wishlist(self, request: HttpRequest, body: VacanciesWishlistIn = Body(...)) -> SuccessResponse:
-        pass
+        raise NotImplementedError()

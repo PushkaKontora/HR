@@ -16,7 +16,7 @@ class Experiences(models.TextChoices):
 
 class User(models.Model):
     email = models.EmailField(max_length=256, unique=True)
-    permission = models.CharField(max_length=32, choices=Permissions.choices)
+    permission = models.CharField(max_length=32, choices=Permissions.choices, default=Permissions.USER)
     surname = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
     patronymic = models.CharField(max_length=128)
