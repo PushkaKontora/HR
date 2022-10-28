@@ -23,7 +23,7 @@ def payload(user: User, token_type: str, ttl: timedelta) -> dict:
         "type": token_type,
         "user_id": user.id,
         "permission": str(user.permission),
-        "exp": int((now() + ttl).timestamp()),
+        "expires_in": int((now() + ttl).timestamp()),
     }
 
 

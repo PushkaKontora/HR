@@ -88,11 +88,10 @@ class UsersRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="/refresh-tokens",
             methods=["POST"],
             view_func=auth_handlers.refresh_tokens,
-            response={200: AuthenticationOut, 401: ErrorResponse, 422: ErrorResponse},
+            response={200: AuthenticationOut, 400: MessageResponse},
         )
 
         self.add_router("/{int:user_id}", user_router)

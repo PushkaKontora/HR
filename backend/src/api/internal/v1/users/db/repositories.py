@@ -24,11 +24,14 @@ class PasswordRepository(IPasswordRepository):
 
 
 class IssuedTokenRepository(IIssuedTokenRepository):
-    def revoke_all_tokens_from_user(self, user_id: int) -> None:
+    def revoke_all_tokens_for_user(self, user_id: int) -> None:
         IssuedToken.objects.filter(owner_id=user_id).update(revoked=True)
 
     def get_or_create(self, user_id, value: str) -> IssuedToken:
         return IssuedToken.objects.get_or_create(owner_id=user_id, value=value)[0]
+
+    def try_get_ony(self, value: str) -> Optional[IssuedToken]:
+        return IssuedToken.objects.filter(value=value).first()
 
 
 def hash_password(password: str) -> str:

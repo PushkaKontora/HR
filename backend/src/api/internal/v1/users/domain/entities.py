@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 
 from ninja import Schema
@@ -7,6 +8,11 @@ from pydantic import EmailStr, HttpUrl
 from api.models import Permissions
 
 PDF_RE = r"([^\\s]+(\\.(?i)(pdf))$)"
+
+
+class TokenType(str, Enum):
+    ACCESS = "access"
+    REFRESH = "refresh"
 
 
 class RegistrationIn(Schema):
@@ -80,7 +86,7 @@ class Tokens(Schema):
 
 
 class Payload(Schema):
-    type: str
+    type: TokenType
     user_id: int
     permission: Permissions
-    exp: int
+    expires_in: int

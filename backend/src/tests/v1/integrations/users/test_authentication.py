@@ -9,7 +9,7 @@ from ninja.responses import Response
 from api.models import IssuedToken, User
 from tests.conftest import post, unauthorized_error
 from tests.v1.integrations.conftest import USER_PASSWORD
-from tests.v1.integrations.users.conftest import USERS, access_payload, refresh_payload, decode_payload
+from tests.v1.integrations.users.conftest import USERS, access_payload, decode_payload, refresh_payload
 
 AUTHENTICATE = USERS + "/authenticate"
 
@@ -37,7 +37,7 @@ def test_authenticate__when_not_existed_email_was_entered(client: Client, user_w
 @pytest.mark.integration
 @pytest.mark.django_db
 @freezegun.freeze_time(now())
-def test_authenticate__when_entered_wrong_password(client: Client, user_with_password: User) -> None:
+def test_authenticate__when_wrong_password_was_entered(client: Client, user_with_password: User) -> None:
     _test_authenticate_with_bad_credentials(client, user_with_password, password="bad password")
 
 
@@ -54,7 +54,7 @@ def _test_authenticate_with_bad_credentials(
 @pytest.mark.integration
 @pytest.mark.django_db
 @freezegun.freeze_time(now())
-def test_authenticate__when_refresh_token_has_created(client: Client, user_with_password) -> None:
+def test_authenticate__when_refresh_token_existed(client: Client, user_with_password: User) -> None:
     token = IssuedToken.objects.create(value="token_value", owner=user_with_password)
     assert token.revoked is False
 

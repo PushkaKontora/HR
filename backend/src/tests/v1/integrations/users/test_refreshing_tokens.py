@@ -5,20 +5,19 @@ import freezegun
 import pytest
 from django.conf import settings
 from django.http import SimpleCookie
-
 from django.test import Client
 from django.utils.timezone import now
 from jwt import encode
 from ninja.responses import Response
 
 from api.models import IssuedToken, User
-from tests.conftest import post, message
-from tests.v1.integrations.users.conftest import USERS, refresh_payload, encode_payload
+from tests.conftest import message, post
+from tests.v1.integrations.users.conftest import USERS, encode_payload, refresh_payload
 from tests.v1.integrations.users.test_authentication import assert_success_with_tokens
 
 REFRESH = USERS + "/refresh-tokens"
 
-INVALID_SIGNATURE = "Invalid signature"
+INVALID_SIGNATURE_OR_PAYLOAD = "Invalid signature or payload"
 INVALID_PAYLOAD = "Invalid payload"
 UNKNOWN_USER_ID = "Unknown user id"
 TOKEN_IS_EXPIRED = "The token is expired"
@@ -68,7 +67,7 @@ def test_refresh__if_token_was_created_with_wrong_secret_key(client: Client, use
 
     response = refresh(client, token)
 
-    assert_invalid_signature(response, user)
+    assert_invalid_signature_or_payload(response, user)
 
 
 @pytest.mark.integration
@@ -78,7 +77,7 @@ def test_refresh__if_token_has_wrong_payload(client: Client, user: User) -> None
 
     response = refresh(client, token)
 
-    assert_invalid_payload(response, user)
+    assert_invalid_signature_or_payload(response, user)
 
 
 @pytest.mark.integration
@@ -88,22 +87,39 @@ def test_refresh__when_some_char_was_removed_from_token(client: Client, user: Us
 
     response = refresh(client, token)
 
-    assert_invalid_signature(response, user)
+    assert_invalid_signature_or_payload(response, user)
 
 
 @pytest.mark.integration
 @pytest.mark.django_db
-@pytest.mark.parametrize("delta", [
-    timedelta(0),
-    timedelta(seconds=1),
-    timedelta(seconds=10),
-    timedelta(days=30),
-])
+@pytest.mark.parametrize("name", ["unknown", "access"])
+def test_refresh__when_wrong_type_is_in_payload(client: Client, user: User, name: str) -> None:
+    payload = refresh_payload(user)
+    assert "type" in payload
+    payload["type"] = name
+
+    response = refresh(client, encode_payload(payload))
+
+    assert_invalid_signature_or_payload(response, user)
+
+
+@pytest.mark.integration
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "delta",
+    [
+        timedelta(0),
+        timedelta(seconds=1),
+        timedelta(seconds=10),
+        timedelta(days=30),
+    ],
+)
 @freezegun.freeze_time(now())
 def test_refresh__when_token_is_expired(client: Client, user: User, delta: timedelta) -> None:
     payload = refresh_payload(user)
-    assert "exp" in payload
-    payload["exp"] = int((now() + delta).timestamp())
+    assert "expires_in" in payload
+
+    payload["expires_in"] = int((now() - delta).timestamp())
 
     response = refresh(client, encode_payload(payload))
 
@@ -115,7 +131,7 @@ def test_refresh__when_token_is_expired(client: Client, user: User, delta: timed
 @pytest.mark.integration
 @pytest.mark.django_db
 def test_refresh__when_token_is_revoked(client: Client, user: User) -> None:
-    alive = IssuedToken.objects.create(owner=user, value=encode_payload(refresh_payload(user)), revoked=False)
+    IssuedToken.objects.create(owner=user, value=encode_payload(refresh_payload(user)), revoked=False)
     sleep(1)
     revoked = IssuedToken.objects.create(owner=user, value=encode_payload(refresh_payload(user)), revoked=True)
 
@@ -126,13 +142,7 @@ def test_refresh__when_token_is_revoked(client: Client, user: User) -> None:
     assert not IssuedToken.objects.filter(owner=user, revoked=False).exists()
 
 
-def assert_invalid_signature(response: Response, user: User) -> None:
+def assert_invalid_signature_or_payload(response: Response, user: User) -> None:
     assert response.status_code == 400
-    assert response.json() == message(INVALID_SIGNATURE)
-    assert not IssuedToken.objects.filter(owner=user).exists()
-
-
-def assert_invalid_payload(response: Response, user: User) -> None:
-    assert response.status_code == 400
-    assert response.json() == message(INVALID_PAYLOAD)
+    assert response.json() == message(INVALID_SIGNATURE_OR_PAYLOAD)
     assert not IssuedToken.objects.filter(owner=user).exists()
