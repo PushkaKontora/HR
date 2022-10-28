@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.utils.timezone import now
+from jwt import decode, encode
 
 from api.models import User
 from tests.conftest import V1
@@ -24,3 +25,11 @@ def payload(user: User, token_type: str, ttl: timedelta) -> dict:
         "permission": str(user.permission),
         "exp": int((now() + ttl).timestamp()),
     }
+
+
+def encode_payload(_payload: dict) -> str:
+    return encode(_payload, settings.SECRET_KEY)
+
+
+def decode_payload(token: str) -> dict:
+    return decode(token, settings.SECRET_KEY, "HS256")

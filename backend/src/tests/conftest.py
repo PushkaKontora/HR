@@ -38,8 +38,16 @@ def error_422(code: int, message: str) -> dict:
 
 
 def success() -> dict:
-    return {"msg": "Success"}
+    return message("Success")
 
 
 def unauthorized_error() -> dict:
-    return {"msg": "Unauthorized"}
+    return message("Unauthorized")
+
+
+def not_found_error(resource: str = None) -> dict:
+    return message("Not found" + f" {resource}" if resource else "")
+
+
+def message(msg: str) -> dict:
+    return {"msg": msg}

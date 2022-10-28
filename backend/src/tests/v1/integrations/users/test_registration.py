@@ -39,7 +39,7 @@ def test_register_user(client: Client) -> None:
 
 @pytest.mark.integration
 @pytest.mark.django_db
-def test_register_user__where_email_has_already_taken(client: Client) -> None:
+def test_register_user__when_email_has_already_taken(client: Client) -> None:
     body = {
         "email": "address@gmail.com",
         "password": "очень secret password",
@@ -61,7 +61,7 @@ def test_register_user__where_email_has_already_taken(client: Client) -> None:
 
 @pytest.mark.integration
 @pytest.mark.django_db
-def test_register_user__where_full_name_has_already_created(client: Client, another_email="another@mail.ru") -> None:
+def test_register_user__when_full_name_has_already_created(client: Client, another_email="another@mail.ru") -> None:
     body = {
         "email": "address@gmail.com",
         "password": "очень secret password",

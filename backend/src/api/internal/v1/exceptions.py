@@ -16,5 +16,15 @@ class APIBaseException(Exception, ABC):
         return Response(ErrorResponse(error=ErrorDetails(code=exc.code, msg=exc.msg)), status=exc.status)
 
 
-class Unauthorized(Exception):
+class UnauthorizedError(Exception):
     pass
+
+
+class NotFoundError(Exception):
+    def __init__(self, resource: str = None):
+        self.msg = "Not found" + f" {resource}" if resource else ""
+
+
+class BadRequestError(Exception):
+    def __init__(self, msg: str = None):
+        self.msg = msg or "Bad request"

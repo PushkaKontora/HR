@@ -1,15 +1,15 @@
 import freezegun
 import pytest
 from django.conf import settings
+from django.db.models import Q
 from django.test import Client
 from django.utils.timezone import now
-from jwt import decode
 from ninja.responses import Response
 
 from api.models import IssuedToken, User
 from tests.conftest import post, unauthorized_error
 from tests.v1.integrations.conftest import USER_PASSWORD
-from tests.v1.integrations.users.conftest import USERS, access_payload, refresh_payload
+from tests.v1.integrations.users.conftest import USERS, access_payload, refresh_payload, decode_payload
 
 AUTHENTICATE = USERS + "/authenticate"
 
@@ -18,31 +18,27 @@ def authenticate(client: Client, email: str, password: str) -> Response:
     return post(client, AUTHENTICATE, body={"email": email, "password": password})
 
 
-def decode_payload(token: str) -> dict:
-    return decode(token, settings.SECRET_KEY, "HS256")
+@pytest.mark.integration
+@pytest.mark.django_db
+@freezegun.freeze_time(now())
+def test_authenticate(client: Client, user_with_password: User) -> None:
+    response = authenticate(client, user_with_password.email, USER_PASSWORD)
+
+    assert_success_with_tokens(response, user_with_password)
 
 
 @pytest.mark.integration
 @pytest.mark.django_db
 @freezegun.freeze_time(now())
-def test_authenticate(client: Client, user: User) -> None:
-    response = authenticate(client, user.email, USER_PASSWORD)
-
-    assert_success(response, user)
+def test_authenticate__when_not_existed_email_was_entered(client: Client, user_with_password: User) -> None:
+    _test_authenticate_with_bad_credentials(client, user_with_password, email="bad_email@unknown.dog")
 
 
 @pytest.mark.integration
 @pytest.mark.django_db
 @freezegun.freeze_time(now())
-def test_authenticate__where_entered_not_existed_email(client: Client, user: User) -> None:
-    _test_authenticate_with_bad_credentials(client, user, email="bad_email@unknown.dog")
-
-
-@pytest.mark.integration
-@pytest.mark.django_db
-@freezegun.freeze_time(now())
-def test_authenticate__where_entered_wrong_password(client: Client, user: User) -> None:
-    _test_authenticate_with_bad_credentials(client, user, password="bad password")
+def test_authenticate__when_entered_wrong_password(client: Client, user_with_password: User) -> None:
+    _test_authenticate_with_bad_credentials(client, user_with_password, password="bad password")
 
 
 def _test_authenticate_with_bad_credentials(
@@ -58,18 +54,18 @@ def _test_authenticate_with_bad_credentials(
 @pytest.mark.integration
 @pytest.mark.django_db
 @freezegun.freeze_time(now())
-def test_authenticate__where_refresh_token_has_created(client: Client, user: User) -> None:
-    token = IssuedToken.objects.create(value="token_value", owner=user)
+def test_authenticate__when_refresh_token_has_created(client: Client, user_with_password) -> None:
+    token = IssuedToken.objects.create(value="token_value", owner=user_with_password)
     assert token.revoked is False
 
-    response = authenticate(client, user.email, USER_PASSWORD)
+    response = authenticate(client, user_with_password.email, USER_PASSWORD)
 
-    assert_success(response, user)
+    assert_success_with_tokens(response, user_with_password)
     token.refresh_from_db()
     assert token.revoked is True
 
 
-def assert_success(response: Response, user: User) -> None:
+def assert_success_with_tokens(response: Response, user: User) -> None:
     assert response.status_code == 200
     body = response.json()
     assert list(body.keys()) == ["access_token"]
@@ -78,3 +74,4 @@ def assert_success(response: Response, user: User) -> None:
     refresh = response.cookies[settings.REFRESH_TOKEN_COOKIE].value
     assert decode_payload(refresh) == refresh_payload(user)
     assert IssuedToken.objects.filter(value=refresh, owner=user, revoked=False).exists()
+    assert not IssuedToken.objects.filter(~Q(value=refresh) & Q(revoked=False)).exists()

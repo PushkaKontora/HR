@@ -6,7 +6,7 @@ class MessageResponse(Schema):
 
 
 class SuccessResponse(MessageResponse):
-    msg: str = "Success"
+    msg = "Success"
 
 
 class ErrorDetails(Schema):
