@@ -1,11 +1,9 @@
-from unittest.mock import Mock
-
 import pytest
 from django.test import Client
 from ninja.responses import Response
 
 from api.models import Department, Resume, User
-from tests.conftest import datetime_to_string, get, not_found_error
+from tests.v1.integrations.conftest import datetime_to_string, get, not_found_error
 from tests.v1.integrations.users.conftest import USER
 
 

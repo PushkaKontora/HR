@@ -5,7 +5,7 @@ from django.utils.timezone import now
 from jwt import decode, encode
 
 from api.models import User
-from tests.conftest import V1
+from tests.v1.integrations.conftest import V1
 
 USERS = V1 + "/users"
 USER = USERS + "/{user_id}"

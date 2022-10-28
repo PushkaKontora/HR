@@ -11,7 +11,7 @@ from jwt import encode
 from ninja.responses import Response
 
 from api.models import IssuedToken, User
-from tests.conftest import message, post
+from tests.v1.integrations.conftest import message, post
 from tests.v1.integrations.users.conftest import USERS, encode_payload, refresh_payload
 from tests.v1.integrations.users.test_authentication import assert_success_with_tokens
 

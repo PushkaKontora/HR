@@ -14,10 +14,10 @@ from api.internal.v1.users.domain.entities import (
     AuthenticationOut,
     EmailIn,
     NameIn,
+    PasswordUpdatedAtOut,
     Payload,
     RegistrationIn,
     ResetPasswordIn,
-    ResetPasswordOut,
     Tokens,
     TokenType,
     UserOut,
@@ -139,7 +139,7 @@ class AuthHandlers(IAuthHandlers):
 
     def reset_password(
         self, request: HttpRequest, user_id: int = Path(...), body: ResetPasswordIn = Body(...)
-    ) -> ResetPasswordOut:
+    ) -> PasswordUpdatedAtOut:
         raise NotImplementedError()
 
     def get_response_with_tokens(self, user: User) -> Response:

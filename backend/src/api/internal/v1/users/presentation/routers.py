@@ -11,10 +11,10 @@ from api.internal.v1.users.domain.entities import (
     AuthenticationOut,
     EmailIn,
     NameIn,
+    PasswordUpdatedAtOut,
     PhotoOut,
     RegistrationIn,
     ResetPasswordIn,
-    ResetPasswordOut,
     UserOut,
 )
 
@@ -37,7 +37,7 @@ class IAuthHandlers(ABC):
     @abstractmethod
     def reset_password(
         self, request: HttpRequest, user_id: int = Path(...), body: ResetPasswordIn = Body(...)
-    ) -> ResetPasswordOut:
+    ) -> PasswordUpdatedAtOut:
         pass
 
 
@@ -177,7 +177,7 @@ class UserRouter(Router):
             view_func=auth_handlers.reset_password,
             auth=[auth],
             response={
-                200: ResetPasswordOut,
+                200: PasswordUpdatedAtOut,
                 401: ErrorResponse,
                 404: ErrorResponse,
                 422: ErrorResponse,

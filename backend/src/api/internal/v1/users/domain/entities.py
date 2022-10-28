@@ -72,7 +72,7 @@ class ResetPasswordIn(Schema):
     new_password: str
 
 
-class ResetPasswordOut(Schema):
+class PasswordUpdatedAtOut(Schema):
     updated_at: datetime
 
 

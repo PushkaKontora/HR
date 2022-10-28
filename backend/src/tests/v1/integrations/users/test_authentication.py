@@ -7,8 +7,8 @@ from django.utils.timezone import now
 from ninja.responses import Response
 
 from api.models import IssuedToken, User
-from tests.conftest import post, unauthorized_error
-from tests.v1.integrations.conftest import USER_PASSWORD
+from tests.v1.conftest import USER_PASSWORD
+from tests.v1.integrations.conftest import post, unauthorized_error
 from tests.v1.integrations.users.conftest import USERS, access_payload, decode_payload, refresh_payload
 
 AUTHENTICATE = USERS + "/authenticate"

@@ -5,7 +5,7 @@ from django.test import Client
 from ninja.responses import Response
 
 from api.models import Permissions, Resume, User
-from tests.conftest import error_422, post, success
+from tests.v1.integrations.conftest import error_422, post, success
 from tests.v1.integrations.users.conftest import USERS
 
 
