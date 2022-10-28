@@ -2,7 +2,6 @@ import './App.css';
 
 import {incremented} from './features/example/example-slice';
 import {useAppDispatch, useAppSelector} from './app/hooks';
-import Footer from './components/footer/footer';
 
 function App() {
   const count = useAppSelector((state) => state.example.valueCount);
@@ -32,7 +31,6 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
-      <Footer/>
     </div>
   );
 }

@@ -1,8 +1,25 @@
-.footer-wrapper{
+.footer-wrapper {
   background-color: rgba(36, 36, 36, 1);
+  //position: absolute;
+  //bottom: 0;
+  width: 100%;
 
-  .footer-content{
+  .footer-content {
     width: 100rem;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
+    padding: 3.5rem 0;
+
+    .footer-side {
+      &__contact {
+        display: flex;
+
+        .footer-nav:not(:last-child) {
+          padding-right: 1rem;
+        }
+      }
+    }
   }
 }

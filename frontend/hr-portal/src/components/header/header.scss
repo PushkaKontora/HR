@@ -1,0 +1,25 @@
+.header-wrapper {
+  width: 100%;
+
+  .header-content {
+    width: 100rem;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2.9rem 0;
+
+    .side-header {
+      display: flex;
+      align-items: center;
+      gap: 1.4rem;
+
+      &__leftSide{
+        gap: 5.7rem;
+        font-size: 1.4rem;
+        line-height: 20px;
+        letter-spacing: 0.05em;
+      }
+    }
+  }
+}

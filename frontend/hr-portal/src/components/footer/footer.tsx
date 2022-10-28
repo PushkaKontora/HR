@@ -11,7 +11,7 @@ function Footer() {
         <div className="footer-side">
           <img src={footerLogo} alt="logo-footer"/>
         </div>
-        <div className="footer-side">
+        <div className="footer-side footer-side__contact">
           <div className="footer-nav"><img src={iconCompany} alt="icon Company"/></div>
           <div className="footer-nav"><img src={logoVK} alt="logo VK"/></div>
           <div className="footer-nav"><img src={logoWEB} alt="logo WEB"/></div>
