@@ -2,6 +2,7 @@ from typing import Iterable
 
 from django.http import HttpRequest
 from ninja import Body, File, Form, Path, Query, UploadedFile
+from ninja.pagination import LimitOffsetPagination, paginate
 
 from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.resumes.domain.entities import (
@@ -16,6 +17,7 @@ from api.internal.v1.resumes.presentation.routers import IResumeHandlers, IResum
 
 
 class ResumesHandlers(IResumesHandlers):
+    @paginate(LimitOffsetPagination)
     def get_resumes(self, request: HttpRequest, filters: ResumesFilters = Query(...)) -> Iterable[ResumeOut]:
         raise NotImplementedError()
 

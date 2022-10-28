@@ -2,6 +2,7 @@ from typing import Iterable
 
 from django.http import HttpRequest
 from ninja import Body, Path, Query
+from ninja.pagination import LimitOffsetPagination, paginate
 
 from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.vacancies.domain.entities import (
@@ -24,6 +25,7 @@ class VacanciesHandlers(IVacanciesHandlers):
     def create_vacancy(self, request: HttpRequest, body: VacancyIn = Body(...)) -> SuccessResponse:
         raise NotImplementedError()
 
+    @paginate(LimitOffsetPagination)
     def get_vacancies(self, request: HttpRequest, filters: VacanciesFilters = Query(...)) -> Iterable[VacancyOut]:
         raise NotImplementedError()
 
