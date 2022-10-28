@@ -18,8 +18,6 @@ apis_registrations = [
     register_competencies_api,
 ]
 
-UNAUTHORIZED_RESPONSE = Response(MessageResponse(msg="Unauthorized"), status=401)
-
 
 def get_api() -> NinjaAPI:
     base = NinjaAPI(title="HR")
@@ -33,7 +31,9 @@ def get_api() -> NinjaAPI:
 
 
 def add_exceptions(base: NinjaAPI) -> None:
-    base.add_exception_handler(UnauthorizedError, lambda r, exc: UNAUTHORIZED_RESPONSE)
-    base.add_exception_handler(AuthenticationError, lambda r, exc: UNAUTHORIZED_RESPONSE)
-    base.add_exception_handler(NotFoundError, lambda r, exc: Response(MessageResponse(msg=exc.msg), status=404))
     base.add_exception_handler(BadRequestError, lambda r, exc: Response(MessageResponse(msg=exc.msg), status=400))
+    base.add_exception_handler(
+        AuthenticationError, lambda r, exc: Response(MessageResponse(msg="Unauthorized"), status=401)
+    )
+    base.add_exception_handler(UnauthorizedError, lambda r, exc: Response(MessageResponse(msg=exc.msg), status=401))
+    base.add_exception_handler(NotFoundError, lambda r, exc: Response(MessageResponse(msg=exc.msg), status=404))

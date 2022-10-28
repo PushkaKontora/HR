@@ -14,6 +14,9 @@ class UserRepository(IUserRepository):
     def try_get_user_with_resume_department_and_password_by_id(self, user_id: int) -> Optional[User]:
         return User.objects.select_related("resume", "department", "password").filter(id=user_id).first()
 
+    def try_get_user_by_id(self, user_id: int) -> Optional[User]:
+        return User.objects.filter(id=user_id).first()
+
     def exists_email(self, email: str) -> bool:
         return User.objects.filter(email=email).exists()
 

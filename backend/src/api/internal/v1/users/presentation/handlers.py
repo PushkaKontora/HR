@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 from datetime import datetime
 from typing import Optional
 
@@ -43,7 +43,11 @@ class IAuthenticationService(ABC):
         pass
 
 
-class IJWTService(ABC):
+class IJWTService(ABC, metaclass=ABCMeta):
+    @abstractmethod
+    def try_get_user(self, payload: Payload) -> Optional[User]:
+        pass
+
     @abstractmethod
     def create_tokens(self, user: User) -> Tokens:
         pass

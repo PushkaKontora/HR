@@ -5,7 +5,7 @@ from api.internal.v1.departments.presentation.handlers import DepartmentHandlers
 from api.internal.v1.departments.presentation.routers import DepartmentRouter, DepartmentsRouter
 
 
-class Container(containers.DeclarativeContainer):
+class DepartmentsContainer(containers.DeclarativeContainer):
     department_handlers = providers.Singleton(DepartmentHandlers)
     departments_handlers = providers.Singleton(DepartmentsHandlers)
 
@@ -16,6 +16,6 @@ class Container(containers.DeclarativeContainer):
 
 
 def register_departments_api(base: NinjaAPI) -> None:
-    container = Container()
+    container = DepartmentsContainer()
 
     base.add_router("/departments", container.departments_router())

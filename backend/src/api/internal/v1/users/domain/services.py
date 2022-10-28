@@ -47,6 +47,10 @@ class IUserRepository(ABC):
     def try_get_user_with_resume_department_and_password_by_id(self, user_id: int) -> Optional[User]:
         pass
 
+    @abstractmethod
+    def try_get_user_by_id(self, user_id: int) -> Optional[User]:
+        pass
+
 
 class IPasswordRepository(ABC):
     @abstractmethod
@@ -94,8 +98,12 @@ class AuthenticationService(IAuthenticationService):
 class JWTService(IJWTService):
     ALGORITHMS = ["HS256"]
 
-    def __init__(self, issued_token_repo: IIssuedTokenRepository):
+    def __init__(self, issued_token_repo: IIssuedTokenRepository, user_repo: IUserRepository):
+        self.user_repo = user_repo
         self.issued_token_repo = issued_token_repo
+
+    def try_get_user(self, payload: Payload) -> Optional[User]:
+        return self.user_repo.try_get_user_by_id(payload.user_id)
 
     def try_get_payload(self, value: str) -> Optional[Payload]:
         try:

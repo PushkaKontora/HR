@@ -17,7 +17,8 @@ class APIBaseException(Exception, ABC):
 
 
 class UnauthorizedError(Exception):
-    pass
+    def __init__(self, msg: str = "Unauthorized"):
+        self.msg = msg
 
 
 class NotFoundError(Exception):

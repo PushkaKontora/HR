@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 
 from django.http import HttpRequest
 from ninja import Body, File, Path, Router, UploadedFile
+from ninja.security import HttpBearer
 
-from api.internal.v1.authentication import JWTBaseAuthentication
 from api.internal.v1.responses import ErrorResponse, MessageResponse, SuccessResponse
 from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 from api.internal.v1.users.domain.entities import (
@@ -98,7 +98,7 @@ class UsersRouter(Router):
 
 
 class UserRouter(Router):
-    def __init__(self, user_handlers: IUserHandlers, auth_handlers: IAuthHandlers, any_user: JWTBaseAuthentication):
+    def __init__(self, user_handlers: IUserHandlers, auth_handlers: IAuthHandlers, auth: HttpBearer):
         super(UserRouter, self).__init__(tags=[USERS_TAG])
 
         self.add_api_operation(
@@ -113,7 +113,7 @@ class UserRouter(Router):
             path="",
             methods=["DELETE"],
             view_func=user_handlers.delete_user,
-            auth=[any_user],
+            auth=[auth],
             response={200: SuccessResponse, 401: ErrorResponse, 404: ErrorResponse},
         )
 
@@ -122,7 +122,7 @@ class UserRouter(Router):
             path="/photo",
             methods=["PATCH"],
             view_func=user_handlers.change_photo,
-            auth=[any_user],
+            auth=[auth],
             response={
                 200: PhotoOut,
                 401: ErrorResponse,
@@ -135,7 +135,7 @@ class UserRouter(Router):
             path="/photo/remove",
             methods=["PATCH"],
             view_func=user_handlers.remove_photo,
-            auth=[any_user],
+            auth=[auth],
             response={
                 200: SuccessResponse,
                 401: ErrorResponse,
@@ -148,7 +148,7 @@ class UserRouter(Router):
             path="/email",
             methods=["PATCH"],
             view_func=user_handlers.change_email,
-            auth=[any_user],
+            auth=[auth],
             response={
                 200: SuccessResponse,
                 401: ErrorResponse,
@@ -162,7 +162,7 @@ class UserRouter(Router):
             path="/rename",
             methods=["PATCH"],
             view_func=user_handlers.rename_user,
-            auth=[any_user],
+            auth=[auth],
             response={
                 200: SuccessResponse,
                 401: ErrorResponse,
@@ -175,7 +175,7 @@ class UserRouter(Router):
             path="/reset-password",
             methods=["PATCH"],
             view_func=auth_handlers.reset_password,
-            auth=[any_user],
+            auth=[auth],
             response={
                 200: ResetPasswordOut,
                 401: ErrorResponse,

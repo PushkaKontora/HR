@@ -3,8 +3,8 @@ from typing import Iterable, List
 
 from django.http import HttpRequest
 from ninja import Body, Path, Query, Router
+from ninja.security import HttpBearer
 
-from api.internal.v1.authentication import JWTBaseAuthentication
 from api.internal.v1.responses import ErrorResponse, SuccessResponse
 from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 from api.internal.v1.vacancies.domain.entities import (
@@ -76,7 +76,7 @@ class VacanciesRouter(Router):
         vacancy_router: Router,
         vacancies_wishlist_router: Router,
         vacancies_handlers: IVacanciesHandlers,
-        only_employer: JWTBaseAuthentication,
+        auth: HttpBearer,
     ):
         super(VacanciesRouter, self).__init__(tags=[VACANCIES_TAG])
 
@@ -93,7 +93,7 @@ class VacanciesRouter(Router):
             path="",
             methods=["POST"],
             view_func=vacancies_handlers.create_vacancy,
-            auth=[only_employer],
+            auth=[auth],
             response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 422: ErrorResponse},
         )
 
@@ -102,9 +102,7 @@ class VacanciesRouter(Router):
 
 
 class VacancyRouter(Router):
-    def __init__(
-        self, vacancy_handlers: IVacancyHandlers, any_user: JWTBaseAuthentication, only_employer: JWTBaseAuthentication
-    ):
+    def __init__(self, vacancy_handlers: IVacancyHandlers, auth: HttpBearer):
         super(VacancyRouter, self).__init__(tags=[VACANCIES_TAG])
 
         self.add_api_operation(
@@ -120,7 +118,7 @@ class VacancyRouter(Router):
             path="",
             methods=["PUT"],
             view_func=vacancy_handlers.update_vacancy,
-            auth=[only_employer],
+            auth=[auth],
             response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 404: ErrorResponse},
         )
 
@@ -129,7 +127,7 @@ class VacancyRouter(Router):
             path="/request",
             methods=["GET"],
             view_func=vacancy_handlers.get_vacancy_request,
-            auth=[any_user],
+            auth=[auth],
             response={200: RequestOut, 401: ErrorResponse, 404: ErrorResponse},
         )
 
@@ -138,7 +136,7 @@ class VacancyRouter(Router):
             path="/request",
             methods=["POST"],
             view_func=vacancy_handlers.create_vacancy_request,
-            auth=[any_user],
+            auth=[auth],
             response={200: RequestOut, 401: ErrorResponse, 404: ErrorResponse},
         )
 
@@ -147,7 +145,7 @@ class VacancyRouter(Router):
             path="/publish",
             methods=["PATCH"],
             view_func=vacancy_handlers.publish_vacancy,
-            auth=[only_employer],
+            auth=[auth],
             response={200: PublishingOut, 401: ErrorResponse, 403: ErrorResponse, 404: ErrorResponse},
         )
 
@@ -156,13 +154,13 @@ class VacancyRouter(Router):
             path="/unpublish",
             methods=["PATCH"],
             view_func=vacancy_handlers.unpublish_vacancy,
-            auth=[only_employer],
+            auth=[auth],
             response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 404: ErrorResponse},
         )
 
 
 class VacanciesWishlistRouter(Router):
-    def __init__(self, vacancies_wishlist_handlers: IVacanciesWishlistHandlers, any_user: JWTBaseAuthentication):
+    def __init__(self, vacancies_wishlist_handlers: IVacanciesWishlistHandlers, auth: HttpBearer):
         super(VacanciesWishlistRouter, self).__init__(tags=[VACANCIES_TAG])
 
         self.add_api_operation(
@@ -170,7 +168,7 @@ class VacanciesWishlistRouter(Router):
             path="",
             methods=["GET"],
             view_func=vacancies_wishlist_handlers.get_vacancies_wishlist,
-            auth=[any_user],
+            auth=[auth],
             response={200: List[VacancyOut], 401: ErrorResponse},
         )
 
@@ -179,6 +177,6 @@ class VacanciesWishlistRouter(Router):
             path="",
             methods=["POST"],
             view_func=vacancies_wishlist_handlers.add_vacancy_to_wishlist,
-            auth=[any_user],
+            auth=[auth],
             response={200: SuccessResponse, 401: ErrorResponse},
         )
