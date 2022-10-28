@@ -102,11 +102,10 @@ class UserRouter(Router):
         super(UserRouter, self).__init__(tags=[USERS_TAG])
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
             view_func=user_handlers.get_user,
-            response={200: UserOut, 404: ErrorResponse},
+            response={200: UserOut, 404: MessageResponse},
         )
 
         self.add_api_operation(

@@ -4,6 +4,7 @@ from typing import Optional
 
 from django.conf import settings
 from django.db.transaction import atomic
+from django.forms import model_to_dict
 from django.utils.timezone import now
 from jwt import PyJWTError, decode, encode
 from pydantic import ValidationError
@@ -11,12 +12,21 @@ from pydantic import ValidationError
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
     AuthenticationOut,
+    PasswordOut,
     Payload,
     RegistrationIn,
     Tokens,
     TokenType,
+    UserDepartmentOut,
+    UserOut,
+    UserResumeOut,
 )
-from api.internal.v1.users.presentation.handlers import IAuthenticationService, IJWTService, IRegistrationService
+from api.internal.v1.users.presentation.handlers import (
+    IAuthenticationService,
+    IJWTService,
+    IRegistrationService,
+    IUserService,
+)
 from api.models import IssuedToken, Password, User
 
 
@@ -31,6 +41,10 @@ class IUserRepository(ABC):
 
     @abstractmethod
     def try_get_user_with_email_and_password(self, email: str, password: str) -> Optional[User]:
+        pass
+
+    @abstractmethod
+    def try_get_user_with_resume_department_and_password_by_id(self, user_id: int) -> Optional[User]:
         pass
 
 
@@ -125,3 +139,27 @@ class JWTService(IJWTService):
         )
 
         return encode(payload.dict(), settings.SECRET_KEY, algorithm=self.ALGORITHMS[0])
+
+
+class UserService(IUserService):
+    def __init__(self, user_repo: IUserRepository):
+        self.user_repo = user_repo
+
+    def try_get_user(self, user_id: int) -> Optional[UserOut]:
+        user = self.user_repo.try_get_user_with_resume_department_and_password_by_id(user_id)
+
+        if not user:
+            return None
+
+        return UserOut(
+            id=user.id,
+            email=user.email,
+            permission=user.permission,
+            surname=user.surname,
+            name=user.name,
+            patronymic=user.patronymic,
+            photo=user.photo.url if user.photo else None,
+            resume=UserResumeOut.from_orm(user.resume) if hasattr(user, "resume") else None,
+            department=UserDepartmentOut.from_orm(user.department) if hasattr(user, "department") else None,
+            password=PasswordOut.from_orm(user.password),
+        )

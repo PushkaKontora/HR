@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from django.test import Client
@@ -51,3 +52,14 @@ def not_found_error(resource: str = None) -> dict:
 
 def message(msg: str) -> dict:
     return {"msg": msg}
+
+
+def datetime_to_string(time: datetime) -> str:
+    string = time.strftime("%Y-%m-%dT%H:%M:%S")
+
+    if time.microsecond > 0:
+        string += f".{str(time.microsecond // 1000).zfill(3)}Z"
+    else:
+        string += "Z"
+
+    return string

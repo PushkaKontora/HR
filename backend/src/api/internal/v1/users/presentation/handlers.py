@@ -7,7 +7,7 @@ from django.http import HttpRequest
 from ninja import Body, File, Path, UploadedFile
 from ninja.responses import Response
 
-from api.internal.v1.exceptions import BadRequestError, UnauthorizedError
+from api.internal.v1.exceptions import BadRequestError, NotFoundError, UnauthorizedError
 from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
@@ -70,6 +70,12 @@ class IJWTService(ABC):
 
     @abstractmethod
     def revoke_all_issued_tokens_for_user(self, owner: User) -> None:
+        pass
+
+
+class IUserService(ABC):
+    @abstractmethod
+    def try_get_user(self, user_id: int) -> Optional[UserOut]:
         pass
 
 
@@ -147,11 +153,19 @@ class AuthHandlers(IAuthHandlers):
 
 
 class UserHandlers(IUserHandlers):
+    def __init__(self, user_service: IUserService):
+        self.user_service = user_service
+
     def remove_photo(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
         raise NotImplementedError()
 
     def get_user(self, request: HttpRequest, user_id: int = Path(...)) -> UserOut:
-        raise NotImplementedError()
+        user_out = self.user_service.try_get_user(user_id)
+
+        if not user_out:
+            raise NotFoundError()
+
+        return user_out
 
     def delete_user(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
         raise NotImplementedError()

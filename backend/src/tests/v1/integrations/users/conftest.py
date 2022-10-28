@@ -8,6 +8,7 @@ from api.models import User
 from tests.conftest import V1
 
 USERS = V1 + "/users"
+USER = USERS + "/{user_id}"
 
 
 def access_payload(user: User) -> dict:

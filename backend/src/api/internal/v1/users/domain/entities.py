@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional
 
 from ninja import Schema
-from pydantic import EmailStr, HttpUrl
+from pydantic import EmailStr, FilePath, HttpUrl
 
 from api.models import Permissions
 
@@ -51,7 +51,7 @@ class UserOut(Schema):
     surname: str
     name: str
     patronymic: str
-    photo: str
+    photo: Optional[str]
     resume: Optional[UserResumeOut]
     department: Optional[UserDepartmentOut]
     password: PasswordOut
