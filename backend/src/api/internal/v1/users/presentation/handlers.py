@@ -7,7 +7,7 @@ from django.http import HttpRequest
 from ninja import Body, File, Path, UploadedFile
 from ninja.responses import Response
 
-from api.internal.v1.exceptions import BadRequestError, NotFoundError, UnauthorizedError
+from api.internal.v1.exceptions import BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError
 from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
@@ -22,7 +22,7 @@ from api.internal.v1.users.domain.entities import (
     TokenType,
     UserOut,
 )
-from api.internal.v1.users.presentation.exceptions import PasswordHasAlreadyRegistered
+from api.internal.v1.users.presentation.exceptions import PasswordDoesNotMatch, PasswordHasAlreadyRegistered
 from api.internal.v1.users.presentation.routers import IAuthHandlers, IUserHandlers
 from api.models import IssuedToken, User
 
@@ -40,6 +40,20 @@ class IRegistrationService(ABC):
 class IAuthenticationService(ABC):
     @abstractmethod
     def authenticate(self, body: AuthenticationIn) -> Optional[User]:
+        pass
+
+
+class IResetPasswordService(ABC):
+    @abstractmethod
+    def authorize_only_self(self, user: User, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def match_password(self, user: User, body: ResetPasswordIn) -> bool:
+        pass
+
+    @abstractmethod
+    def reset(self, user: User, body: ResetPasswordIn) -> PasswordUpdatedAtOut:
         pass
 
 
@@ -90,9 +104,16 @@ class AuthHandlers(IAuthHandlers):
     TOKEN_WAS_NOT_ISSUED = "The token was not issued"
     TOKEN_IS_REVOKED = "The token is revoked"
 
+    ONLY_SELF = "Only self"
+
     def __init__(
-        self, registration_service: IRegistrationService, auth_service: IAuthenticationService, jwt_service: IJWTService
+        self,
+        registration_service: IRegistrationService,
+        auth_service: IAuthenticationService,
+        jwt_service: IJWTService,
+        reset_password_service: IResetPasswordService,
     ):
+        self.reset_password_service = reset_password_service
         self.jwt_service = jwt_service
         self.auth_service = auth_service
         self.registration_service = registration_service
@@ -140,7 +161,13 @@ class AuthHandlers(IAuthHandlers):
     def reset_password(
         self, request: HttpRequest, user_id: int = Path(...), body: ResetPasswordIn = Body(...)
     ) -> PasswordUpdatedAtOut:
-        raise NotImplementedError()
+        if not self.reset_password_service.authorize_only_self(request.user, user_id):
+            raise ForbiddenError(self.ONLY_SELF)
+
+        if not self.reset_password_service.match_password(request.user, body):
+            raise PasswordDoesNotMatch()
+
+        return self.reset_password_service.reset(request.user, body)
 
     def get_response_with_tokens(self, user: User) -> Response:
         tokens = self.jwt_service.create_tokens(user)
@@ -177,7 +204,7 @@ class UserHandlers(IUserHandlers):
     def change_photo(
         self, request: HttpRequest, user_id: int = Path(...), photo: UploadedFile = File(...)
     ) -> SuccessResponse:
-        pass
+        raise NotImplementedError()
 
     def change_email(
         self, request: HttpRequest, user_id: int = Path(...), body: EmailIn = Body(...)

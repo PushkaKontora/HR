@@ -5,13 +5,19 @@ from ninja import NinjaAPI
 
 from api.internal.v1.exceptions import APIBaseException
 from api.internal.v1.users.db.repositories import IssuedTokenRepository, PasswordRepository, UserRepository
-from api.internal.v1.users.domain.services import AuthenticationService, JWTService, RegistrationService, UserService
+from api.internal.v1.users.domain.services import (
+    AuthenticationService,
+    JWTService,
+    RegistrationService,
+    ResetPasswordService,
+    UserService,
+)
 from api.internal.v1.users.presentation.authentication import JWTAuth
-from api.internal.v1.users.presentation.exceptions import PasswordHasAlreadyRegistered
+from api.internal.v1.users.presentation.exceptions import PasswordDoesNotMatch, PasswordHasAlreadyRegistered
 from api.internal.v1.users.presentation.handlers import AuthHandlers, UserHandlers
 from api.internal.v1.users.presentation.routers import UserRouter, UsersRouter
 
-EXCEPTIONS = [PasswordHasAlreadyRegistered]
+EXCEPTIONS = [PasswordHasAlreadyRegistered, PasswordDoesNotMatch]
 
 
 class UsersContainer(containers.DeclarativeContainer):
@@ -23,10 +29,15 @@ class UsersContainer(containers.DeclarativeContainer):
     auth_service = providers.Singleton(AuthenticationService, user_repo=user_repo)
     jwt_service = providers.Singleton(JWTService, issued_token_repo=issued_token_repo, user_repo=user_repo)
     user_service = providers.Singleton(UserService, user_repo=user_repo)
+    reset_password_service = providers.Singleton(ResetPasswordService)
 
     auth = providers.Singleton(JWTAuth, jwt_service=jwt_service)
     auth_handlers = providers.Singleton(
-        AuthHandlers, registration_service=registration_service, auth_service=auth_service, jwt_service=jwt_service
+        AuthHandlers,
+        registration_service=registration_service,
+        auth_service=auth_service,
+        jwt_service=jwt_service,
+        reset_password_service=reset_password_service,
     )
     user_handlers = providers.Singleton(UserHandlers, user_service=user_service)
 

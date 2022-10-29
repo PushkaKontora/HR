@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 from datetime import timedelta
 from typing import Optional
 
+from bcrypt import checkpw
 from django.conf import settings
 from django.db.transaction import atomic
-from django.forms import model_to_dict
 from django.utils.timezone import now
 from jwt import PyJWTError, decode, encode
 from pydantic import ValidationError
@@ -13,18 +13,22 @@ from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
     AuthenticationOut,
     PasswordOut,
+    PasswordUpdatedAtOut,
     Payload,
     RegistrationIn,
+    ResetPasswordIn,
     Tokens,
     TokenType,
     UserDepartmentOut,
     UserOut,
     UserResumeOut,
 )
+from api.internal.v1.users.domain.utils import hash_password
 from api.internal.v1.users.presentation.handlers import (
     IAuthenticationService,
     IJWTService,
     IRegistrationService,
+    IResetPasswordService,
     IUserService,
 )
 from api.models import IssuedToken, Password, User
@@ -84,7 +88,7 @@ class RegistrationService(IRegistrationService):
     def register(self, body: RegistrationIn) -> None:
         user = self.user_repo.create(body.email, body.surname, body.name, body.patronymic)
 
-        self.password_repo.create(user.id, body.password)
+        self.password_repo.create(user.id, hash_password(body.password))
 
 
 class AuthenticationService(IAuthenticationService):
@@ -171,3 +175,18 @@ class UserService(IUserService):
             department=UserDepartmentOut.from_orm(user.department) if hasattr(user, "department") else None,
             password=PasswordOut.from_orm(user.password),
         )
+
+
+class ResetPasswordService(IResetPasswordService):
+    def authorize_only_self(self, user: User, user_id: int) -> bool:
+        return user.id == user_id
+
+    def match_password(self, user: User, body: ResetPasswordIn) -> bool:
+        return checkpw(body.previous_password.encode(), user.password.value.encode())
+
+    def reset(self, user: User, body: ResetPasswordIn) -> PasswordUpdatedAtOut:
+        password = user.password
+        password.value = hash_password(body.new_password)
+        password.save(update_fields=["value", "updated_at"])
+
+        return PasswordUpdatedAtOut(updated_at=password.updated_at)

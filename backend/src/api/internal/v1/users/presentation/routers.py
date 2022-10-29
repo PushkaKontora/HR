@@ -171,15 +171,13 @@ class UserRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="/reset-password",
             methods=["PATCH"],
             view_func=auth_handlers.reset_password,
             auth=[auth],
             response={
                 200: PasswordUpdatedAtOut,
-                401: ErrorResponse,
-                404: ErrorResponse,
+                401: MessageResponse,
                 422: ErrorResponse,
             },
         )

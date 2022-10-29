@@ -1,9 +1,7 @@
 from typing import Optional
 
-from bcrypt import hashpw
-from django.conf import settings
-
 from api.internal.v1.users.domain.services import IIssuedTokenRepository, IPasswordRepository, IUserRepository
+from api.internal.v1.users.domain.utils import hash_password
 from api.models import IssuedToken, Password, User
 
 
@@ -26,7 +24,7 @@ class UserRepository(IUserRepository):
 
 class PasswordRepository(IPasswordRepository):
     def create(self, user_id: int, password: str) -> Password:
-        return Password.objects.create(owner_id=user_id, value=hash_password(password))
+        return Password.objects.create(owner_id=user_id, value=password)
 
 
 class IssuedTokenRepository(IIssuedTokenRepository):
@@ -38,7 +36,3 @@ class IssuedTokenRepository(IIssuedTokenRepository):
 
     def try_get_ony(self, value: str) -> Optional[IssuedToken]:
         return IssuedToken.objects.filter(value=value).first()
-
-
-def hash_password(password: str) -> str:
-    return hashpw(password.encode("utf-8"), settings.SALT).decode()

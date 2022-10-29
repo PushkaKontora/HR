@@ -29,3 +29,8 @@ class NotFoundError(Exception):
 class BadRequestError(Exception):
     def __init__(self, msg: str = None):
         self.msg = msg or "Bad request"
+
+
+class ForbiddenError(Exception):
+    def __init__(self, msg: str = "Forbidden"):
+        self.msg = msg
