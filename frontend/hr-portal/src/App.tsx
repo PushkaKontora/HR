@@ -8,6 +8,8 @@ import DefaultLayout from './components/layouts/default-layout/default-layout';
 import {Root, NoAuthRoutes, AuthRoutes} from './const/app-routes';
 import LoginPage from './pages/login-page/login-page';
 import SignUpPage from './pages/sign-up-page/sign-up-page';
+import PrivateRoute from './components/private-route/private-route';
+import {User} from './types/user';
 
 function App() {
   const count = useAppSelector((state) => state.example.valueCount);
@@ -20,6 +22,11 @@ function App() {
     <div className="App">
       <Routes>
         <Route path={Root} element={<DefaultLayout/>}>
+          <Route index element={
+            <PrivateRoute requiredUserStatus={User.user}>
+              <div>Example private page</div>
+            </PrivateRoute>
+          }/>
           <Route path={Root + NoAuthRoutes.Login} element={<LoginPage/>}/>
           <Route path={Root + NoAuthRoutes.SignUp} element={<SignUpPage/>}/>
         </Route>

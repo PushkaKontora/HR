@@ -1,13 +1,14 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
+import {User} from '../../types/user';
 
 
 interface GeneralState {
-  statusUser: 'user' | 'employer' | 'admin';
+  statusUser: User;
 }
 
 
 const initialState: GeneralState = {
-  statusUser: 'user',
+  statusUser: User.noAuth,
 };
 
 const generalSlice = createSlice({

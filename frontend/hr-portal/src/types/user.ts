@@ -1,5 +1,6 @@
 export enum User {
   user = 'user',
   employer = 'employer',
-  admin = 'admin'
+  admin = 'admin',
+  noAuth = 'noAuth'
 }
