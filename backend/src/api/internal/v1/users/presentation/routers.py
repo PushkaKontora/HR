@@ -178,6 +178,7 @@ class UserRouter(Router):
             response={
                 200: PasswordUpdatedAtOut,
                 401: MessageResponse,
+                403: MessageResponse,
                 422: ErrorResponse,
             },
         )
