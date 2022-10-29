@@ -8,7 +8,7 @@ from api.internal.v1.users.api import UsersContainer
 
 
 class ResumesContainer(containers.DeclarativeContainer):
-    auth = providers.Dependency(HttpBearer)
+    auth = providers.ExternalDependency(HttpBearer)
 
     resume_handlers = providers.Singleton(ResumeHandlers)
     resumes_handlers = providers.Singleton(ResumesHandlers)

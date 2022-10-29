@@ -12,7 +12,7 @@ from api.internal.v1.vacancies.presentation.routers import VacanciesRouter, Vaca
 
 
 class VacanciesContainer(containers.DeclarativeContainer):
-    auth = providers.Dependency(HttpBearer)
+    auth = providers.ExternalDependency(HttpBearer)
 
     vacancies_wishlist_handlers = providers.Singleton(VacanciesWishlistHandlers)
     vacancy_handlers = providers.Singleton(VacancyHandlers)
