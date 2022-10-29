@@ -3,7 +3,7 @@ from typing import Type
 from dependency_injector import containers, providers
 from ninja import NinjaAPI
 
-from api.internal.v1.exceptions import APIBaseException
+from api.internal.v1.exceptions import APIBaseError
 from api.internal.v1.users.db.repositories import (
     DepartmentRepository,
     IssuedTokenRepository,
@@ -20,14 +20,14 @@ from api.internal.v1.users.domain.services import (
 )
 from api.internal.v1.users.presentation.authentication import JWTAuth
 from api.internal.v1.users.presentation.exceptions import (
-    PasswordDoesNotMatch,
-    PasswordHasAlreadyRegistered,
+    PasswordDoesNotMatchError,
+    PasswordHasAlreadyRegisteredError,
     UserIsLeaderOfDepartmentError,
 )
 from api.internal.v1.users.presentation.handlers import AuthHandlers, UserHandlers
 from api.internal.v1.users.presentation.routers import UserRouter, UsersRouter
 
-EXCEPTIONS = [PasswordHasAlreadyRegistered, PasswordDoesNotMatch, UserIsLeaderOfDepartmentError]
+EXCEPTIONS = [PasswordHasAlreadyRegisteredError, PasswordDoesNotMatchError, UserIsLeaderOfDepartmentError]
 
 
 class UsersContainer(containers.DeclarativeContainer):
@@ -68,5 +68,5 @@ def register_users_api(base: NinjaAPI) -> None:
     base.add_router("/users", container.users_router())
 
 
-def _get_handler(exception_cls: Type[APIBaseException]):
+def _get_handler(exception_cls: Type[APIBaseError]):
     return lambda request, exc: exception_cls.response(exc)

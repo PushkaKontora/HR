@@ -23,8 +23,8 @@ from api.internal.v1.users.domain.entities import (
     UserOut,
 )
 from api.internal.v1.users.presentation.exceptions import (
-    PasswordDoesNotMatch,
-    PasswordHasAlreadyRegistered,
+    PasswordDoesNotMatchError,
+    PasswordHasAlreadyRegisteredError,
     UserIsLeaderOfDepartmentError,
 )
 from api.internal.v1.users.presentation.routers import IAuthHandlers, IUserHandlers
@@ -138,7 +138,7 @@ class AuthHandlers(IAuthHandlers):
 
     def register_user(self, request: HttpRequest, body: RegistrationIn = Body(...)) -> SuccessResponse:
         if self.registration_service.is_email_taken(body.email):
-            raise PasswordHasAlreadyRegistered()
+            raise PasswordHasAlreadyRegisteredError()
 
         self.registration_service.register(body)
 
@@ -183,7 +183,7 @@ class AuthHandlers(IAuthHandlers):
             raise ForbiddenError(self.ONLY_SELF)
 
         if not self.reset_password_service.match_password(request.user, body):
-            raise PasswordDoesNotMatch()
+            raise PasswordDoesNotMatchError()
 
         return self.reset_password_service.reset(request.user, body)
 
