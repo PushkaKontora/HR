@@ -26,6 +26,7 @@ from api.internal.v1.users.domain.entities import (
 from api.internal.v1.users.domain.utils import hash_password
 from api.internal.v1.users.presentation.handlers import (
     IAuthenticationService,
+    IDeleteUserService,
     IJWTService,
     IRegistrationService,
     IResetPasswordService,
@@ -55,6 +56,10 @@ class IUserRepository(ABC):
     def try_get_user_by_id(self, user_id: int) -> Optional[User]:
         pass
 
+    @abstractmethod
+    def get_for_update(self, user_id: int) -> User:
+        pass
+
 
 class IPasswordRepository(ABC):
     @abstractmethod
@@ -73,6 +78,12 @@ class IIssuedTokenRepository(ABC):
 
     @abstractmethod
     def try_get_ony(self, value: str) -> Optional[IssuedToken]:
+        pass
+
+
+class IDepartmentRepository(ABC):
+    @abstractmethod
+    def is_leader(self, user_id: int) -> bool:
         pass
 
 
@@ -190,3 +201,21 @@ class ResetPasswordService(IResetPasswordService):
         password.save(update_fields=["value", "updated_at"])
 
         return PasswordUpdatedAtOut(updated_at=password.updated_at)
+
+
+class DeleteUserService(IDeleteUserService):
+    def __init__(self, user_repo: IUserRepository, department_repo: IDepartmentRepository):
+        self.user_repo = user_repo
+        self.department_repo = department_repo
+
+    def authorize(self, auth_user: User, user_id: int) -> bool:
+        return auth_user.id == user_id
+
+    def is_user_leader_of_department(self, user_id: int) -> bool:
+        return self.department_repo.is_leader(user_id)
+
+    @atomic
+    def delete(self, user_id: int) -> None:
+        user = self.user_repo.get_for_update(user_id)
+
+        user.delete()

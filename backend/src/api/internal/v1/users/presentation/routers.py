@@ -114,7 +114,7 @@ class UserRouter(Router):
             methods=["DELETE"],
             view_func=user_handlers.delete_user,
             auth=[auth],
-            response={200: SuccessResponse, 401: ErrorResponse, 404: ErrorResponse},
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: ErrorResponse},
         )
 
         self.add_api_operation(

@@ -22,7 +22,11 @@ from api.internal.v1.users.domain.entities import (
     TokenType,
     UserOut,
 )
-from api.internal.v1.users.presentation.exceptions import PasswordDoesNotMatch, PasswordHasAlreadyRegistered
+from api.internal.v1.users.presentation.exceptions import (
+    PasswordDoesNotMatch,
+    PasswordHasAlreadyRegistered,
+    UserIsLeaderOfDepartmentError,
+)
 from api.internal.v1.users.presentation.routers import IAuthHandlers, IUserHandlers
 from api.models import IssuedToken, User
 
@@ -54,6 +58,20 @@ class IResetPasswordService(ABC):
 
     @abstractmethod
     def reset(self, user: User, body: ResetPasswordIn) -> PasswordUpdatedAtOut:
+        pass
+
+
+class IDeleteUserService(ABC):
+    @abstractmethod
+    def authorize(self, auth_user: User, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def is_user_leader_of_department(self, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def delete(self, user_id: int) -> None:
         pass
 
 
@@ -184,11 +202,9 @@ class AuthHandlers(IAuthHandlers):
 
 
 class UserHandlers(IUserHandlers):
-    def __init__(self, user_service: IUserService):
+    def __init__(self, user_service: IUserService, delete_user_service: IDeleteUserService):
         self.user_service = user_service
-
-    def remove_photo(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
-        raise NotImplementedError()
+        self.delete_user_service = delete_user_service
 
     def get_user(self, request: HttpRequest, user_id: int = Path(...)) -> UserOut:
         user_out = self.user_service.try_get_user(user_id)
@@ -199,11 +215,22 @@ class UserHandlers(IUserHandlers):
         return user_out
 
     def delete_user(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
-        raise NotImplementedError()
+        if not self.delete_user_service.authorize(request.user, user_id):
+            raise ForbiddenError()
+
+        if self.delete_user_service.is_user_leader_of_department(user_id):
+            raise UserIsLeaderOfDepartmentError()
+
+        self.delete_user_service.delete(user_id)
+
+        return SuccessResponse()
 
     def change_photo(
         self, request: HttpRequest, user_id: int = Path(...), photo: UploadedFile = File(...)
     ) -> SuccessResponse:
+        raise NotImplementedError()
+
+    def remove_photo(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
         raise NotImplementedError()
 
     def change_email(

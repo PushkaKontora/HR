@@ -1,8 +1,13 @@
 from typing import Optional
 
-from api.internal.v1.users.domain.services import IIssuedTokenRepository, IPasswordRepository, IUserRepository
+from api.internal.v1.users.domain.services import (
+    IDepartmentRepository,
+    IIssuedTokenRepository,
+    IPasswordRepository,
+    IUserRepository,
+)
 from api.internal.v1.users.domain.utils import hash_password
-from api.models import IssuedToken, Password, User
+from api.models import Department, IssuedToken, Password, User
 
 
 class UserRepository(IUserRepository):
@@ -14,6 +19,9 @@ class UserRepository(IUserRepository):
 
     def try_get_user_by_id(self, user_id: int) -> Optional[User]:
         return User.objects.filter(id=user_id).first()
+
+    def get_for_update(self, user_id: int) -> User:
+        return User.objects.select_for_update().get(id=user_id)
 
     def exists_email(self, email: str) -> bool:
         return User.objects.filter(email=email).exists()
@@ -36,3 +44,8 @@ class IssuedTokenRepository(IIssuedTokenRepository):
 
     def try_get_ony(self, value: str) -> Optional[IssuedToken]:
         return IssuedToken.objects.filter(value=value).first()
+
+
+class DepartmentRepository(IDepartmentRepository):
+    def is_leader(self, user_id: int) -> bool:
+        return Department.objects.filter(leader_id=user_id).exists()

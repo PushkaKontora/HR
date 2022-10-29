@@ -9,3 +9,8 @@ class PasswordHasAlreadyRegistered(APIBaseException):
 class PasswordDoesNotMatch(APIBaseException):
     def __init__(self):
         super(PasswordDoesNotMatch, self).__init__(2, "The previous password does not match with expected", 422)
+
+
+class UserIsLeaderOfDepartmentError(APIBaseException):
+    def __init__(self):
+        super(UserIsLeaderOfDepartmentError, self).__init__(10, "The user is a leader of a department", 422)
