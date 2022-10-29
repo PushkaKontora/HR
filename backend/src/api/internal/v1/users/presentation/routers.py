@@ -109,7 +109,6 @@ class UserRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["DELETE"],
             view_func=user_handlers.delete_user,
