@@ -1,12 +1,18 @@
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 
 from ninja import Schema
-from pydantic import EmailStr, HttpUrl
+from pydantic import EmailStr, FilePath, HttpUrl
 
 from api.models import Permissions
 
 PDF_RE = r"([^\\s]+(\\.(?i)(pdf))$)"
+
+
+class TokenType(str, Enum):
+    ACCESS = "access"
+    REFRESH = "refresh"
 
 
 class RegistrationIn(Schema):
@@ -45,7 +51,7 @@ class UserOut(Schema):
     surname: str
     name: str
     patronymic: str
-    photo: str
+    photo: Optional[str]
     resume: Optional[UserResumeOut]
     department: Optional[UserDepartmentOut]
     password: PasswordOut
@@ -66,9 +72,21 @@ class ResetPasswordIn(Schema):
     new_password: str
 
 
-class ResetPasswordOut(Schema):
+class PasswordUpdatedAtOut(Schema):
     updated_at: datetime
 
 
 class PhotoOut(Schema):
     photo: HttpUrl
+
+
+class Tokens(Schema):
+    access: str
+    refresh: str
+
+
+class Payload(Schema):
+    type: TokenType
+    user_id: int
+    permission: Permissions
+    expires_in: int

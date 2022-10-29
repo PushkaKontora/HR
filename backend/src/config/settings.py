@@ -9,7 +9,9 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import base64
+from base64 import b64encode
+from datetime import timedelta
 from pathlib import Path
 
 from environ import Env
@@ -109,6 +111,16 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+
+# Authentication
+
+SALT = b"$2b$12$" + env("SALT_POSTFIX").encode()
+
+REFRESH_TOKEN_COOKIE = "rf_tk"
+
+ACCESS_TOKEN_TTL = timedelta(minutes=30) if not DEBUG else timedelta(days=1)
+REFRESH_TOKEN_TTL = timedelta(days=10)
 
 
 # Internationalization
