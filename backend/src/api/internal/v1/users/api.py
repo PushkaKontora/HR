@@ -13,12 +13,12 @@ from api.internal.v1.users.db.repositories import (
 from api.internal.v1.users.domain.services import (
     AuthenticationService,
     ChangingEmailService,
-    DeleteUserService,
+    DeletingUserService,
+    GettingUserService,
     JWTService,
     RegistrationService,
-    RenameUserService,
-    ResetPasswordService,
-    UserService,
+    RenamingUserService,
+    ResettingPasswordService,
 )
 from api.internal.v1.users.presentation.authentication import JWTAuth
 from api.internal.v1.users.presentation.exceptions import (
@@ -47,10 +47,12 @@ class UsersContainer(containers.DeclarativeContainer):
     registration_service = providers.Singleton(RegistrationService, user_repo=user_repo, password_repo=password_repo)
     auth_service = providers.Singleton(AuthenticationService, user_repo=user_repo)
     jwt_service = providers.Singleton(JWTService, issued_token_repo=issued_token_repo, user_repo=user_repo)
-    user_service = providers.Singleton(UserService, user_repo=user_repo)
-    reset_password_service = providers.Singleton(ResetPasswordService)
-    delete_user_service = providers.Singleton(DeleteUserService, user_repo=user_repo, department_repo=department_repo)
-    rename_user_service = providers.Singleton(RenameUserService, user_repo=user_repo)
+    getting_user_service = providers.Singleton(GettingUserService, user_repo=user_repo)
+    resetting_password_service = providers.Singleton(ResettingPasswordService)
+    deleting_user_service = providers.Singleton(
+        DeletingUserService, user_repo=user_repo, department_repo=department_repo
+    )
+    renaming_user_service = providers.Singleton(RenamingUserService, user_repo=user_repo)
     changing_email_service = providers.Singleton(ChangingEmailService, user_repo=user_repo)
 
     auth = providers.Singleton(JWTAuth, jwt_service=jwt_service)
@@ -59,13 +61,13 @@ class UsersContainer(containers.DeclarativeContainer):
         registration_service=registration_service,
         auth_service=auth_service,
         jwt_service=jwt_service,
-        reset_password_service=reset_password_service,
+        resetting_password_service=resetting_password_service,
     )
     user_handlers = providers.Singleton(
         UserHandlers,
-        user_service=user_service,
-        delete_user_service=delete_user_service,
-        rename_user_service=rename_user_service,
+        getting_user_service=getting_user_service,
+        deleting_user_service=deleting_user_service,
+        renaming_user_service=renaming_user_service,
         changing_email_service=changing_email_service,
     )
 

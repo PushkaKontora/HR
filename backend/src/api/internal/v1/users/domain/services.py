@@ -29,12 +29,12 @@ from api.internal.v1.users.domain.utils import hash_password
 from api.internal.v1.users.presentation.handlers import (
     IAuthenticationService,
     IChangingEmailService,
-    IDeleteUserService,
+    IDeletingUserService,
+    IGettingUserService,
     IJWTService,
     IRegistrationService,
-    IRenameUserService,
-    IResetPasswordService,
-    IUserService,
+    IRenamingUserService,
+    IResettingPasswordService,
 )
 from api.models import IssuedToken, Password, User
 
@@ -168,7 +168,7 @@ class JWTService(IJWTService):
         return encode(payload.dict(), settings.SECRET_KEY, algorithm=self.ALGORITHMS[0])
 
 
-class UserService(IUserService):
+class GettingUserService(IGettingUserService):
     def __init__(self, user_repo: IUserRepository):
         self.user_repo = user_repo
 
@@ -192,7 +192,7 @@ class UserService(IUserService):
         )
 
 
-class ResetPasswordService(IResetPasswordService):
+class ResettingPasswordService(IResettingPasswordService):
     def authorize_only_self(self, user: User, user_id: int) -> bool:
         return user.id == user_id
 
@@ -207,7 +207,7 @@ class ResetPasswordService(IResetPasswordService):
         return PasswordUpdatedAtOut(updated_at=password.updated_at)
 
 
-class DeleteUserService(IDeleteUserService):
+class DeletingUserService(IDeletingUserService):
     def __init__(self, user_repo: IUserRepository, department_repo: IDepartmentRepository):
         self.user_repo = user_repo
         self.department_repo = department_repo
@@ -225,7 +225,7 @@ class DeleteUserService(IDeleteUserService):
         user.delete()
 
 
-class RenameUserService(IRenameUserService):
+class RenamingUserService(IRenamingUserService):
     def __init__(self, user_repo: IUserRepository):
         self.user_repo = user_repo
 

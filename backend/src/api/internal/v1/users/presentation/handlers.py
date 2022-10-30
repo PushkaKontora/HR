@@ -48,7 +48,7 @@ class IAuthenticationService(ABC):
         pass
 
 
-class IResetPasswordService(ABC):
+class IResettingPasswordService(ABC):
     @abstractmethod
     def authorize_only_self(self, user: User, user_id: int) -> bool:
         pass
@@ -62,7 +62,7 @@ class IResetPasswordService(ABC):
         pass
 
 
-class IDeleteUserService(ABC):
+class IDeletingUserService(ABC):
     @abstractmethod
     def authorize(self, auth_user: User, user_id: int) -> bool:
         pass
@@ -76,7 +76,7 @@ class IDeleteUserService(ABC):
         pass
 
 
-class IRenameUserService(ABC):
+class IRenamingUserService(ABC):
     @abstractmethod
     def authorize(self, auth_user: User, user_id: int) -> bool:
         pass
@@ -134,7 +134,7 @@ class IJWTService(ABC, metaclass=ABCMeta):
         pass
 
 
-class IUserService(ABC):
+class IGettingUserService(ABC):
     @abstractmethod
     def try_get_user(self, user_id: int) -> Optional[UserOut]:
         pass
@@ -154,9 +154,9 @@ class AuthHandlers(IAuthHandlers):
         registration_service: IRegistrationService,
         auth_service: IAuthenticationService,
         jwt_service: IJWTService,
-        reset_password_service: IResetPasswordService,
+        resetting_password_service: IResettingPasswordService,
     ):
-        self.reset_password_service = reset_password_service
+        self.resetting_password_service = resetting_password_service
         self.jwt_service = jwt_service
         self.auth_service = auth_service
         self.registration_service = registration_service
@@ -204,13 +204,13 @@ class AuthHandlers(IAuthHandlers):
     def reset_password(
         self, request: HttpRequest, user_id: int = Path(...), body: ResetPasswordIn = Body(...)
     ) -> PasswordUpdatedAtOut:
-        if not self.reset_password_service.authorize_only_self(request.user, user_id):
+        if not self.resetting_password_service.authorize_only_self(request.user, user_id):
             raise ForbiddenError(self.ONLY_SELF)
 
-        if not self.reset_password_service.match_password(request.user, body):
+        if not self.resetting_password_service.match_password(request.user, body):
             raise PasswordDoesNotMatchError()
 
-        return self.reset_password_service.reset(request.user, body)
+        return self.resetting_password_service.reset(request.user, body)
 
     def get_response_with_tokens(self, user: User) -> Response:
         tokens = self.jwt_service.create_tokens(user)
@@ -229,18 +229,18 @@ class AuthHandlers(IAuthHandlers):
 class UserHandlers(IUserHandlers):
     def __init__(
         self,
-        user_service: IUserService,
-        delete_user_service: IDeleteUserService,
-        rename_user_service: IRenameUserService,
+        getting_user_service: IGettingUserService,
+        deleting_user_service: IDeletingUserService,
+        renaming_user_service: IRenamingUserService,
         changing_email_service: IChangingEmailService,
     ):
         self.changing_email_service = changing_email_service
-        self.user_service = user_service
-        self.delete_user_service = delete_user_service
-        self.rename_user_service = rename_user_service
+        self.getting_user_service = getting_user_service
+        self.deleting_user_service = deleting_user_service
+        self.renaming_user_service = renaming_user_service
 
     def get_user(self, request: HttpRequest, user_id: int = Path(...)) -> UserOut:
-        user_out = self.user_service.try_get_user(user_id)
+        user_out = self.getting_user_service.try_get_user(user_id)
 
         if not user_out:
             raise NotFoundError()
@@ -248,13 +248,13 @@ class UserHandlers(IUserHandlers):
         return user_out
 
     def delete_user(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
-        if not self.delete_user_service.authorize(request.user, user_id):
+        if not self.deleting_user_service.authorize(request.user, user_id):
             raise ForbiddenError()
 
-        if self.delete_user_service.is_user_leader_of_department(user_id):
+        if self.deleting_user_service.is_user_leader_of_department(user_id):
             raise UserIsLeaderOfDepartmentError()
 
-        self.delete_user_service.delete(user_id)
+        self.deleting_user_service.delete(user_id)
 
         return SuccessResponse()
 
@@ -280,9 +280,9 @@ class UserHandlers(IUserHandlers):
         return SuccessResponse()
 
     def rename_user(self, request: HttpRequest, user_id: int = Path(...), body: NameIn = Body(...)) -> SuccessResponse:
-        if not self.rename_user_service.authorize(request.user, user_id):
+        if not self.renaming_user_service.authorize(request.user, user_id):
             raise ForbiddenError()
 
-        self.rename_user_service.rename(user_id, body)
+        self.renaming_user_service.rename(user_id, body)
 
         return SuccessResponse()
