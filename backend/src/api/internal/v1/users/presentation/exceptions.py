@@ -14,3 +14,8 @@ class PasswordDoesNotMatchError(APIBaseError):
 class UserIsLeaderOfDepartmentError(APIBaseError):
     def __init__(self):
         super(UserIsLeaderOfDepartmentError, self).__init__(10, "The user is a leader of a department", 422)
+
+
+class EmailIsAlreadyRegisteredError(APIBaseError):
+    def __init__(self):
+        super(EmailIsAlreadyRegisteredError, self).__init__(11, "The email is already registered", 422)

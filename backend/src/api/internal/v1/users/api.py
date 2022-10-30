@@ -12,6 +12,7 @@ from api.internal.v1.users.db.repositories import (
 )
 from api.internal.v1.users.domain.services import (
     AuthenticationService,
+    ChangingEmailService,
     DeleteUserService,
     JWTService,
     RegistrationService,
@@ -21,6 +22,7 @@ from api.internal.v1.users.domain.services import (
 )
 from api.internal.v1.users.presentation.authentication import JWTAuth
 from api.internal.v1.users.presentation.exceptions import (
+    EmailIsAlreadyRegisteredError,
     PasswordDoesNotMatchError,
     PasswordHasAlreadyRegisteredError,
     UserIsLeaderOfDepartmentError,
@@ -28,7 +30,12 @@ from api.internal.v1.users.presentation.exceptions import (
 from api.internal.v1.users.presentation.handlers import AuthHandlers, UserHandlers
 from api.internal.v1.users.presentation.routers import UserRouter, UsersRouter
 
-EXCEPTIONS = [PasswordHasAlreadyRegisteredError, PasswordDoesNotMatchError, UserIsLeaderOfDepartmentError]
+EXCEPTIONS = [
+    PasswordHasAlreadyRegisteredError,
+    PasswordDoesNotMatchError,
+    UserIsLeaderOfDepartmentError,
+    EmailIsAlreadyRegisteredError,
+]
 
 
 class UsersContainer(containers.DeclarativeContainer):
@@ -44,6 +51,7 @@ class UsersContainer(containers.DeclarativeContainer):
     reset_password_service = providers.Singleton(ResetPasswordService)
     delete_user_service = providers.Singleton(DeleteUserService, user_repo=user_repo, department_repo=department_repo)
     rename_user_service = providers.Singleton(RenameUserService, user_repo=user_repo)
+    changing_email_service = providers.Singleton(ChangingEmailService, user_repo=user_repo)
 
     auth = providers.Singleton(JWTAuth, jwt_service=jwt_service)
     auth_handlers = providers.Singleton(
@@ -58,6 +66,7 @@ class UsersContainer(containers.DeclarativeContainer):
         user_service=user_service,
         delete_user_service=delete_user_service,
         rename_user_service=rename_user_service,
+        changing_email_service=changing_email_service,
     )
 
     user_router = providers.Singleton(UserRouter, user_handlers=user_handlers, auth_handlers=auth_handlers, auth=auth)

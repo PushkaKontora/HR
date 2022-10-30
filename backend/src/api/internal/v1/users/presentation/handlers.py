@@ -23,6 +23,7 @@ from api.internal.v1.users.domain.entities import (
     UserOut,
 )
 from api.internal.v1.users.presentation.exceptions import (
+    EmailIsAlreadyRegisteredError,
     PasswordDoesNotMatchError,
     PasswordHasAlreadyRegisteredError,
     UserIsLeaderOfDepartmentError,
@@ -82,6 +83,20 @@ class IRenameUserService(ABC):
 
     @abstractmethod
     def rename(self, user_id: int, body: NameIn) -> None:
+        pass
+
+
+class IChangingEmailService(ABC):
+    @abstractmethod
+    def authorize(self, auth_user: User, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def is_email_already_registered(self, body: EmailIn) -> bool:
+        pass
+
+    @abstractmethod
+    def change_email(self, user_id: int, body: EmailIn) -> None:
         pass
 
 
@@ -217,7 +232,9 @@ class UserHandlers(IUserHandlers):
         user_service: IUserService,
         delete_user_service: IDeleteUserService,
         rename_user_service: IRenameUserService,
+        changing_email_service: IChangingEmailService,
     ):
+        self.changing_email_service = changing_email_service
         self.user_service = user_service
         self.delete_user_service = delete_user_service
         self.rename_user_service = rename_user_service
@@ -252,7 +269,15 @@ class UserHandlers(IUserHandlers):
     def change_email(
         self, request: HttpRequest, user_id: int = Path(...), body: EmailIn = Body(...)
     ) -> SuccessResponse:
-        raise NotImplementedError()
+        if not self.changing_email_service.authorize(request.user, user_id):
+            raise ForbiddenError()
+
+        if self.changing_email_service.is_email_already_registered(body):
+            raise EmailIsAlreadyRegisteredError()
+
+        self.changing_email_service.change_email(user_id, body)
+
+        return SuccessResponse()
 
     def rename_user(self, request: HttpRequest, user_id: int = Path(...), body: NameIn = Body(...)) -> SuccessResponse:
         if not self.rename_user_service.authorize(request.user, user_id):

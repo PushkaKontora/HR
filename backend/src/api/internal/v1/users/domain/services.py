@@ -12,6 +12,7 @@ from pydantic import ValidationError
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
     AuthenticationOut,
+    EmailIn,
     NameIn,
     PasswordOut,
     PasswordUpdatedAtOut,
@@ -27,6 +28,7 @@ from api.internal.v1.users.domain.entities import (
 from api.internal.v1.users.domain.utils import hash_password
 from api.internal.v1.users.presentation.handlers import (
     IAuthenticationService,
+    IChangingEmailService,
     IDeleteUserService,
     IJWTService,
     IRegistrationService,
@@ -238,3 +240,21 @@ class RenameUserService(IRenameUserService):
         user.name = body.name
         user.patronymic = body.patronymic
         user.save(update_fields=["surname", "name", "patronymic"])
+
+
+class ChangingEmailService(IChangingEmailService):
+    def __init__(self, user_repo: IUserRepository):
+        self.user_repo = user_repo
+
+    def authorize(self, auth_user: User, user_id: int) -> bool:
+        return auth_user.id == user_id
+
+    def is_email_already_registered(self, body: EmailIn) -> bool:
+        return self.user_repo.exists_email(body.email)
+
+    @atomic
+    def change_email(self, user_id: int, body: EmailIn) -> None:
+        user = self.user_repo.get_for_update(user_id)
+
+        user.email = body.email
+        user.save(update_fields=["email"])
