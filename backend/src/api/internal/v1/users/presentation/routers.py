@@ -143,15 +143,14 @@ class UserRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="/email",
             methods=["PATCH"],
             view_func=user_handlers.change_email,
             auth=[auth],
             response={
                 200: SuccessResponse,
-                401: ErrorResponse,
-                404: ErrorResponse,
+                401: MessageResponse,
+                403: MessageResponse,
                 422: ErrorResponse,
             },
         )
