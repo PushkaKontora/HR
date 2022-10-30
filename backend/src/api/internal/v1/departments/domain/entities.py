@@ -1,3 +1,5 @@
+from typing import Optional
+
 from ninja import Schema
 
 
@@ -11,6 +13,6 @@ class LeaderOut(Schema):
 class DepartmentOut(Schema):
     id: int
     name: str
-    description: str
+    description: Optional[str]
     vacancies_amount: int
     leader: LeaderOut
