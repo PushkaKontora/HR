@@ -75,6 +75,16 @@ class IDeleteUserService(ABC):
         pass
 
 
+class IRenameUserService(ABC):
+    @abstractmethod
+    def authorize(self, auth_user: User, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def rename(self, user_id: int, body: NameIn) -> None:
+        pass
+
+
 class IJWTService(ABC, metaclass=ABCMeta):
     @abstractmethod
     def try_get_user(self, payload: Payload) -> Optional[User]:
@@ -202,9 +212,15 @@ class AuthHandlers(IAuthHandlers):
 
 
 class UserHandlers(IUserHandlers):
-    def __init__(self, user_service: IUserService, delete_user_service: IDeleteUserService):
+    def __init__(
+        self,
+        user_service: IUserService,
+        delete_user_service: IDeleteUserService,
+        rename_user_service: IRenameUserService,
+    ):
         self.user_service = user_service
         self.delete_user_service = delete_user_service
+        self.rename_user_service = rename_user_service
 
     def get_user(self, request: HttpRequest, user_id: int = Path(...)) -> UserOut:
         user_out = self.user_service.try_get_user(user_id)
@@ -239,4 +255,9 @@ class UserHandlers(IUserHandlers):
         raise NotImplementedError()
 
     def rename_user(self, request: HttpRequest, user_id: int = Path(...), body: NameIn = Body(...)) -> SuccessResponse:
-        raise NotImplementedError()
+        if not self.rename_user_service.authorize(request.user, user_id):
+            raise ForbiddenError()
+
+        self.rename_user_service.rename(user_id, body)
+
+        return SuccessResponse()

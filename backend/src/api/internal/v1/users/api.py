@@ -15,6 +15,7 @@ from api.internal.v1.users.domain.services import (
     DeleteUserService,
     JWTService,
     RegistrationService,
+    RenameUserService,
     ResetPasswordService,
     UserService,
 )
@@ -42,6 +43,7 @@ class UsersContainer(containers.DeclarativeContainer):
     user_service = providers.Singleton(UserService, user_repo=user_repo)
     reset_password_service = providers.Singleton(ResetPasswordService)
     delete_user_service = providers.Singleton(DeleteUserService, user_repo=user_repo, department_repo=department_repo)
+    rename_user_service = providers.Singleton(RenameUserService, user_repo=user_repo)
 
     auth = providers.Singleton(JWTAuth, jwt_service=jwt_service)
     auth_handlers = providers.Singleton(
@@ -52,7 +54,10 @@ class UsersContainer(containers.DeclarativeContainer):
         reset_password_service=reset_password_service,
     )
     user_handlers = providers.Singleton(
-        UserHandlers, user_service=user_service, delete_user_service=delete_user_service
+        UserHandlers,
+        user_service=user_service,
+        delete_user_service=delete_user_service,
+        rename_user_service=rename_user_service,
     )
 
     user_router = providers.Singleton(UserRouter, user_handlers=user_handlers, auth_handlers=auth_handlers, auth=auth)

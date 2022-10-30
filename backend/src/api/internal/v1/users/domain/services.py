@@ -12,6 +12,7 @@ from pydantic import ValidationError
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
     AuthenticationOut,
+    NameIn,
     PasswordOut,
     PasswordUpdatedAtOut,
     Payload,
@@ -29,6 +30,7 @@ from api.internal.v1.users.presentation.handlers import (
     IDeleteUserService,
     IJWTService,
     IRegistrationService,
+    IRenameUserService,
     IResetPasswordService,
     IUserService,
 )
@@ -219,3 +221,20 @@ class DeleteUserService(IDeleteUserService):
         user = self.user_repo.get_for_update(user_id)
 
         user.delete()
+
+
+class RenameUserService(IRenameUserService):
+    def __init__(self, user_repo: IUserRepository):
+        self.user_repo = user_repo
+
+    def authorize(self, auth_user: User, user_id: int) -> bool:
+        return auth_user.id == user_id
+
+    @atomic
+    def rename(self, user_id: int, body: NameIn) -> None:
+        user = self.user_repo.get_for_update(user_id)
+
+        user.surname = body.surname
+        user.name = body.name
+        user.patronymic = body.patronymic
+        user.save(update_fields=["surname", "name", "patronymic"])

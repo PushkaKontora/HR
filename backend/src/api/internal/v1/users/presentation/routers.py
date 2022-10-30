@@ -157,15 +157,14 @@ class UserRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="/rename",
             methods=["PATCH"],
             view_func=user_handlers.rename_user,
             auth=[auth],
             response={
                 200: SuccessResponse,
-                401: ErrorResponse,
-                404: ErrorResponse,
+                401: MessageResponse,
+                403: MessageResponse,
             },
         )
 
