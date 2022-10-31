@@ -23,7 +23,7 @@ class UnauthorizedError(Exception):
 
 class NotFoundError(Exception):
     def __init__(self, resource: str = None):
-        self.msg = "Not found" + f" {resource}" if resource else ""
+        self.msg = "Not found" + (f" {resource}" if resource else "")
 
 
 class BadRequestError(Exception):

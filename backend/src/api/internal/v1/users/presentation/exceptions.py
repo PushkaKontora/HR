@@ -19,3 +19,8 @@ class UserIsLeaderOfDepartmentError(APIBaseError):
 class EmailIsAlreadyRegisteredError(APIBaseError):
     def __init__(self):
         super(EmailIsAlreadyRegisteredError, self).__init__(11, "The email is already registered", 422)
+
+
+class FileIsNotImageError(APIBaseError):
+    def __init__(self):
+        super(FileIsNotImageError, self).__init__(12, "The file is not image", 422)

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import timedelta
+from re import match
 from typing import Optional
 
 from bcrypt import checkpw
@@ -7,6 +8,7 @@ from django.conf import settings
 from django.db.transaction import atomic
 from django.utils.timezone import now
 from jwt import PyJWTError, decode, encode
+from ninja import UploadedFile
 from pydantic import ValidationError
 
 from api.internal.v1.users.domain.entities import (
@@ -17,6 +19,7 @@ from api.internal.v1.users.domain.entities import (
     PasswordOut,
     PasswordUpdatedAtOut,
     Payload,
+    PhotoOut,
     RegistrationIn,
     ResetPasswordIn,
     Tokens,
@@ -32,6 +35,7 @@ from api.internal.v1.users.presentation.handlers import (
     IDeletingUserService,
     IGettingUserService,
     IJWTService,
+    IPhotoService,
     IRegistrationService,
     IRenamingUserService,
     IResettingPasswordService,
@@ -258,3 +262,30 @@ class ChangingEmailService(IChangingEmailService):
 
         user.email = body.email
         user.save(update_fields=["email"])
+
+
+class PhotoService(IPhotoService):
+    IMAGE_PATTERN = r"^.*\.(jpg|JPG|png|PNG|jpeg|JPEG)$"
+
+    def __init__(self, user_repo: IUserRepository):
+        self.user_repo = user_repo
+
+    def authorize(self, auth_user: User, user_id: int) -> bool:
+        return auth_user.id == user_id
+
+    def upload(self, user_id: int, photo: UploadedFile) -> PhotoOut:
+        user = self.user_repo.try_get_user_by_id(user_id)
+
+        user.photo = UploadedFile(photo, f"{user.id}{photo.name}")
+        user.save(update_fields=["photo"])
+
+        return PhotoOut(photo=user.photo.url)
+
+    def delete(self, user_id: int) -> None:
+        user = self.user_repo.try_get_user_by_id(user_id)
+
+        user.photo = None
+        user.save(update_fields=["photo"])
+
+    def is_image(self, photo: UploadedFile) -> bool:
+        return match(self.IMAGE_PATTERN, photo.name) is not None

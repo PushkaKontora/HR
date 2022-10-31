@@ -1,6 +1,6 @@
 from abc import ABC, ABCMeta, abstractmethod
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Type
 
 from django.conf import settings
 from django.http import HttpRequest
@@ -16,6 +16,7 @@ from api.internal.v1.users.domain.entities import (
     NameIn,
     PasswordUpdatedAtOut,
     Payload,
+    PhotoOut,
     RegistrationIn,
     ResetPasswordIn,
     Tokens,
@@ -24,6 +25,7 @@ from api.internal.v1.users.domain.entities import (
 )
 from api.internal.v1.users.presentation.exceptions import (
     EmailIsAlreadyRegisteredError,
+    FileIsNotImageError,
     PasswordDoesNotMatchError,
     PasswordHasAlreadyRegisteredError,
     UserIsLeaderOfDepartmentError,
@@ -140,6 +142,24 @@ class IGettingUserService(ABC):
         pass
 
 
+class IPhotoService(ABC):
+    @abstractmethod
+    def authorize(self, auth_user: User, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def upload(self, user_id: int, photo: UploadedFile) -> PhotoOut:
+        pass
+
+    @abstractmethod
+    def delete(self, user_id: int) -> None:
+        pass
+
+    @abstractmethod
+    def is_image(self, photo: UploadedFile) -> bool:
+        pass
+
+
 class AuthHandlers(IAuthHandlers):
     REFRESH_TOKEN_IS_NOT_IN_COOKIES = "Refresh token is not in cookies"
     INVALID_SIGNATURE_OR_PAYLOAD = "Invalid signature or payload"
@@ -233,7 +253,9 @@ class UserHandlers(IUserHandlers):
         deleting_user_service: IDeletingUserService,
         renaming_user_service: IRenamingUserService,
         changing_email_service: IChangingEmailService,
+        photo_service: IPhotoService,
     ):
+        self.photo_service = photo_service
         self.changing_email_service = changing_email_service
         self.getting_user_service = getting_user_service
         self.deleting_user_service = deleting_user_service
@@ -258,13 +280,22 @@ class UserHandlers(IUserHandlers):
 
         return SuccessResponse()
 
-    def change_photo(
-        self, request: HttpRequest, user_id: int = Path(...), photo: UploadedFile = File(...)
-    ) -> SuccessResponse:
-        raise NotImplementedError()
+    def upload_photo(self, request: HttpRequest, user_id: int = Path(...), photo: UploadedFile = File(...)) -> PhotoOut:
+        if not self.photo_service.is_image(photo):
+            raise FileIsNotImageError()
 
-    def remove_photo(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
-        raise NotImplementedError()
+        if not self.photo_service.authorize(request.user, user_id):
+            raise ForbiddenError()
+
+        return self.photo_service.upload(user_id, photo)
+
+    def delete_photo(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
+        if not self.photo_service.authorize(request.user, user_id):
+            raise ForbiddenError()
+
+        self.photo_service.delete(user_id)
+
+        return SuccessResponse()
 
     def change_email(
         self, request: HttpRequest, user_id: int = Path(...), body: EmailIn = Body(...)

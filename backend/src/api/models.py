@@ -20,7 +20,7 @@ class User(models.Model):
     surname = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
     patronymic = models.CharField(max_length=128)
-    photo = models.FileField(upload_to="photos/%Y/%m/%d/", null=True)
+    photo = models.ImageField(upload_to="photos/%Y/%m/%d/", null=True)
     favorite_vacancies = models.ManyToManyField("Vacancy", through="FavoriteVacancy")
     favorite_resumes = models.ManyToManyField("Resume", through="FavoriteResume")
 

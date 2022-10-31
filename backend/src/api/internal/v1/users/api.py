@@ -16,6 +16,7 @@ from api.internal.v1.users.domain.services import (
     DeletingUserService,
     GettingUserService,
     JWTService,
+    PhotoService,
     RegistrationService,
     RenamingUserService,
     ResettingPasswordService,
@@ -23,6 +24,7 @@ from api.internal.v1.users.domain.services import (
 from api.internal.v1.users.presentation.authentication import JWTAuth
 from api.internal.v1.users.presentation.exceptions import (
     EmailIsAlreadyRegisteredError,
+    FileIsNotImageError,
     PasswordDoesNotMatchError,
     PasswordHasAlreadyRegisteredError,
     UserIsLeaderOfDepartmentError,
@@ -35,6 +37,7 @@ EXCEPTIONS = [
     PasswordDoesNotMatchError,
     UserIsLeaderOfDepartmentError,
     EmailIsAlreadyRegisteredError,
+    FileIsNotImageError,
 ]
 
 
@@ -54,6 +57,7 @@ class UsersContainer(containers.DeclarativeContainer):
     )
     renaming_user_service = providers.Singleton(RenamingUserService, user_repo=user_repo)
     changing_email_service = providers.Singleton(ChangingEmailService, user_repo=user_repo)
+    photo_service = providers.Singleton(PhotoService, user_repo=user_repo)
 
     auth = providers.Singleton(JWTAuth, jwt_service=jwt_service)
     auth_handlers = providers.Singleton(
@@ -69,6 +73,7 @@ class UsersContainer(containers.DeclarativeContainer):
         deleting_user_service=deleting_user_service,
         renaming_user_service=renaming_user_service,
         changing_email_service=changing_email_service,
+        photo_service=photo_service,
     )
 
     user_router = providers.Singleton(UserRouter, user_handlers=user_handlers, auth_handlers=auth_handlers, auth=auth)

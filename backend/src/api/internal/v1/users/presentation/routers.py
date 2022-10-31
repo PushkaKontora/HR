@@ -5,7 +5,6 @@ from ninja import Body, File, Path, Router, UploadedFile
 from ninja.security import HttpBearer
 
 from api.internal.v1.responses import ErrorResponse, MessageResponse, SuccessResponse
-from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
     AuthenticationOut,
@@ -51,11 +50,11 @@ class IUserHandlers(ABC):
         pass
 
     @abstractmethod
-    def change_photo(self, request: HttpRequest, user_id: int = Path(...), photo: UploadedFile = File(...)) -> PhotoOut:
+    def upload_photo(self, request: HttpRequest, user_id: int = Path(...), photo: UploadedFile = File(...)) -> PhotoOut:
         pass
 
     @abstractmethod
-    def remove_photo(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
+    def delete_photo(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
         pass
 
     @abstractmethod
@@ -117,28 +116,26 @@ class UserRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
             path="/photo",
-            methods=["PATCH"],
-            view_func=user_handlers.change_photo,
+            methods=["POST"],
+            view_func=user_handlers.upload_photo,
             auth=[auth],
             response={
                 200: PhotoOut,
-                401: ErrorResponse,
-                404: ErrorResponse,
+                401: MessageResponse,
+                403: MessageResponse,
             },
         )
 
         self.add_api_operation(
-            tags=[USERS_TAG, NOT_IMPLEMENTED_TAG],
-            path="/photo/remove",
-            methods=["PATCH"],
-            view_func=user_handlers.remove_photo,
+            path="/photo",
+            methods=["DELETE"],
+            view_func=user_handlers.delete_photo,
             auth=[auth],
             response={
                 200: SuccessResponse,
-                401: ErrorResponse,
-                404: ErrorResponse,
+                401: MessageResponse,
+                403: MessageResponse,
             },
         )
 

@@ -51,7 +51,7 @@ def forbidden(msg: str = "Forbidden") -> dict:
 
 
 def not_found(resource: str = None) -> dict:
-    return message("Not found" + f" {resource}" if resource else "")
+    return message("Not found" + (f" {resource}" if resource else ""))
 
 
 def message(msg: str) -> dict:
