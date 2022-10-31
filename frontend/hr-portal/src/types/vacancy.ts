@@ -4,8 +4,8 @@ export type Vacancy = {
   'name': string,
   'description': string,
   'expected_experience': ExpectedExperience,
-  'salary_from': number,
-  'salary_to': number,
+  'salary_from'?: number,
+  'salary_to'?: number,
   'department': {
     'id': number,
     'name': string,

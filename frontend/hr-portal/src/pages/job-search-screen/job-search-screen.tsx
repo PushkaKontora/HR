@@ -1,10 +1,20 @@
-import {ChangeEvent, FormEvent, useState} from 'react';
+import {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import bannerSearchScreen from '../../assets/img/job-seach/banner-jobSearchPage.svg';
 import deleteIcon from '../../assets/img/job-seach/delete-icon.svg';
 import './job-search-screen.scss';
+import VacancyList from '../../components/vacancy-list/vacancy-list';
 
 const radioInput = ['Любой', 'Более года', 'Более 3 лет', 'Более 6 лет', 'Без опыта'];
 const departments = ['SEO', 'frontend', 'backend', 'аналитика'];
+
+enum SelectFilterCard {
+  DEFAULT = 'По умолчанию',
+  ON_DATE = 'По дате',
+  DECREASE_SALARY = 'По убыванию зарплаты',
+  INCREASE_SALARY = 'По возрастанию зарплаты'
+}
+
+const selectFilterCardVariants = [SelectFilterCard.DEFAULT, SelectFilterCard.ON_DATE, SelectFilterCard.DECREASE_SALARY, SelectFilterCard.INCREASE_SALARY];
 
 function JobSearchScreen() {
   const [pageSearch, setPageSearch] = useState('');
@@ -12,6 +22,21 @@ function JobSearchScreen() {
   const [selectDepartment, setSelectDepartment] = useState([]);
   const [salaryMin, setSalaryMin] = useState('');
   const [salaryMax, setSalaryMax] = useState('');
+  const [selectFilterCard, setSelectFilterCard] = useState(SelectFilterCard.DEFAULT);
+  const [isOpenFilterCard, setIsOpenFilterCard] = useState(false);
+
+  useEffect(() => {
+    const parent = document.getElementById('parent');
+    const child = document.getElementById('child');
+
+    const cWidth = child?.offsetWidth;
+    const pWidth = parent?.offsetWidth;
+    if (cWidth && pWidth) {
+      cWidth > pWidth ? child.style.width = cWidth + 'px' : child.style.width = pWidth + 'px';
+      child.style.width = cWidth + 'px';
+    }
+  },);
+
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -35,6 +60,10 @@ function JobSearchScreen() {
 
   const onHandleClickRadio = (e: ChangeEvent<HTMLInputElement>) => {
     setRadioChecked(e.target.value);
+  };
+
+  const onToggleSelect = () => {
+    setIsOpenFilterCard(!isOpenFilterCard);
   };
 
   // const onHandleFilterDepartment = (e: ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +92,16 @@ function JobSearchScreen() {
       <div className="jobSearchScreen-item jobSearchScreen-item__content">
         <div className="contentItem contentItem__filters">
           <div className="filterItem">
+            <div className="filterItem-title">Департамент</div>
+            {/*<select value={selectDepartment} placeholder="Все департаменты" multiple>*/}
+            {/*  {*/}
+            {/*    departments.map((department, index) => (*/}
+            {/*      <option key={index} value={department}>{department}</option>*/}
+            {/*    ))*/}
+            {/*  }*/}
+            {/*</select>*/}
+          </div>
+          <div className="filterItem">
             <div className="filterItem-title">Требуемый стаж работы</div>
             {
               radioInput.map((value, index) => (
@@ -80,16 +119,6 @@ function JobSearchScreen() {
                 </div>
               ))
             }
-          </div>
-          <div className="filterItem">
-            <div className="filterItem-title">Департамент</div>
-            {/*<select value={selectDepartment} placeholder="Все департаменты" multiple>*/}
-            {/*  {*/}
-            {/*    departments.map((department, index) => (*/}
-            {/*      <option key={index} value={department}>{department}</option>*/}
-            {/*    ))*/}
-            {/*  }*/}
-            {/*</select>*/}
           </div>
           <div className="filterItem filterItem__salary">
             <div className="filterItem-title">Зарплата</div>
@@ -110,16 +139,26 @@ function JobSearchScreen() {
           <div className="cardVacancy-title">
             <div className="title">Найдена 131 вакансия</div>
             <div className="variantsSorted">
-              <select>
-                <option value='по дате'>по дате</option>
-                <option value='по убыванию зарплаты'>по убыванию зарплаты</option>
-                <option value='по возрастанию зарплаты'>по возрастанию зарплаты</option>
-              </select>
+              <button id="parent" onClick={onToggleSelect} className={isOpenFilterCard ? 'variantSorted-select-btn variantSorted-select-btn__active' : 'variantSorted-select-btn'}>{selectFilterCard}</button>
+              {isOpenFilterCard && (
+                <div id="child" className="variantSorted-option-wrapper">
+                  <ul>
+                    {
+                      selectFilterCardVariants.map((element) => {
+                        return (
+                          selectFilterCard !== element &&
+                          <li onClick={() => setSelectFilterCard(element)} className="variantSorted-element">
+                            {element}
+                          </li>
+                        );
+                      })
+                    }
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
-          <div className="cards-vacancy">
-            dddd
-          </div>
+          <VacancyList/>
         </div>
       </div>
     </div>
