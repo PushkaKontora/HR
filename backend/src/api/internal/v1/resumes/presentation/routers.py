@@ -125,21 +125,19 @@ class ResumeRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="/publish",
             methods=["PATCH"],
             auth=[auth],
             view_func=resume_handlers.publish_resume,
-            response={200: PublishingOut, 401: ErrorResponse, 404: ErrorResponse},
+            response={200: PublishingOut, 401: MessageResponse, 403: MessageResponse},
         )
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="/unpublish",
             methods=["PATCH"],
             auth=[auth],
             view_func=resume_handlers.unpublish_resume,
-            response={200: SuccessResponse, 401: ErrorResponse, 404: ErrorResponse},
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse},
         )
 
 
