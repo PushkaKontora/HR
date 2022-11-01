@@ -265,7 +265,7 @@ class ChangingEmailService(IChangingEmailService):
 
 
 class PhotoService(IPhotoService):
-    IMAGE_PATTERN = r"^.*\.(jpg|JPG|png|PNG|jpeg|JPEG)$"
+    PHOTO_MIME_TYPES = ("image/png", "image/jpeg")
 
     def __init__(self, user_repo: IUserRepository):
         self.user_repo = user_repo
@@ -288,4 +288,4 @@ class PhotoService(IPhotoService):
         user.save(update_fields=["photo"])
 
     def is_image(self, photo: UploadedFile) -> bool:
-        return match(self.IMAGE_PATTERN, photo.name) is not None
+        return photo.content_type in self.PHOTO_MIME_TYPES
