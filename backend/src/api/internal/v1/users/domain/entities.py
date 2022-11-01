@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional
 
 from ninja import Schema
-from pydantic import EmailStr, FilePath, HttpUrl
+from pydantic import EmailStr, Field, FilePath, HttpUrl, validator
 
 from api.models import Permissions
 
@@ -70,6 +70,14 @@ class NameIn(Schema):
 class ResetPasswordIn(Schema):
     previous_password: str
     new_password: str
+
+    @validator("new_password")
+    @classmethod
+    def validate_not_equality_of_passwords(cls, field_value, values, field, config):
+        if field_value == values["previous_password"]:
+            raise ValueError("The passwords must be unique")
+
+        return field_value
 
 
 class PasswordUpdatedAtOut(Schema):

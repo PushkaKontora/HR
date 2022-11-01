@@ -42,12 +42,16 @@ def success() -> dict:
     return message("Success")
 
 
-def unauthorized_error() -> dict:
+def unauthorized() -> dict:
     return message("Unauthorized")
 
 
-def not_found_error(resource: str = None) -> dict:
-    return message("Not found" + f" {resource}" if resource else "")
+def forbidden(msg: str = "Forbidden") -> dict:
+    return message(msg)
+
+
+def not_found(resource: str = None) -> dict:
+    return message("Not found" + (f" {resource}" if resource else ""))
 
 
 def message(msg: str) -> dict:

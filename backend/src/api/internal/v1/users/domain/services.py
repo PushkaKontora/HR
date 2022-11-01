@@ -1,31 +1,44 @@
 from abc import ABC, abstractmethod
 from datetime import timedelta
+from re import match
 from typing import Optional
 
+from bcrypt import checkpw
 from django.conf import settings
 from django.db.transaction import atomic
-from django.forms import model_to_dict
 from django.utils.timezone import now
 from jwt import PyJWTError, decode, encode
+from ninja import UploadedFile
 from pydantic import ValidationError
 
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
     AuthenticationOut,
+    EmailIn,
+    NameIn,
     PasswordOut,
+    PasswordUpdatedAtOut,
     Payload,
+    PhotoOut,
     RegistrationIn,
+    ResetPasswordIn,
     Tokens,
     TokenType,
     UserDepartmentOut,
     UserOut,
     UserResumeOut,
 )
+from api.internal.v1.users.domain.utils import hash_password
 from api.internal.v1.users.presentation.handlers import (
     IAuthenticationService,
+    IChangingEmailService,
+    IDeletingUserService,
+    IGettingUserService,
     IJWTService,
+    IPhotoService,
     IRegistrationService,
-    IUserService,
+    IRenamingUserService,
+    IResettingPasswordService,
 )
 from api.models import IssuedToken, Password, User
 
@@ -51,6 +64,10 @@ class IUserRepository(ABC):
     def try_get_user_by_id(self, user_id: int) -> Optional[User]:
         pass
 
+    @abstractmethod
+    def get_for_update(self, user_id: int) -> User:
+        pass
+
 
 class IPasswordRepository(ABC):
     @abstractmethod
@@ -72,6 +89,12 @@ class IIssuedTokenRepository(ABC):
         pass
 
 
+class IDepartmentRepository(ABC):
+    @abstractmethod
+    def is_leader(self, user_id: int) -> bool:
+        pass
+
+
 class RegistrationService(IRegistrationService):
     def __init__(self, user_repo: IUserRepository, password_repo: IPasswordRepository):
         self.password_repo = password_repo
@@ -84,7 +107,7 @@ class RegistrationService(IRegistrationService):
     def register(self, body: RegistrationIn) -> None:
         user = self.user_repo.create(body.email, body.surname, body.name, body.patronymic)
 
-        self.password_repo.create(user.id, body.password)
+        self.password_repo.create(user.id, hash_password(body.password))
 
 
 class AuthenticationService(IAuthenticationService):
@@ -149,7 +172,7 @@ class JWTService(IJWTService):
         return encode(payload.dict(), settings.SECRET_KEY, algorithm=self.ALGORITHMS[0])
 
 
-class UserService(IUserService):
+class GettingUserService(IGettingUserService):
     def __init__(self, user_repo: IUserRepository):
         self.user_repo = user_repo
 
@@ -171,3 +194,98 @@ class UserService(IUserService):
             department=UserDepartmentOut.from_orm(user.department) if hasattr(user, "department") else None,
             password=PasswordOut.from_orm(user.password),
         )
+
+
+class ResettingPasswordService(IResettingPasswordService):
+    def authorize_only_self(self, user: User, user_id: int) -> bool:
+        return user.id == user_id
+
+    def match_password(self, user: User, body: ResetPasswordIn) -> bool:
+        return checkpw(body.previous_password.encode(), user.password.value.encode())
+
+    def reset(self, user: User, body: ResetPasswordIn) -> PasswordUpdatedAtOut:
+        password = user.password
+        password.value = hash_password(body.new_password)
+        password.save(update_fields=["value", "updated_at"])
+
+        return PasswordUpdatedAtOut(updated_at=password.updated_at)
+
+
+class DeletingUserService(IDeletingUserService):
+    def __init__(self, user_repo: IUserRepository, department_repo: IDepartmentRepository):
+        self.user_repo = user_repo
+        self.department_repo = department_repo
+
+    def authorize(self, auth_user: User, user_id: int) -> bool:
+        return auth_user.id == user_id
+
+    def is_user_leader_of_department(self, user_id: int) -> bool:
+        return self.department_repo.is_leader(user_id)
+
+    @atomic
+    def delete(self, user_id: int) -> None:
+        user = self.user_repo.get_for_update(user_id)
+
+        user.delete()
+
+
+class RenamingUserService(IRenamingUserService):
+    def __init__(self, user_repo: IUserRepository):
+        self.user_repo = user_repo
+
+    def authorize(self, auth_user: User, user_id: int) -> bool:
+        return auth_user.id == user_id
+
+    @atomic
+    def rename(self, user_id: int, body: NameIn) -> None:
+        user = self.user_repo.get_for_update(user_id)
+
+        user.surname = body.surname
+        user.name = body.name
+        user.patronymic = body.patronymic
+        user.save(update_fields=["surname", "name", "patronymic"])
+
+
+class ChangingEmailService(IChangingEmailService):
+    def __init__(self, user_repo: IUserRepository):
+        self.user_repo = user_repo
+
+    def authorize(self, auth_user: User, user_id: int) -> bool:
+        return auth_user.id == user_id
+
+    def is_email_already_registered(self, body: EmailIn) -> bool:
+        return self.user_repo.exists_email(body.email)
+
+    @atomic
+    def change_email(self, user_id: int, body: EmailIn) -> None:
+        user = self.user_repo.get_for_update(user_id)
+
+        user.email = body.email
+        user.save(update_fields=["email"])
+
+
+class PhotoService(IPhotoService):
+    PHOTO_MIME_TYPES = ("image/png", "image/jpeg")
+
+    def __init__(self, user_repo: IUserRepository):
+        self.user_repo = user_repo
+
+    def authorize(self, auth_user: User, user_id: int) -> bool:
+        return auth_user.id == user_id
+
+    def upload(self, user_id: int, photo: UploadedFile) -> PhotoOut:
+        user = self.user_repo.try_get_user_by_id(user_id)
+
+        user.photo = UploadedFile(photo, f"{user.id}{photo.name}")
+        user.save(update_fields=["photo"])
+
+        return PhotoOut(photo=user.photo.url)
+
+    def delete(self, user_id: int) -> None:
+        user = self.user_repo.try_get_user_by_id(user_id)
+
+        user.photo = None
+        user.save(update_fields=["photo"])
+
+    def is_image(self, photo: UploadedFile) -> bool:
+        return photo.content_type in self.PHOTO_MIME_TYPES

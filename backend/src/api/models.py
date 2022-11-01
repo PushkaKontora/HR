@@ -20,7 +20,7 @@ class User(models.Model):
     surname = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
     patronymic = models.CharField(max_length=128)
-    photo = models.FileField(upload_to="photos/%Y/%m/%d/", null=True)
+    photo = models.ImageField(upload_to="photos/%Y/%m/%d/", null=True)
     favorite_vacancies = models.ManyToManyField("Vacancy", through="FavoriteVacancy")
     favorite_resumes = models.ManyToManyField("Resume", through="FavoriteResume")
 
@@ -69,7 +69,7 @@ class Competency(models.Model):
 class Department(models.Model):
     leader = models.OneToOneField("User", on_delete=models.PROTECT, related_name="department")
     name = models.CharField(max_length=256)
-    description = models.TextField()
+    description = models.TextField(null=True)
 
     class Meta:
         db_table = "departments"
@@ -78,7 +78,7 @@ class Department(models.Model):
 class Vacancy(models.Model):
     department = models.ForeignKey("Department", on_delete=models.CASCADE, related_name="vacancies")
     name = models.CharField(max_length=256)
-    description = models.TextField()
+    description = models.TextField(null=True)
     expected_experience = models.CharField(max_length=32, choices=Experiences.choices, null=True)
     salary_from = models.PositiveIntegerField(null=True)
     salary_to = models.PositiveIntegerField(null=True)

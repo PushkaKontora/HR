@@ -3,7 +3,7 @@ from django.test import Client
 from ninja.responses import Response
 
 from api.models import Department, Resume, User
-from tests.v1.integrations.conftest import datetime_to_string, get, not_found_error
+from tests.v1.integrations.conftest import datetime_to_string, get, not_found
 from tests.v1.integrations.users.conftest import USER
 
 
@@ -66,4 +66,4 @@ def test_get_one__unknown_user_id(client: Client, user: User) -> None:
     response = get_one(client, 0)
 
     assert response.status_code == 404
-    assert response.json() == not_found_error()
+    assert response.json() == not_found()
