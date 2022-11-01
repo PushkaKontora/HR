@@ -41,10 +41,11 @@ class ResumeOut(Schema):
 
 
 class ResumeFormIn(Schema):
+    user_id: int
     desired_job: str
-    desired_salary: Optional[int] = Field(gte=0)
-    experience: Optional[Experiences]
-    competencies: Optional[List[str]]
+    desired_salary: Optional[int] = Field(None, gte=0)
+    experience: Optional[Experiences] = None
+    competencies: Optional[List[str]] = None
 
 
 class ResumesWishlistFilters(Schema):

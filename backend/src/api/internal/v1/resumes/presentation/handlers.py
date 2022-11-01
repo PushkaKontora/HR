@@ -1,9 +1,11 @@
+from abc import ABC, abstractmethod
 from typing import Iterable
 
 from django.http import HttpRequest
 from ninja import Body, File, Form, Path, Query, UploadedFile
 from ninja.pagination import LimitOffsetPagination, paginate
 
+from api.internal.v1.exceptions import ForbiddenError
 from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.resumes.domain.entities import (
     PublishingOut,
@@ -13,7 +15,27 @@ from api.internal.v1.resumes.domain.entities import (
     ResumesWishlistFilters,
     ResumesWishlistIn,
 )
+from api.internal.v1.resumes.presentation.exceptions import AttachedDocumentIsNotPDFError, ResumeIsCreatedByUserError
 from api.internal.v1.resumes.presentation.routers import IResumeHandlers, IResumesHandlers, IResumesWishlistHandlers
+from api.models import User
+
+
+class ICreatingResumeService(ABC):
+    @abstractmethod
+    def is_pdf(self, document: UploadedFile) -> bool:
+        pass
+
+    @abstractmethod
+    def authorize(self, auth_user: User, extra: ResumeFormIn) -> bool:
+        pass
+
+    @abstractmethod
+    def is_resume_created_by_user(self, extra: ResumeFormIn) -> bool:
+        pass
+
+    @abstractmethod
+    def create(self, extra: ResumeFormIn, document: UploadedFile) -> None:
+        pass
 
 
 class ResumesHandlers(IResumesHandlers):
@@ -23,13 +45,27 @@ class ResumesHandlers(IResumesHandlers):
 
 
 class ResumeHandlers(IResumeHandlers):
+    def __init__(self, creating_resume_service: ICreatingResumeService):
+        self.creating_resume_service = creating_resume_service
+
     def get_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> ResumeOut:
         raise NotImplementedError()
 
     def create_resume(
         self, request: HttpRequest, extra: ResumeFormIn = Form(...), document: UploadedFile = File(...)
     ) -> SuccessResponse:
-        raise NotImplementedError()
+        if not self.creating_resume_service.is_pdf(document):
+            raise AttachedDocumentIsNotPDFError()
+
+        if not self.creating_resume_service.authorize(request.user, extra):
+            raise ForbiddenError()
+
+        if self.creating_resume_service.is_resume_created_by_user(extra):
+            raise ResumeIsCreatedByUserError()
+
+        self.creating_resume_service.create(extra, document)
+
+        return SuccessResponse()
 
     def update_resume(
         self,
