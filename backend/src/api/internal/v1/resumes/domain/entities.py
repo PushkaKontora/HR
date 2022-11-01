@@ -32,11 +32,10 @@ class OwnerOut(Schema):
 class ResumeOut(Schema):
     owner: OwnerOut
     desired_job: str
-    desired_salary: int
-    experience: Experiences
+    desired_salary: Optional[int]
+    experience: Optional[Experiences]
     document: HttpUrl
-    published: bool
-    published_at: datetime
+    published_at: Optional[datetime]
     competencies: List[str]
 
 

@@ -103,11 +103,11 @@ class ResumeRouter(Router):
         super(ResumeRouter, self).__init__(tags=[RESUMES_TAG])
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
+            auth=[auth],
             view_func=resume_handlers.get_resume,
-            response={200: ResumeOut, 404: ErrorResponse},
+            response={200: ResumeOut, 403: MessageResponse, 404: MessageResponse},
         )
 
         self.add_api_operation(

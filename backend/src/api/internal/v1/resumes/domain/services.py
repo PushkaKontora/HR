@@ -6,9 +6,13 @@ from django.db.transaction import atomic
 from django.utils.timezone import now
 from ninja import UploadedFile
 
-from api.internal.v1.resumes.domain.entities import PublishingOut, ResumeFormIn
-from api.internal.v1.resumes.presentation.handlers import ICreatingResumeService, IPublishingResumeService
-from api.models import Experiences, Resume, User
+from api.internal.v1.resumes.domain.entities import OwnerOut, PublishingOut, ResumeFormIn, ResumeOut
+from api.internal.v1.resumes.presentation.handlers import (
+    ICreatingResumeService,
+    IGettingResumeService,
+    IPublishingResumeService,
+)
+from api.models import Experiences, Permissions, Resume, User
 
 
 class IResumeRepository(ABC):
@@ -29,6 +33,10 @@ class IResumeRepository(ABC):
 
     @abstractmethod
     def get_one_with_only_published_at(self, resume_id: int) -> Resume:
+        pass
+
+    @abstractmethod
+    def get_one_with_user_by_id(self, resume_id: int) -> Resume:
         pass
 
 
@@ -98,3 +106,33 @@ class PublishingResumeService(IPublishingResumeService):
 
         resume.published_at = None
         resume.save(update_fields=["published_at"])
+
+
+class GettingResumeService(IGettingResumeService):
+    def __init__(self, resume_repo: IResumeRepository):
+        self.resume_repo = resume_repo
+
+    def authorize(self, auth_user: User, resume_id: int) -> bool:
+        is_employer = auth_user.permission == Permissions.EMPLOYER
+        is_owner = hasattr(auth_user, "resume") and auth_user.resume.id == resume_id
+
+        return is_employer or is_owner
+
+    def get_resume_out(self, resume_id: int) -> ResumeOut:
+        resume = self.resume_repo.get_one_with_user_by_id(resume_id)
+        owner = resume.owner
+
+        return ResumeOut(
+            owner=OwnerOut(
+                surname=owner.surname,
+                name=owner.name,
+                patronymic=owner.patronymic,
+                email=owner.email,
+            ),
+            desired_job=resume.desired_job,
+            desired_salary=resume.desired_salary,
+            experience=resume.experience,
+            document=resume.document.url,
+            published_at=resume.published_at,
+            competencies=list(resume.competencies.values_list("name", flat=True)),
+        )

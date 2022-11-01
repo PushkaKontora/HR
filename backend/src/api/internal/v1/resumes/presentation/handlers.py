@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Iterable
+from typing import Iterable, Optional
 
 from django.http import HttpRequest
 from ninja import Body, File, Form, Path, Query, UploadedFile
 from ninja.pagination import LimitOffsetPagination, paginate
 
-from api.internal.v1.exceptions import ForbiddenError
+from api.internal.v1.exceptions import ForbiddenError, NotFoundError
 from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.resumes.domain.entities import (
     PublishingOut,
@@ -52,6 +52,16 @@ class IPublishingResumeService(ABC):
         pass
 
 
+class IGettingResumeService(ABC):
+    @abstractmethod
+    def authorize(self, auth_user: User, resume_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def get_resume_out(self, resume_id: int) -> ResumeOut:
+        pass
+
+
 class ResumesHandlers(IResumesHandlers):
     @paginate(LimitOffsetPagination)
     def get_resumes(self, request: HttpRequest, filters: ResumesFilters = Query(...)) -> Iterable[ResumeOut]:
@@ -60,13 +70,20 @@ class ResumesHandlers(IResumesHandlers):
 
 class ResumeHandlers(IResumeHandlers):
     def __init__(
-        self, creating_resume_service: ICreatingResumeService, publishing_resume_service: IPublishingResumeService
+        self,
+        creating_resume_service: ICreatingResumeService,
+        publishing_resume_service: IPublishingResumeService,
+        getting_resume_service: IGettingResumeService,
     ):
+        self.getting_resume_service = getting_resume_service
         self.publishing_resume_service = publishing_resume_service
         self.creating_resume_service = creating_resume_service
 
     def get_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> ResumeOut:
-        raise NotImplementedError()
+        if not self.getting_resume_service.authorize(request.user, resume_id):
+            raise ForbiddenError()
+
+        return self.getting_resume_service.get_resume_out(resume_id)
 
     def create_resume(
         self, request: HttpRequest, extra: ResumeFormIn = Form(...), document: UploadedFile = File(...)

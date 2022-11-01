@@ -34,6 +34,9 @@ class ResumeRepository(IResumeRepository):
     def get_one_with_only_published_at(self, resume_id: int) -> Resume:
         return Resume.objects.only("published_at").get(id=resume_id)
 
+    def get_one_with_user_by_id(self, resume_id: int) -> Resume:
+        return Resume.objects.select_related("owner").get(id=resume_id)
+
 
 class CompetencyRepository(ICompetencyRepository):
     def get_existed_competencies_by_names(self, competencies: Set[str]) -> QuerySet[str]:
