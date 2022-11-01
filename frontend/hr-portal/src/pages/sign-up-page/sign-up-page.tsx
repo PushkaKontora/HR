@@ -3,7 +3,7 @@ import {BackgroundImage, ParentForBackgroundImage} from '../../components/styled
 import {Title} from '../../components/styled/forms/title';
 import {BlueLink} from '../../components/styled/links/blue';
 import {LargeRegular} from '../../components/styled/fonts/large';
-import {NoAuthRoutes, Root} from '../../const/app-routes';
+import {NoAuthRoutes} from '../../const/app-routes';
 
 function SignUpPage() {
   return (
@@ -16,7 +16,7 @@ function SignUpPage() {
 
       <LargeRegular>
         <p>
-          Уже есть аккаунт? <BlueLink to={Root + NoAuthRoutes.Login}>Войти</BlueLink>
+          Уже есть аккаунт? <BlueLink to={NoAuthRoutes.Login}>Войти</BlueLink>
         </p>
       </LargeRegular>
     </div>

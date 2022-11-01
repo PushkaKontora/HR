@@ -3,7 +3,7 @@ import likeIcon from '../../assets/img/header/likes.svg';
 import personalIcon from '../../assets/img/header/personal.svg';
 import exitIcon from '../../assets/img/header/button-exit.svg';
 import {useAppSelector} from '../../app/hooks';
-import {User} from '../../types/user';
+import {UserStatus} from '../../types/user-status';
 import {Fragment} from 'react';
 
 function Header() {
@@ -15,7 +15,7 @@ function Header() {
         <div className="logo-header-wrapper"><img src={logoHeader} alt="logo"/></div>
         <div className="header-nav">
           <div className="header-navItem">Вакансии</div>
-          {statusUser !== User.user ? (
+          {statusUser !== UserStatus.user ? (
             <Fragment>
               <div className="header-navItem">Резюме</div>
               <div className="header-navItem">Мои вакансии</div>

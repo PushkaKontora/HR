@@ -1,12 +1,10 @@
-const Root = '/';
-
 enum NoAuthRoutes {
-  Login = 'login',
-  SignUp = 'signup'
+  Login = '/login',
+  SignUp = '/signup'
 }
 
 enum AuthRoutes {
-
+  Logout = '/logout'
 }
 
-export {Root, NoAuthRoutes, AuthRoutes};
+export {NoAuthRoutes, AuthRoutes};

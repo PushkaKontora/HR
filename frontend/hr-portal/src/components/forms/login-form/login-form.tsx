@@ -5,6 +5,11 @@ import FormInput from '../form-input/form-input';
 import {InputData} from '../types/form-input-props';
 import {FormSubmit} from '../../styled/forms/form-submit';
 import {EmailRegex} from '../../../const/email-regex';
+import {LargeRegular} from '../../styled/fonts/large';
+import {useAppDispatch, useAppSelector} from '../../../app/hooks';
+import {login} from '../../../service/async-actions';
+import {UserStatus} from '../../../types/user-status';
+import {Navigate} from 'react-router-dom';
 
 type LoginFormData = {
   email: string
@@ -20,11 +25,9 @@ function LoginForm() {
     mode: 'onChange'
   });
 
-  // useState будет переписан на Redux
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+  const loading = useAppSelector((state) => state.general.loading);
+  const userStatus = useAppSelector((state) => state.general.statusUser);
+  const dispatch = useAppDispatch();
 
   const inputs: InputData[] = [
     {
@@ -50,16 +53,21 @@ function LoginForm() {
   ];
 
   const onSubmit = (data: LoginFormData) => {
-    setFormData({...data});
+    dispatch(login(data));
+    console.log('Login submitted, awaiting...');
   };
 
+  if (userStatus !== UserStatus.noAuth) {
+    return <Navigate to={'/'}/>;
+  }
+
   return (
-    <form action={'#'} onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       {inputs.map((item, idx) => (
         <FormInput key={idx} {...item} errors={errors} register={register}/>
       ))}
 
-      <FormSubmit type='submit' value='Далее'/>
+      <FormSubmit type='submit' value='Далее' disabled={loading}/>
     </form>
   );
 }

@@ -4,6 +4,9 @@ import Logo from '../../headers/logo/logo';
 import styled from 'styled-components';
 import Footer from '../../footer/footer';
 import {CONTENT_WIDTH} from '../../../const/styled/style-const';
+import {useSelector} from 'react-redux';
+import {useAppSelector} from '../../../app/hooks';
+import {UserStatus} from '../../../types/user-status';
 
 const Main = styled.main`
   min-width: ${CONTENT_WIDTH};
@@ -25,7 +28,8 @@ const Page = styled.div`
 
 function DefaultLayout() {
   const headerHeight = '120px';
-  const showFooter = false;
+  const status = useAppSelector((state) => state.general.statusUser);
+  const showFooter = status !== UserStatus.noAuth;
 
   return (
     <Page>

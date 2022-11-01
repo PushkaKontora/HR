@@ -3,7 +3,7 @@ import {Title} from '../../components/styled/forms/title';
 import {BackgroundImage, ParentForBackgroundImage} from '../../components/styled/forms/background-image';
 import {LargeRegular} from '../../components/styled/fonts/large';
 import {BlueLink} from '../../components/styled/links/blue';
-import {Root, NoAuthRoutes} from '../../const/app-routes';
+import {NoAuthRoutes} from '../../const/app-routes';
 
 function LoginPage() {
   return (
@@ -17,7 +17,7 @@ function LoginPage() {
       <LargeRegular>
         <BlueLink to={''}>Забыли пароль?</BlueLink>
         <p style={{marginTop: '16px'}}>
-          Нет аккаунта? <BlueLink to={Root + NoAuthRoutes.SignUp}>Зарегистрироваться сейчас.</BlueLink>
+          Нет аккаунта? <BlueLink to={NoAuthRoutes.SignUp}>Зарегистрироваться сейчас.</BlueLink>
         </p>
       </LargeRegular>
     </div>
