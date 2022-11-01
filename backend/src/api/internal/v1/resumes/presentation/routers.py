@@ -107,7 +107,7 @@ class ResumeRouter(Router):
             methods=["GET"],
             auth=[auth],
             view_func=resume_handlers.get_resume,
-            response={200: ResumeOut, 403: MessageResponse, 404: MessageResponse},
+            response={200: ResumeOut, 403: MessageResponse},
         )
 
         self.add_api_operation(
