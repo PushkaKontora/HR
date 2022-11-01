@@ -63,3 +63,5 @@ function CardSorting() {
 }
 
 export default CardSorting;
+
+//todo: сделать закрытие сортировке по клику вне области (stopPropagination)
