@@ -38,6 +38,20 @@ class ICreatingResumeService(ABC):
         pass
 
 
+class IPublishingResumeService(ABC):
+    @abstractmethod
+    def authorize(self, auth_user: User, resume_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def publish(self, resume_id: int) -> PublishingOut:
+        pass
+
+    @abstractmethod
+    def unpublish(self, resume_id: int) -> None:
+        pass
+
+
 class ResumesHandlers(IResumesHandlers):
     @paginate(LimitOffsetPagination)
     def get_resumes(self, request: HttpRequest, filters: ResumesFilters = Query(...)) -> Iterable[ResumeOut]:
@@ -45,7 +59,10 @@ class ResumesHandlers(IResumesHandlers):
 
 
 class ResumeHandlers(IResumeHandlers):
-    def __init__(self, creating_resume_service: ICreatingResumeService):
+    def __init__(
+        self, creating_resume_service: ICreatingResumeService, publishing_resume_service: IPublishingResumeService
+    ):
+        self.publishing_resume_service = publishing_resume_service
         self.creating_resume_service = creating_resume_service
 
     def get_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> ResumeOut:
@@ -77,10 +94,18 @@ class ResumeHandlers(IResumeHandlers):
         raise NotImplementedError()
 
     def publish_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> PublishingOut:
-        raise NotImplementedError()
+        if not self.publishing_resume_service.authorize(request.user, resume_id):
+            raise ForbiddenError()
+
+        return self.publishing_resume_service.publish(resume_id)
 
     def unpublish_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
-        raise NotImplementedError()
+        if not self.publishing_resume_service.authorize(request.user, resume_id):
+            raise ForbiddenError()
+
+        self.publishing_resume_service.unpublish(resume_id)
+
+        return SuccessResponse()
 
 
 class ResumesWishlistHandlers(IResumesWishlistHandlers):

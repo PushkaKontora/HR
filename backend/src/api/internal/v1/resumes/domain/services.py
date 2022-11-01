@@ -3,10 +3,11 @@ from typing import Optional, Set
 
 from django.db.models import QuerySet
 from django.db.transaction import atomic
+from django.utils.timezone import now
 from ninja import UploadedFile
 
-from api.internal.v1.resumes.domain.entities import ResumeFormIn
-from api.internal.v1.resumes.presentation.handlers import ICreatingResumeService
+from api.internal.v1.resumes.domain.entities import PublishingOut, ResumeFormIn
+from api.internal.v1.resumes.presentation.handlers import ICreatingResumeService, IPublishingResumeService
 from api.models import Experiences, Resume, User
 
 
@@ -24,6 +25,10 @@ class IResumeRepository(ABC):
         experience: Optional[Experiences] = None,
         desired_salary: Optional[int] = None,
     ) -> Resume:
+        pass
+
+    @abstractmethod
+    def get_one_with_only_published_at(self, resume_id: int) -> Resume:
         pass
 
 
@@ -70,3 +75,26 @@ class CreatingResumeService(ICreatingResumeService):
         if extra.competencies:
             competencies = set(self.competency_repo.get_existed_competencies_by_names(set(extra.competencies)))
             self.resume_competencies_repo.attach_competencies_to_resume(resume.id, competencies)
+
+
+class PublishingResumeService(IPublishingResumeService):
+    def __init__(self, resume_repo: IResumeRepository):
+        self.resume_repo = resume_repo
+
+    def authorize(self, auth_user: User, resume_id: int) -> bool:
+        return hasattr(auth_user, "resume") and auth_user.resume.id == resume_id
+
+    def publish(self, resume_id: int) -> PublishingOut:
+        resume = self.resume_repo.get_one_with_only_published_at(resume_id)
+
+        if resume.published_at is None:
+            resume.published_at = now()
+            resume.save(update_fields=["published_at"])
+
+        return PublishingOut(published_at=resume.published_at)
+
+    def unpublish(self, resume_id: int) -> None:
+        resume = self.resume_repo.get_one_with_only_published_at(resume_id)
+
+        resume.published_at = None
+        resume.save(update_fields=["published_at"])
