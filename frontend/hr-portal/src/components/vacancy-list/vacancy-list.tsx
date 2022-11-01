@@ -11,7 +11,7 @@ function VacancyList() {
       <div className="vacancyListItem vacancyListItem__list">
         {
           Vacancies.map((vacancy) => {
-            return (<VacancyCard vacancy={vacancy}/>);
+            return (<VacancyCard key={vacancy.id} vacancy={vacancy}/>);
           })
         }
       </div>

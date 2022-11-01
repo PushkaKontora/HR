@@ -1,6 +1,7 @@
 import {ExpectedExperience} from '../const';
 
 export type Vacancy = {
+  'id': number,
   'name': string,
   'description': string,
   'expected_experience': ExpectedExperience,
