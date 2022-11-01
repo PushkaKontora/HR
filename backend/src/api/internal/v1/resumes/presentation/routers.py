@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from ninja import Body, File, Form, Path, Query, Router, UploadedFile
 from ninja.security import HttpBearer
 
-from api.internal.v1.responses import ErrorResponse, SuccessResponse
+from api.internal.v1.responses import ErrorResponse, SuccessResponse, MessageResponse
 from api.internal.v1.resumes.domain.entities import (
     PublishingOut,
     ResumeFormIn,
@@ -87,12 +87,11 @@ class ResumesRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["POST"],
             view_func=resume_handlers.create_resume,
             auth=[auth],
-            response={200: SuccessResponse, 401: ErrorResponse, 422: ErrorResponse},
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: ErrorResponse},
         )
 
         self.add_router("/wishlist", resumes_wishlist_router)
