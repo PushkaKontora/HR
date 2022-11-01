@@ -1,12 +1,18 @@
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 
 from ninja import Schema
-from pydantic import EmailStr, HttpUrl
+from pydantic import EmailStr, Field, FilePath, HttpUrl, validator
 
 from api.models import Permissions
 
 PDF_RE = r"([^\\s]+(\\.(?i)(pdf))$)"
+
+
+class TokenType(str, Enum):
+    ACCESS = "access"
+    REFRESH = "refresh"
 
 
 class RegistrationIn(Schema):
@@ -45,7 +51,7 @@ class UserOut(Schema):
     surname: str
     name: str
     patronymic: str
-    photo: str
+    photo: Optional[str]
     resume: Optional[UserResumeOut]
     department: Optional[UserDepartmentOut]
     password: PasswordOut
@@ -65,10 +71,30 @@ class ResetPasswordIn(Schema):
     previous_password: str
     new_password: str
 
+    @validator("new_password")
+    @classmethod
+    def validate_not_equality_of_passwords(cls, field_value, values, field, config):
+        if field_value == values["previous_password"]:
+            raise ValueError("The passwords must be unique")
 
-class ResetPasswordOut(Schema):
+        return field_value
+
+
+class PasswordUpdatedAtOut(Schema):
     updated_at: datetime
 
 
 class PhotoOut(Schema):
     photo: HttpUrl
+
+
+class Tokens(Schema):
+    access: str
+    refresh: str
+
+
+class Payload(Schema):
+    type: TokenType
+    user_id: int
+    permission: Permissions
+    expires_in: int

@@ -4,8 +4,9 @@ from typing import Iterable, List
 from django.http import HttpRequest
 from ninja import Path, Router
 
-from api.internal.base import NOT_IMPLEMENTED_TAG, ErrorResponse
 from api.internal.v1.departments.domain.entities import DepartmentOut
+from api.internal.v1.responses import ErrorResponse, MessageResponse
+from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 
 DEPARTMENTS_TAG = "departments"
 
@@ -27,7 +28,6 @@ class DepartmentsRouter(Router):
         super(DepartmentsRouter, self).__init__(tags=[DEPARTMENTS_TAG])
 
         self.add_api_operation(
-            tags=[DEPARTMENTS_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
             view_func=departments_handlers.get_departments,
@@ -42,9 +42,8 @@ class DepartmentRouter(Router):
         super(DepartmentRouter, self).__init__(tags=[DEPARTMENTS_TAG])
 
         self.add_api_operation(
-            tags=[DEPARTMENTS_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
             view_func=department_handlers.get_department,
-            response={200: DepartmentOut, 404: ErrorResponse},
+            response={200: DepartmentOut, 404: MessageResponse},
         )

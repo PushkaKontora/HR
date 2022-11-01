@@ -3,9 +3,9 @@ from typing import Iterable, List
 
 from django.http import HttpRequest
 from ninja import Body, File, Form, Path, Query, Router, UploadedFile
+from ninja.security import HttpBearer
 
-from api.internal.authentication import JWTBaseAuthentication
-from api.internal.base import NOT_IMPLEMENTED_TAG, ErrorResponse, SuccessResponse
+from api.internal.v1.responses import ErrorResponse, MessageResponse, SuccessResponse
 from api.internal.v1.resumes.domain.entities import (
     PublishingOut,
     ResumeFormIn,
@@ -14,6 +14,7 @@ from api.internal.v1.resumes.domain.entities import (
     ResumesWishlistFilters,
     ResumesWishlistIn,
 )
+from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 
 RESUMES_TAG = "resumes"
 
@@ -73,7 +74,7 @@ class ResumesRouter(Router):
         resumes_wishlist_router: Router,
         resumes_handlers: IResumesHandlers,
         resume_handlers: IResumeHandlers,
-        any_user: JWTBaseAuthentication,
+        auth: HttpBearer,
     ):
         super(ResumesRouter, self).__init__(tags=[RESUMES_TAG])
 
@@ -86,12 +87,11 @@ class ResumesRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["POST"],
             view_func=resume_handlers.create_resume,
-            auth=[any_user],
-            response={200: SuccessResponse, 401: ErrorResponse, 422: ErrorResponse},
+            auth=[auth],
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: ErrorResponse},
         )
 
         self.add_router("/wishlist", resumes_wishlist_router)
@@ -99,7 +99,7 @@ class ResumesRouter(Router):
 
 
 class ResumeRouter(Router):
-    def __init__(self, resume_handlers: IResumeHandlers, any_user: JWTBaseAuthentication):
+    def __init__(self, resume_handlers: IResumeHandlers, auth: HttpBearer):
         super(ResumeRouter, self).__init__(tags=[RESUMES_TAG])
 
         self.add_api_operation(
@@ -114,7 +114,7 @@ class ResumeRouter(Router):
             tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["PUT"],
-            auth=[any_user],
+            auth=[auth],
             view_func=resume_handlers.update_resume,
             response={
                 200: SuccessResponse,
@@ -125,33 +125,31 @@ class ResumeRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="/publish",
             methods=["PATCH"],
-            auth=[any_user],
+            auth=[auth],
             view_func=resume_handlers.publish_resume,
-            response={200: PublishingOut, 401: ErrorResponse, 404: ErrorResponse},
+            response={200: PublishingOut, 401: MessageResponse, 403: MessageResponse},
         )
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="/unpublish",
             methods=["PATCH"],
-            auth=[any_user],
+            auth=[auth],
             view_func=resume_handlers.unpublish_resume,
-            response={200: SuccessResponse, 401: ErrorResponse, 404: ErrorResponse},
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse},
         )
 
 
 class ResumesWishlistRouter(Router):
-    def __init__(self, wishlist_resumes_handlers: IResumesWishlistHandlers, only_employer: JWTBaseAuthentication):
+    def __init__(self, wishlist_resumes_handlers: IResumesWishlistHandlers, auth: HttpBearer):
         super(ResumesWishlistRouter, self).__init__(tags=[RESUMES_TAG])
 
         self.add_api_operation(
             tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
-            auth=[only_employer],
+            auth=[auth],
             view_func=wishlist_resumes_handlers.get_resumes_wishlist,
             response={200: List[ResumeOut], 401: ErrorResponse, 403: ErrorResponse},
         )
@@ -160,7 +158,7 @@ class ResumesWishlistRouter(Router):
             tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["POST"],
-            auth=[only_employer],
+            auth=[auth],
             view_func=wishlist_resumes_handlers.add_resume_to_wishlist,
             response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 422: ErrorResponse},
         )

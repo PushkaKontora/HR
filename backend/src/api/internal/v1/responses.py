@@ -1,15 +1,17 @@
 from ninja import Schema
 
-NOT_IMPLEMENTED_TAG = "not implemented"
+
+class MessageResponse(Schema):
+    msg: str
 
 
-class SuccessResponse(Schema):
-    pass
+class SuccessResponse(MessageResponse):
+    msg = "Success"
 
 
 class ErrorDetails(Schema):
     code: int
-    message: str
+    msg: str
 
 
 class ErrorResponse(Schema):

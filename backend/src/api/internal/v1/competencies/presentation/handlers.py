@@ -11,4 +11,4 @@ class CompetenciesHandlers(ICompetenciesHandlers):
     def get_competencies(
         self, request: HttpRequest, filters: CompetenciesFilters = Query(...)
     ) -> Iterable[CompetencyOut]:
-        pass
+        raise NotImplementedError()

@@ -9,7 +9,10 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import base64
+import os.path
+from base64 import b64encode
+from datetime import timedelta
 from pathlib import Path
 
 from environ import Env
@@ -49,6 +52,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -109,6 +113,25 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+# Storage
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", str)
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", str)
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", str)
+AWS_S3_ENDPOINT_URL = env("AWS_S3_ENDPOINT_URL", str)
+
+
+# Authentication
+
+SALT = b"$2b$12$" + env("SALT_POSTFIX", str).encode()
+
+REFRESH_TOKEN_COOKIE = "rf_tk"
+
+ACCESS_TOKEN_TTL = timedelta(minutes=30) if not DEBUG else timedelta(days=1)
+REFRESH_TOKEN_TTL = timedelta(days=10)
 
 
 # Internationalization
