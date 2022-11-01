@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from ninja import Body, File, Form, Path, Query, Router, UploadedFile
 from ninja.security import HttpBearer
 
-from api.internal.v1.responses import ErrorResponse, SuccessResponse, MessageResponse
+from api.internal.v1.responses import ErrorResponse, MessageResponse, SuccessResponse
 from api.internal.v1.resumes.domain.entities import (
     PublishingOut,
     ResumeFormIn,
