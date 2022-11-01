@@ -2,7 +2,6 @@
 
 ```
 npm run dev
+node_modules/.bin/eslint src/ --fix
 ```
 
-
-размер контента - 100rem
