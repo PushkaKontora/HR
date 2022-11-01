@@ -55,6 +55,7 @@ class VacancyDepartmentOut(Schema):
 
 
 class VacancyOut(Schema):
+    id: int
     name: str
     description: str
     expected_experience: Experiences
