@@ -107,7 +107,7 @@ class ResumeRouter(Router):
             methods=["GET"],
             auth=[auth],
             view_func=resume_handlers.get_resume,
-            response={200: ResumeOut, 403: MessageResponse},
+            response={200: ResumeOut, 403: MessageResponse, 404: MessageResponse},
         )
 
         self.add_api_operation(
@@ -129,7 +129,7 @@ class ResumeRouter(Router):
             methods=["PATCH"],
             auth=[auth],
             view_func=resume_handlers.publish_resume,
-            response={200: PublishingOut, 401: MessageResponse, 403: MessageResponse},
+            response={200: PublishingOut, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
         )
 
         self.add_api_operation(
@@ -137,7 +137,7 @@ class ResumeRouter(Router):
             methods=["PATCH"],
             auth=[auth],
             view_func=resume_handlers.unpublish_resume,
-            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse},
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
         )
 
 

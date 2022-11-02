@@ -89,6 +89,17 @@ def test_get_resume__authenticated_user_cannot_get_anothers_resume(
     assert response.json() == forbidden()
 
 
+@pytest.mark.integration
+@pytest.mark.django_db
+def test_get_unknown_resume(client: Client, resume: Resume, user_token: str) -> None:
+    assert resume.id != 0
+
+    response = get_one(client, 0, user_token)
+
+    assert response.status_code == 404
+    assert response.json() == not_found()
+
+
 @pytest.fixture(autouse=True)
 def delete_uploaded_files() -> None:
     yield

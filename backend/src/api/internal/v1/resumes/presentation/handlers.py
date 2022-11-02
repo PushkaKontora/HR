@@ -101,6 +101,9 @@ class ResumeHandlers(IResumeHandlers):
         self.creating_resume_service = creating_resume_service
 
     def get_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> ResumeOut:
+        if not self.getting_resume_service.exists_resume_by_id(resume_id):
+            raise NotFoundError()
+
         if not self.getting_resume_service.authorize(request.user, resume_id):
             raise ForbiddenError()
 
@@ -143,12 +146,18 @@ class ResumeHandlers(IResumeHandlers):
         return SuccessResponse()
 
     def publish_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> PublishingOut:
+        if not self.getting_resume_service.exists_resume_by_id(resume_id):
+            raise NotFoundError()
+
         if not self.publishing_resume_service.authorize(request.user, resume_id):
             raise ForbiddenError()
 
         return self.publishing_resume_service.publish(resume_id)
 
     def unpublish_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
+        if not self.getting_resume_service.exists_resume_by_id(resume_id):
+            raise NotFoundError()
+
         if not self.publishing_resume_service.authorize(request.user, resume_id):
             raise ForbiddenError()
 

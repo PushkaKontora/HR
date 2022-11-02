@@ -8,7 +8,7 @@ from django.utils.timezone import now
 from ninja.responses import Response
 
 from api.models import Resume, User
-from tests.v1.integrations.conftest import forbidden, patch, success
+from tests.v1.integrations.conftest import forbidden, not_found, patch, success
 from tests.v1.integrations.resumes.conftest import RESUME
 
 UNPUBLISH = RESUME + "/unpublish"
@@ -76,3 +76,14 @@ def test_unpublish_resume__that_does_not_belong_to_authenticated_user(
 
     resume.refresh_from_db()
     assert resume.published_at is None
+
+
+@pytest.mark.integration
+@pytest.mark.django_db
+def test_publish_unknown_resume(client: Client, resume: Resume, user_token: str) -> None:
+    assert resume.id != 0
+
+    response = unpublish(client, 0, user_token)
+
+    assert response.status_code == 404
+    assert response.json() == not_found()
