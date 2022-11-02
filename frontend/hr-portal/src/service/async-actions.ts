@@ -1,15 +1,13 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-import {indicateStatus, reset, setLoading, setUser} from '../features/general/general-slice';
+import {indicateStatus, reset, setError, setLoading, setUser} from '../features/general/general-slice';
 import {AppDispatch, RootState, store} from '../app/store';
 import {AxiosInstance} from 'axios';
-import {dropToken, saveToken} from './token-manager';
+import {decodeToken, dropToken, getToken, saveToken} from './token-manager';
 import {UsersRoutes} from '../const/api-users-routes';
 import {useSelector} from 'react-redux';
 import {useAppSelector} from '../app/hooks';
-
-type AccessToken = {
-  access_token: string;
-}
+import {User} from '../types/user';
+import {TIMEOUT_SHOW_ERROR} from '../const/errors';
 
 type Generics = {
   dispatch: AppDispatch,
@@ -17,15 +15,17 @@ type Generics = {
   extra: AxiosInstance
 };
 
-export const getUser = createAsyncThunk<void, number, Generics>(
+// get any user action here
+
+export const getAuthUser = createAsyncThunk<void, number, Generics>(
   'users/getUser',
   async (arg, {dispatch, extra: api}) => {
     dispatch(setLoading(true));
-    const user = await api.get(UsersRoutes.byId(arg));
+    const res = await api.get(UsersRoutes.byId(arg));
+    const user: User = res.data;
+
     dispatch(setUser(user));
 
-    const status = useAppSelector((state) => state.general.statusUser);
-    dispatch(indicateStatus(status));
     dispatch(setLoading(false));
   }
 );
@@ -39,6 +39,9 @@ export const login = createAsyncThunk<void, {email: string, password: string}, G
     const res = await api.post(UsersRoutes.auth, arg);
 
     saveToken(res.data.access_token);
+    const userPermission = decodeToken()?.permission;
+    dispatch(indicateStatus(userPermission));
+
     dispatch(setLoading(false));
   });
 
@@ -50,5 +53,15 @@ export const logout = createAsyncThunk<void, undefined, Generics>(
     // drop refresh token from cookie
     dispatch(reset());
     dispatch(setLoading(false));
+  },
+);
+
+export const clearErrorAction = createAsyncThunk(
+  'game/clearError',
+  () => {
+    setTimeout(
+      () => store.dispatch(setError(null)),
+      TIMEOUT_SHOW_ERROR,
+    );
   },
 );
