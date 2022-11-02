@@ -3,7 +3,7 @@ from django.test import Client
 from ninja.responses import Response
 
 from api.models import User
-from tests.v1.integrations.conftest import error_422, forbidden, patch, success
+from tests.v1.integrations.conftest import error_422, forbidden, not_found, patch, success
 from tests.v1.integrations.users.conftest import USER
 
 CHANGE = USER + "/email"
@@ -77,3 +77,14 @@ def test_changing_email__authorized_user_try_it_with_another(
     another_user.refresh_from_db()
     assert user.email == expected_user_email
     assert another_user.email == expected_another_user_email
+
+
+@pytest.mark.integration
+@pytest.mark.django_db
+def test_changing_email_of_unknown_user(client: Client, user: User, user_token: str) -> None:
+    response = change(client, 0, user_token, "123@123.com")
+
+    assert response.status_code == 404
+    assert response.json() == not_found()
+
+    assert User.objects.get(pk=user.pk).email == user.email

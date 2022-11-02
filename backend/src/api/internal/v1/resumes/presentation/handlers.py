@@ -59,7 +59,7 @@ class IGettingResumeService(ABC):
         pass
 
     @abstractmethod
-    def exists_resume_by_id(self, resume_id: int) -> bool:
+    def exists_resume_with_id(self, resume_id: int) -> bool:
         pass
 
 
@@ -101,7 +101,7 @@ class ResumeHandlers(IResumeHandlers):
         self.creating_resume_service = creating_resume_service
 
     def get_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> ResumeOut:
-        if not self.getting_resume_service.exists_resume_by_id(resume_id):
+        if not self.getting_resume_service.exists_resume_with_id(resume_id):
             raise NotFoundError()
 
         if not self.getting_resume_service.authorize(request.user, resume_id):
@@ -132,7 +132,7 @@ class ResumeHandlers(IResumeHandlers):
         extra: ResumeIn = Form(...),
         document: UploadedFile = File(None),
     ) -> SuccessResponse:
-        if not self.getting_resume_service.exists_resume_by_id(resume_id):
+        if not self.getting_resume_service.exists_resume_with_id(resume_id):
             raise NotFoundError()
 
         if document is not None and not self.document_service.is_pdf(document):
@@ -146,7 +146,7 @@ class ResumeHandlers(IResumeHandlers):
         return SuccessResponse()
 
     def publish_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> PublishingOut:
-        if not self.getting_resume_service.exists_resume_by_id(resume_id):
+        if not self.getting_resume_service.exists_resume_with_id(resume_id):
             raise NotFoundError()
 
         if not self.publishing_resume_service.authorize(request.user, resume_id):
@@ -155,7 +155,7 @@ class ResumeHandlers(IResumeHandlers):
         return self.publishing_resume_service.publish(resume_id)
 
     def unpublish_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
-        if not self.getting_resume_service.exists_resume_by_id(resume_id):
+        if not self.getting_resume_service.exists_resume_with_id(resume_id):
             raise NotFoundError()
 
         if not self.publishing_resume_service.authorize(request.user, resume_id):

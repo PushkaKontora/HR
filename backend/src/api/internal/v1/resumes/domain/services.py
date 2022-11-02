@@ -42,7 +42,7 @@ class IResumeRepository(ABC):
         pass
 
     @abstractmethod
-    def exists_resume_by_id(self, resume_id: int) -> bool:
+    def exists_resume_with_id(self, resume_id: int) -> bool:
         pass
 
     @abstractmethod
@@ -151,8 +151,8 @@ class GettingResumeService(IGettingResumeService):
             competencies=list(resume.competencies.values_list("name", flat=True)),
         )
 
-    def exists_resume_by_id(self, resume_id: int) -> bool:
-        return self.resume_repo.exists_resume_by_id(resume_id)
+    def exists_resume_with_id(self, resume_id: int) -> bool:
+        return self.resume_repo.exists_resume_with_id(resume_id)
 
 
 class UpdatingResumeService(IUpdatingResumeService):

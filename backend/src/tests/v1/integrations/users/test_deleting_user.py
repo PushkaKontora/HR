@@ -76,3 +76,14 @@ def test_delete_user__authenticated_user_try_to_delete_another(
     assert response.json() == forbidden()
     assert User.objects.filter(pk=user.pk).exists()
     assert User.objects.filter(pk=another_user.pk).exists()
+
+
+@pytest.mark.integration
+@pytest.mark.django_db
+def test_delete_user_with_unknown_id(client: Client, user: User, user_token: str) -> None:
+    response = delete(client, 0, user_token)
+
+    assert response.status_code == 404
+    assert response.json() == not_found()
+
+    assert User.objects.filter(pk=user.pk).exists()

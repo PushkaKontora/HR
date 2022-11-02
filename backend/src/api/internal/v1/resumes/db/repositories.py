@@ -12,7 +12,7 @@ from api.models import Competency, Experiences, Resume, ResumeCompetency
 
 
 class ResumeRepository(IResumeRepository):
-    def exists_resume_by_id(self, resume_id: int) -> bool:
+    def exists_resume_with_id(self, resume_id: int) -> bool:
         return Resume.objects.filter(id=resume_id).exists()
 
     def get_one_by_id(self, resume_id: int) -> Resume:

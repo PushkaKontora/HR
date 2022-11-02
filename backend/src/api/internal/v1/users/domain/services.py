@@ -45,7 +45,7 @@ from api.models import IssuedToken, Password, User
 
 class IUserRepository(ABC):
     @abstractmethod
-    def exists_email(self, email: str) -> bool:
+    def exists_user_with_email(self, email: str) -> bool:
         pass
 
     @abstractmethod
@@ -65,7 +65,15 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def get_for_update(self, user_id: int) -> User:
+    def get_user_for_update(self, user_id: int) -> User:
+        pass
+
+    @abstractmethod
+    def exists_user_with_id(self, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def get_user_by_id(self, user_id: int) -> User:
         pass
 
 
@@ -101,7 +109,7 @@ class RegistrationService(IRegistrationService):
         self.user_repo = user_repo
 
     def is_email_taken(self, email: str) -> bool:
-        return self.user_repo.exists_email(email)
+        return self.user_repo.exists_user_with_email(email)
 
     @atomic
     def register(self, body: RegistrationIn) -> None:
@@ -195,9 +203,12 @@ class GettingUserService(IGettingUserService):
             password=PasswordOut.from_orm(user.password),
         )
 
+    def exists_user_with_id(self, user_id: int) -> bool:
+        return self.user_repo.exists_user_with_id(user_id)
+
 
 class ResettingPasswordService(IResettingPasswordService):
-    def authorize_only_self(self, user: User, user_id: int) -> bool:
+    def authorize(self, user: User, user_id: int) -> bool:
         return user.id == user_id
 
     def match_password(self, user: User, body: ResetPasswordIn) -> bool:
@@ -224,7 +235,7 @@ class DeletingUserService(IDeletingUserService):
 
     @atomic
     def delete(self, user_id: int) -> None:
-        user = self.user_repo.get_for_update(user_id)
+        user = self.user_repo.get_user_for_update(user_id)
 
         user.delete()
 
@@ -238,7 +249,7 @@ class RenamingUserService(IRenamingUserService):
 
     @atomic
     def rename(self, user_id: int, body: NameIn) -> None:
-        user = self.user_repo.get_for_update(user_id)
+        user = self.user_repo.get_user_for_update(user_id)
 
         user.surname = body.surname
         user.name = body.name
@@ -254,11 +265,11 @@ class ChangingEmailService(IChangingEmailService):
         return auth_user.id == user_id
 
     def is_email_already_registered(self, body: EmailIn) -> bool:
-        return self.user_repo.exists_email(body.email)
+        return self.user_repo.exists_user_with_email(body.email)
 
     @atomic
     def change_email(self, user_id: int, body: EmailIn) -> None:
-        user = self.user_repo.get_for_update(user_id)
+        user = self.user_repo.get_user_for_update(user_id)
 
         user.email = body.email
         user.save(update_fields=["email"])
@@ -274,7 +285,7 @@ class PhotoService(IPhotoService):
         return auth_user.id == user_id
 
     def upload(self, user_id: int, photo: UploadedFile) -> PhotoOut:
-        user = self.user_repo.try_get_user_by_id(user_id)
+        user = self.user_repo.get_user_by_id(user_id)
 
         user.photo = UploadedFile(photo, f"{user.id}{photo.name}")
         user.save(update_fields=["photo"])
@@ -282,7 +293,7 @@ class PhotoService(IPhotoService):
         return PhotoOut(photo=user.photo.url)
 
     def delete(self, user_id: int) -> None:
-        user = self.user_repo.try_get_user_by_id(user_id)
+        user = self.user_repo.get_user_by_id(user_id)
 
         user.photo = None
         user.save(update_fields=["photo"])

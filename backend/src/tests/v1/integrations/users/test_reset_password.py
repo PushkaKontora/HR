@@ -9,13 +9,12 @@ from ninja.responses import Response
 
 from api.models import User
 from tests.v1.conftest import ANOTHER_USER_PASSWORD, USER_PASSWORD
-from tests.v1.integrations.conftest import datetime_to_string, error_422, forbidden, patch
+from tests.v1.integrations.conftest import datetime_to_string, error_422, forbidden, not_found, patch
 from tests.v1.integrations.users.conftest import USER, access_payload, encode_payload
 
 RESET = USER + "/reset-password"
 
 PREVIOUS_PASSWORD_IS_WRONG_RESPONSE = error_422(2, "The previous password does not match with expected")
-ONLY_SELF = "Only self"
 
 
 def reset(client: Client, user_id: int, token: str, prev_password: str, new_password: str) -> Response:
@@ -134,7 +133,7 @@ def test_reset_password__if_jwt_token_does_not_belong_user_with_path_id(
     response = reset(client, another_user_with_password.id, user_token, "a", "b")
 
     assert response.status_code == 403
-    assert response.json() == forbidden(ONLY_SELF)
+    assert response.json() == forbidden()
     assert checkpw(ANOTHER_USER_PASSWORD.encode(), another_user_with_password.password.value.encode())
 
 
@@ -143,5 +142,5 @@ def test_reset_password__if_jwt_token_does_not_belong_user_with_path_id(
 def test_reset_password__if_path_user_id_is_not_existed_in_db(client: Client, user: User, user_token: str) -> None:
     response = reset(client, 0, user_token, "a", "b")
 
-    assert response.status_code == 403
-    assert response.json() == forbidden(ONLY_SELF)
+    assert response.status_code == 404
+    assert response.json() == not_found()

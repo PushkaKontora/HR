@@ -66,6 +66,7 @@ class UsersContainer(containers.DeclarativeContainer):
         auth_service=auth_service,
         jwt_service=jwt_service,
         resetting_password_service=resetting_password_service,
+        getting_user_service=getting_user_service,
     )
     user_handlers = providers.Singleton(
         UserHandlers,

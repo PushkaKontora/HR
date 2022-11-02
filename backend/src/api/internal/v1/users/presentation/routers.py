@@ -112,7 +112,13 @@ class UserRouter(Router):
             methods=["DELETE"],
             view_func=user_handlers.delete_user,
             auth=[auth],
-            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: ErrorResponse},
+            response={
+                200: SuccessResponse,
+                401: MessageResponse,
+                403: MessageResponse,
+                404: MessageResponse,
+                422: ErrorResponse,
+            },
         )
 
         self.add_api_operation(
@@ -120,11 +126,7 @@ class UserRouter(Router):
             methods=["POST"],
             view_func=user_handlers.upload_photo,
             auth=[auth],
-            response={
-                200: PhotoOut,
-                401: MessageResponse,
-                403: MessageResponse,
-            },
+            response={200: PhotoOut, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
         )
 
         self.add_api_operation(
@@ -132,11 +134,7 @@ class UserRouter(Router):
             methods=["DELETE"],
             view_func=user_handlers.delete_photo,
             auth=[auth],
-            response={
-                200: SuccessResponse,
-                401: MessageResponse,
-                403: MessageResponse,
-            },
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
         )
 
         self.add_api_operation(
@@ -148,6 +146,7 @@ class UserRouter(Router):
                 200: SuccessResponse,
                 401: MessageResponse,
                 403: MessageResponse,
+                404: MessageResponse,
                 422: ErrorResponse,
             },
         )
@@ -157,11 +156,7 @@ class UserRouter(Router):
             methods=["PATCH"],
             view_func=user_handlers.rename_user,
             auth=[auth],
-            response={
-                200: SuccessResponse,
-                401: MessageResponse,
-                403: MessageResponse,
-            },
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
         )
 
         self.add_api_operation(
@@ -173,6 +168,7 @@ class UserRouter(Router):
                 200: PasswordUpdatedAtOut,
                 401: MessageResponse,
                 403: MessageResponse,
+                404: MessageResponse,
                 422: ErrorResponse,
             },
         )
