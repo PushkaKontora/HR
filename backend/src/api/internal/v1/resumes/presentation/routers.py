@@ -7,8 +7,8 @@ from ninja.security import HttpBearer
 
 from api.internal.v1.responses import ErrorResponse, MessageResponse, SuccessResponse
 from api.internal.v1.resumes.domain.entities import (
+    NewResumeIn,
     PublishingOut,
-    ResumeFormIn,
     ResumeOut,
     ResumesFilters,
     ResumesWishlistFilters,
@@ -32,7 +32,7 @@ class IResumeHandlers(ABC):
 
     @abstractmethod
     def create_resume(
-        self, request: HttpRequest, extra: ResumeFormIn = Form(...), document: UploadedFile = File(...)
+        self, request: HttpRequest, extra: NewResumeIn = Form(...), document: UploadedFile = File(...)
     ) -> SuccessResponse:
         pass
 
@@ -41,7 +41,7 @@ class IResumeHandlers(ABC):
         self,
         request: HttpRequest,
         resume_id: int = Path(...),
-        extra: ResumeFormIn = Form(...),
+        extra: NewResumeIn = Form(...),
         document: UploadedFile = File(...),
     ) -> SuccessResponse:
         pass
@@ -111,16 +111,16 @@ class ResumeRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
-            methods=["PUT"],
+            methods=["POST"],
             auth=[auth],
             view_func=resume_handlers.update_resume,
             response={
                 200: SuccessResponse,
-                401: ErrorResponse,
-                404: ErrorResponse,
-                422: ErrorResponse,
+                401: MessageResponse,
+                403: MessageResponse,
+                404: MessageResponse,
+                422: MessageResponse,
             },
         )
 

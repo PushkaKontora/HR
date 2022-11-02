@@ -8,8 +8,9 @@ from ninja.pagination import LimitOffsetPagination, paginate
 from api.internal.v1.exceptions import ForbiddenError, NotFoundError
 from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.resumes.domain.entities import (
+    NewResumeIn,
     PublishingOut,
-    ResumeFormIn,
+    ResumeIn,
     ResumeOut,
     ResumesFilters,
     ResumesWishlistFilters,
@@ -22,19 +23,15 @@ from api.models import User
 
 class ICreatingResumeService(ABC):
     @abstractmethod
-    def is_pdf(self, document: UploadedFile) -> bool:
+    def authorize(self, auth_user: User, extra: NewResumeIn) -> bool:
         pass
 
     @abstractmethod
-    def authorize(self, auth_user: User, extra: ResumeFormIn) -> bool:
+    def is_resume_created_by_user(self, extra: NewResumeIn) -> bool:
         pass
 
     @abstractmethod
-    def is_resume_created_by_user(self, extra: ResumeFormIn) -> bool:
-        pass
-
-    @abstractmethod
-    def create(self, extra: ResumeFormIn, document: UploadedFile) -> None:
+    def create(self, extra: NewResumeIn, document: UploadedFile) -> None:
         pass
 
 
@@ -61,6 +58,26 @@ class IGettingResumeService(ABC):
     def get_resume_out(self, resume_id: int) -> ResumeOut:
         pass
 
+    @abstractmethod
+    def exists_resume_by_id(self, resume_id: int) -> bool:
+        pass
+
+
+class IUpdatingResumeService(ABC):
+    @abstractmethod
+    def authorize(self, auth_user: User, resume_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def update(self, resume_id: int, extra: ResumeIn, document: Optional[UploadedFile]) -> None:
+        pass
+
+
+class IDocumentService(ABC):
+    @abstractmethod
+    def is_pdf(self, document: UploadedFile) -> bool:
+        pass
+
 
 class ResumesHandlers(IResumesHandlers):
     @paginate(LimitOffsetPagination)
@@ -74,7 +91,11 @@ class ResumeHandlers(IResumeHandlers):
         creating_resume_service: ICreatingResumeService,
         publishing_resume_service: IPublishingResumeService,
         getting_resume_service: IGettingResumeService,
+        updating_resume_service: IUpdatingResumeService,
+        document_service: IDocumentService,
     ):
+        self.document_service = document_service
+        self.updating_resume_service = updating_resume_service
         self.getting_resume_service = getting_resume_service
         self.publishing_resume_service = publishing_resume_service
         self.creating_resume_service = creating_resume_service
@@ -86,9 +107,9 @@ class ResumeHandlers(IResumeHandlers):
         return self.getting_resume_service.get_resume_out(resume_id)
 
     def create_resume(
-        self, request: HttpRequest, extra: ResumeFormIn = Form(...), document: UploadedFile = File(...)
+        self, request: HttpRequest, extra: NewResumeIn = Form(...), document: UploadedFile = File(...)
     ) -> SuccessResponse:
-        if not self.creating_resume_service.is_pdf(document):
+        if not self.document_service.is_pdf(document):
             raise AttachedDocumentIsNotPDFError()
 
         if not self.creating_resume_service.authorize(request.user, extra):
@@ -105,10 +126,21 @@ class ResumeHandlers(IResumeHandlers):
         self,
         request: HttpRequest,
         resume_id: int = Path(...),
-        extra: ResumeFormIn = Form(...),
-        document: UploadedFile = File(...),
+        extra: ResumeIn = Form(...),
+        document: UploadedFile = File(None),
     ) -> SuccessResponse:
-        raise NotImplementedError()
+        if not self.getting_resume_service.exists_resume_by_id(resume_id):
+            raise NotFoundError()
+
+        if document is not None and not self.document_service.is_pdf(document):
+            raise AttachedDocumentIsNotPDFError()
+
+        if not self.updating_resume_service.authorize(request.user, resume_id):
+            raise ForbiddenError()
+
+        self.updating_resume_service.update(resume_id, extra, document)
+
+        return SuccessResponse()
 
     def publish_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> PublishingOut:
         if not self.publishing_resume_service.authorize(request.user, resume_id):

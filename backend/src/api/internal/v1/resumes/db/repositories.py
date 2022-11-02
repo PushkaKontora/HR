@@ -12,6 +12,12 @@ from api.models import Competency, Experiences, Resume, ResumeCompetency
 
 
 class ResumeRepository(IResumeRepository):
+    def exists_resume_by_id(self, resume_id: int) -> bool:
+        return Resume.objects.filter(id=resume_id).exists()
+
+    def get_one_by_id(self, resume_id: int) -> Resume:
+        return Resume.objects.get(id=resume_id)
+
     def exists_resume_by_owner_id(self, owner_id: int) -> bool:
         return Resume.objects.filter(owner_id=owner_id).exists()
 
@@ -44,6 +50,9 @@ class CompetencyRepository(ICompetencyRepository):
 
 
 class ResumeCompetenciesRepository(IResumeCompetenciesRepository):
+    def delete_all_competencies_from_resume(self, resume_id: int) -> None:
+        ResumeCompetency.objects.filter(resume_id=resume_id).delete()
+
     def attach_competencies_to_resume(self, resume_id: int, competencies: Set[str]) -> None:
         ResumeCompetency.objects.bulk_create(
             ResumeCompetency(resume_id=resume_id, competency_id=competency) for competency in competencies

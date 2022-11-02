@@ -67,6 +67,8 @@ def test_create_resume(
     assert resume.desired_salary == desired_salary
     if expected_competencies:
         assert set(resume.competencies.values_list("name", flat=True)) == set(expected_competencies)
+    else:
+        assert resume.competencies.count() == 0
     assert resume.published_at is None
 
 

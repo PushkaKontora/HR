@@ -6,11 +6,13 @@ from django.db.transaction import atomic
 from django.utils.timezone import now
 from ninja import UploadedFile
 
-from api.internal.v1.resumes.domain.entities import OwnerOut, PublishingOut, ResumeFormIn, ResumeOut
+from api.internal.v1.resumes.domain.entities import NewResumeIn, OwnerOut, PublishingOut, ResumeIn, ResumeOut
 from api.internal.v1.resumes.presentation.handlers import (
     ICreatingResumeService,
+    IDocumentService,
     IGettingResumeService,
     IPublishingResumeService,
+    IUpdatingResumeService,
 )
 from api.models import Experiences, Permissions, Resume, User
 
@@ -39,6 +41,14 @@ class IResumeRepository(ABC):
     def get_one_with_user_by_id(self, resume_id: int) -> Resume:
         pass
 
+    @abstractmethod
+    def exists_resume_by_id(self, resume_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def get_one_by_id(self, resume_id: int) -> Resume:
+        pass
+
 
 class ICompetencyRepository(ABC):
     @abstractmethod
@@ -51,10 +61,17 @@ class IResumeCompetenciesRepository(ABC):
     def attach_competencies_to_resume(self, resume_id: int, competencies: Set[str]) -> None:
         pass
 
+    @abstractmethod
+    def delete_all_competencies_from_resume(self, resume_id: int) -> None:
+        pass
+
+
+class DocumentService(IDocumentService):
+    def is_pdf(self, document: UploadedFile) -> bool:
+        return document.content_type == "application/pdf"
+
 
 class CreatingResumeService(ICreatingResumeService):
-    PDF_MIME_TYPE = "application/pdf"
-
     def __init__(
         self,
         resume_repo: IResumeRepository,
@@ -65,17 +82,14 @@ class CreatingResumeService(ICreatingResumeService):
         self.competency_repo = competency_repo
         self.resume_repo = resume_repo
 
-    def is_pdf(self, document: UploadedFile) -> bool:
-        return document.content_type == self.PDF_MIME_TYPE
-
-    def authorize(self, auth_user: User, extra: ResumeFormIn) -> bool:
+    def authorize(self, auth_user: User, extra: NewResumeIn) -> bool:
         return auth_user.id == extra.user_id
 
-    def is_resume_created_by_user(self, extra: ResumeFormIn) -> bool:
+    def is_resume_created_by_user(self, extra: NewResumeIn) -> bool:
         return self.resume_repo.exists_resume_by_owner_id(extra.user_id)
 
     @atomic
-    def create(self, extra: ResumeFormIn, document: UploadedFile) -> None:
+    def create(self, extra: NewResumeIn, document: UploadedFile) -> None:
         resume = self.resume_repo.create(
             extra.user_id, document, extra.desired_job, extra.experience, extra.desired_salary
         )
@@ -136,3 +150,37 @@ class GettingResumeService(IGettingResumeService):
             published_at=resume.published_at,
             competencies=list(resume.competencies.values_list("name", flat=True)),
         )
+
+    def exists_resume_by_id(self, resume_id: int) -> bool:
+        return self.resume_repo.exists_resume_by_id(resume_id)
+
+
+class UpdatingResumeService(IUpdatingResumeService):
+    def __init__(
+        self,
+        resume_repo: IResumeRepository,
+        competency_repo: ICompetencyRepository,
+        resume_competencies_repo: IResumeCompetenciesRepository,
+    ):
+        self.competency_repo = competency_repo
+        self.resume_competencies_repo = resume_competencies_repo
+        self.resume_repo = resume_repo
+
+    def authorize(self, auth_user: User, resume_id: int) -> bool:
+        return hasattr(auth_user, "resume") and auth_user.resume.id == resume_id
+
+    @atomic
+    def update(self, resume_id: int, extra: ResumeIn, document: Optional[UploadedFile]) -> None:
+        resume = self.resume_repo.get_one_by_id(resume_id)
+
+        resume.desired_job = extra.desired_job
+        resume.desired_salary = extra.desired_salary
+        resume.experience = extra.experience
+        resume.document = document or resume.document
+        resume.save()
+
+        if extra.competencies:
+            self.resume_competencies_repo.delete_all_competencies_from_resume(resume_id)
+
+            competencies = set(self.competency_repo.get_existed_competencies_by_names(set(extra.competencies)))
+            self.resume_competencies_repo.attach_competencies_to_resume(resume_id, competencies)

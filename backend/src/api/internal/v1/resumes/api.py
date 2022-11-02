@@ -6,7 +6,13 @@ from ninja.security import HttpBearer
 
 from api.internal.v1.exceptions import APIBaseError
 from api.internal.v1.resumes.db.repositories import CompetencyRepository, ResumeCompetenciesRepository, ResumeRepository
-from api.internal.v1.resumes.domain.services import CreatingResumeService, GettingResumeService, PublishingResumeService
+from api.internal.v1.resumes.domain.services import (
+    CreatingResumeService,
+    DocumentService,
+    GettingResumeService,
+    PublishingResumeService,
+    UpdatingResumeService,
+)
 from api.internal.v1.resumes.presentation.exceptions import AttachedDocumentIsNotPDFError, ResumeIsCreatedByUserError
 from api.internal.v1.resumes.presentation.handlers import ResumeHandlers, ResumesHandlers, ResumesWishlistHandlers
 from api.internal.v1.resumes.presentation.routers import ResumeRouter, ResumesRouter, ResumesWishlistRouter
@@ -30,12 +36,21 @@ class ResumesContainer(containers.DeclarativeContainer):
     )
     publishing_resume_service = providers.Singleton(PublishingResumeService, resume_repo=resume_repo)
     getting_resume_service = providers.Singleton(GettingResumeService, resume_repo=resume_repo)
+    document_service = providers.Singleton(DocumentService)
+    updating_resume_service = providers.Singleton(
+        UpdatingResumeService,
+        resume_repo=resume_repo,
+        competency_repo=competency_repo,
+        resume_competencies_repo=resume_competencies_repo,
+    )
 
     resume_handlers = providers.Singleton(
         ResumeHandlers,
         creating_resume_service=creating_resume_service,
         publishing_resume_service=publishing_resume_service,
         getting_resume_service=getting_resume_service,
+        document_service=document_service,
+        updating_resume_service=updating_resume_service,
     )
     resumes_handlers = providers.Singleton(ResumesHandlers)
     wishlist_resumes_handlers = providers.Singleton(ResumesWishlistHandlers)
