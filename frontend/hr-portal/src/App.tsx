@@ -10,14 +10,30 @@ import LoginPage from './pages/login-page/login-page';
 import SignUpPage from './pages/sign-up-page/sign-up-page';
 import PrivateRoute from './components/private-route/private-route';
 import {UserStatus} from './types/user-status';
+import {useEffect} from 'react';
+import {checkToken, getToken} from './service/token-manager';
 
 function App() {
   const count = useAppSelector((state) => state.example.valueCount);
+  const status = useAppSelector((state) => state.general.statusUser);
   const dispatch = useAppDispatch();
 
   const handlerClick = () => {
     dispatch(incremented());
   };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (isMounted) {
+      checkToken(dispatch);
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [status]);
+
   return (
     <div className="App">
       <Routes>

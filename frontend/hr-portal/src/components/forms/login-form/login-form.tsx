@@ -7,9 +7,10 @@ import {FormSubmit} from '../../styled/forms/form-submit';
 import {EmailRegex} from '../../../const/email-regex';
 import {LargeRegular} from '../../styled/fonts/large';
 import {useAppDispatch, useAppSelector} from '../../../app/hooks';
-import {login} from '../../../service/async-actions';
+import {getAuthUser, login} from '../../../service/async-actions';
 import {UserStatus} from '../../../types/user-status';
 import {Navigate} from 'react-router-dom';
+import {decodeToken} from '../../../service/token-manager';
 
 type LoginFormData = {
   email: string
