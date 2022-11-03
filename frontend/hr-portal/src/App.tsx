@@ -46,6 +46,7 @@ function App() {
           }/>
           <Route path={NoAuthRoutes.Login} element={<LoginPage/>}/>
           <Route path={NoAuthRoutes.SignUp} element={<SignUpPage/>}/>
+          <Route path={NoAuthRoutes.Vacancy} element={<JobSearchScreen/>}/>
         </Route>
       </Routes>
     </div>

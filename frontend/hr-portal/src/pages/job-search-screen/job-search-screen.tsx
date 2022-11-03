@@ -4,16 +4,62 @@ import deleteIcon from '../../assets/img/job-seach/delete-icon.svg';
 import './job-search-screen.scss';
 import VacancyList from '../../components/vacancy-list/vacancy-list';
 import CardSorting from '../../components/card-sorting/card-sorting';
-import Select from 'react-select/base';
+import Select from 'react-select';
 
 const radioInput = ['Любой', 'Более года', 'Более 3 лет', 'Более 6 лет', 'Без опыта'];
-const departments = ['SEO', 'frontend', 'backend', 'аналитика'];
+const departments = [
+  {
+    'value': 1,
+    'label': 'SEO'
+  }, {
+    'value': 11,
+    'label': 'frontend'
+  }, {
+    'value': 5,
+    'label': 'backend'
+  }, {
+    'value': 3,
+    'label': 'аналитика'
+  },
+  {
+    'value': 111,
+    'label': 'frontend'
+  }, {
+    'value': 455,
+    'label': 'backend'
+  }, {
+    'value': 543,
+    'label': 'аналитика'
+  },{
+    'value': 661,
+    'label': 'SEO'
+  }, {
+    'value': 1661,
+    'label': 'frontend'
+  }, {
+    'value': 6665,
+    'label': 'backend'
+  }, {
+    'value': 3646,
+    'label': 'аналитика'
+  },
+  {
+    'value': 11661,
+    'label': 'frontend'
+  }, {
+    'value': 45455,
+    'label': 'backend'
+  }, {
+    'value': 54453,
+    'label': 'аналитика'
+  },
+];
 
 
 function JobSearchScreen() {
   const [pageSearch, setPageSearch] = useState('');
   const [radioChecked, setRadioChecked] = useState(radioInput[0]);
-  const [selectDepartment, setSelectDepartment] = useState('');
+  const [selectDepartment, setSelectDepartment] = useState<null | string | undefined>(null);
   const [salaryMin, setSalaryMin] = useState('');
   const [salaryMax, setSalaryMax] = useState('');
 
@@ -66,19 +112,14 @@ function JobSearchScreen() {
       </div>
       <div className="jobSearchScreen-item jobSearchScreen-item__content">
         <div className="contentItem contentItem__filters">
-          <div className="filterItem">
+          <div className="filterItem filterItem__departments">
             <div className="filterItem-title">Департамент</div>
             <Select
               className="basic-single"
               classNamePrefix="select"
               name=""
               options={departments}
-              onChange={(e) => onHandleFilterDepartment(e)}
-              onInputChange={() => undefined}
-              onMenuClose={() => undefined}
-              onMenuOpen={() => undefined}
-              value={selectDepartment}
-              inputValue="dff"
+              onChange={(e) => setSelectDepartment(e?.label)}
               placeholder="Выбрать департамент"
             />
           </div>
