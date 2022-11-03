@@ -74,8 +74,11 @@ class FavouriteResumeRepository(IFavouriteResumeRepository):
 
         return sorter.execute(queryset)
 
-    def add_resume_to_user_wishlist(self, user_id: int, resume_id: int) -> None:
+    def add_resume_to_wishlist(self, user_id: int, resume_id: int) -> None:
         FavouriteResume.objects.create(user_id=user_id, resume_id=resume_id)
 
     def exists_resume_in_user_wishlist(self, user_id: int, resume_id: int) -> bool:
         return FavouriteResume.objects.filter(user_id=user_id, resume_id=resume_id).exists()
+
+    def delete_resume_from_wishlist(self, user_id: int, resume_id: int) -> None:
+        FavouriteResume.objects.filter(user_id=user_id, resume_id=resume_id).delete()

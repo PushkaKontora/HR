@@ -4,11 +4,11 @@ from ninja.responses import Response
 
 from api.models import FavouriteResume, Resume, User
 from tests.v1.integrations.conftest import error_422, forbidden, not_found, post, success
-from tests.v1.integrations.resumes.wishlist.conftest import RESUME_IN_WISHLIST
+from tests.v1.integrations.resumes.wishlist.conftest import WISHLIST_RESUME
 
 
 def add_resume_to_wishlist(client: Client, resume_id: int, token: str) -> Response:
-    return post(client, RESUME_IN_WISHLIST.format(resume_id=resume_id), token)
+    return post(client, WISHLIST_RESUME.format(resume_id=resume_id), token)
 
 
 @pytest.mark.integration

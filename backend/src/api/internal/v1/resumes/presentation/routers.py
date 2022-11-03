@@ -66,6 +66,10 @@ class IResumesWishlistHandlers(ABC):
     def add_resume_to_wishlist(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
         pass
 
+    @abstractmethod
+    def delete_resume_from_wishlist(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
+        pass
+
 
 class ResumesRouter(Router):
     def __init__(
@@ -142,19 +146,26 @@ class ResumeRouter(Router):
 
 
 class ResumesWishlistRouter(Router):
-    def __init__(self, wishlist_resumes_handlers: IResumesWishlistHandlers, auth: HttpBearer):
+    def __init__(self, resumes_wishlist_handlers: IResumesWishlistHandlers, auth: HttpBearer):
         super(ResumesWishlistRouter, self).__init__(tags=[RESUMES_TAG], auth=[auth])
 
         self.add_api_operation(
             path="",
             methods=["GET"],
-            view_func=wishlist_resumes_handlers.get_resumes_wishlist,
+            view_func=resumes_wishlist_handlers.get_resumes_wishlist,
             response={200: List[ResumeOut], 401: MessageResponse, 403: MessageResponse},
         )
 
         self.add_api_operation(
             path="/{int:resume_id}",
             methods=["POST"],
-            view_func=wishlist_resumes_handlers.add_resume_to_wishlist,
+            view_func=resumes_wishlist_handlers.add_resume_to_wishlist,
             response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: MessageResponse},
+        )
+
+        self.add_api_operation(
+            path="/{int:resume_id}",
+            methods=["DELETE"],
+            view_func=resumes_wishlist_handlers.delete_resume_from_wishlist,
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
         )

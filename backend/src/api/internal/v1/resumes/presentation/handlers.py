@@ -100,6 +100,10 @@ class IResumesWishlistService(ABC):
     def add_resume_to_wishlist(self, auth_user: User, resume_id: int) -> None:
         pass
 
+    @abstractmethod
+    def delete_resume_from_wishlist(self, auth_user: User, resume_id: int) -> None:
+        pass
+
 
 class ResumesHandlers(IResumesHandlers):
     @paginate(LimitOffsetPagination)
@@ -214,5 +218,16 @@ class ResumesWishlistHandlers(IResumesWishlistHandlers):
             raise ResumeAlreadyAddedToWishlistError()
 
         self.resumes_wishlist_service.add_resume_to_wishlist(request.user, resume_id)
+
+        return SuccessResponse()
+
+    def delete_resume_from_wishlist(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
+        if not self.resumes_wishlist_service.authorize(request.user):
+            raise ForbiddenError()
+
+        if not self.resumes_wishlist_service.exists_resume_in_wishlist(request.user, resume_id):
+            raise NotFoundError()
+
+        self.resumes_wishlist_service.delete_resume_from_wishlist(request.user, resume_id)
 
         return SuccessResponse()

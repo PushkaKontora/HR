@@ -84,11 +84,15 @@ class IFavouriteResumeRepository(ABC):
         pass
 
     @abstractmethod
-    def add_resume_to_user_wishlist(self, user_id: int, resume_id: int) -> None:
+    def add_resume_to_wishlist(self, user_id: int, resume_id: int) -> None:
         pass
 
     @abstractmethod
     def exists_resume_in_user_wishlist(self, user_id: int, resume_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def delete_resume_from_wishlist(self, user_id: int, resume_id: int) -> None:
         pass
 
 
@@ -255,4 +259,7 @@ class ResumesWishlistService(IResumesWishlistService):
         return self.favourite_resume_repo.exists_resume_in_user_wishlist(auth_user.id, resume_id)
 
     def add_resume_to_wishlist(self, auth_user: User, resume_id: int) -> None:
-        self.favourite_resume_repo.add_resume_to_user_wishlist(auth_user.id, resume_id)
+        self.favourite_resume_repo.add_resume_to_wishlist(auth_user.id, resume_id)
+
+    def delete_resume_from_wishlist(self, auth_user: User, resume_id: int) -> None:
+        self.favourite_resume_repo.delete_resume_from_wishlist(auth_user.id, resume_id)

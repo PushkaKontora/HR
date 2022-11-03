@@ -86,7 +86,7 @@ class ResumesContainer(containers.DeclarativeContainer):
         auth=auth,
     )
     resumes_wishlist_router = providers.Singleton(
-        ResumesWishlistRouter, wishlist_resumes_handlers=resumes_wishlist_handlers, auth=auth
+        ResumesWishlistRouter, resumes_wishlist_handlers=resumes_wishlist_handlers, auth=auth
     )
     resumes_router = providers.Singleton(
         ResumesRouter,
