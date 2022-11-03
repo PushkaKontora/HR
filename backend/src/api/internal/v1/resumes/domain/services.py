@@ -83,6 +83,14 @@ class IFavouriteResumeRepository(ABC):
     ) -> QuerySet[FavouriteResume]:
         pass
 
+    @abstractmethod
+    def add_resume_to_user_wishlist(self, user_id: int, resume_id: int) -> None:
+        pass
+
+    @abstractmethod
+    def exists_resume_in_user_wishlist(self, user_id: int, resume_id: int) -> bool:
+        pass
+
 
 class DocumentService(IDocumentService):
     def is_pdf(self, document: UploadedFile) -> bool:
@@ -242,3 +250,9 @@ class ResumesWishlistService(IResumesWishlistService):
             )
             for favourite in favourites
         )
+
+    def exists_resume_in_wishlist(self, auth_user: User, resume_id: int) -> bool:
+        return self.favourite_resume_repo.exists_resume_in_user_wishlist(auth_user.id, resume_id)
+
+    def add_resume_to_wishlist(self, auth_user: User, resume_id: int) -> None:
+        self.favourite_resume_repo.add_resume_to_user_wishlist(auth_user.id, resume_id)

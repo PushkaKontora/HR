@@ -20,12 +20,16 @@ from api.internal.v1.resumes.domain.services import (
     ResumesWishlistService,
     UpdatingResumeService,
 )
-from api.internal.v1.resumes.presentation.exceptions import AttachedDocumentIsNotPDFError, ResumeIsCreatedByUserError
+from api.internal.v1.resumes.presentation.exceptions import (
+    AttachedDocumentIsNotPDFError,
+    ResumeAlreadyAddedToWishlistError,
+    ResumeIsCreatedByUserError,
+)
 from api.internal.v1.resumes.presentation.handlers import ResumeHandlers, ResumesHandlers, ResumesWishlistHandlers
 from api.internal.v1.resumes.presentation.routers import ResumeRouter, ResumesRouter, ResumesWishlistRouter
 from api.internal.v1.users.api import UsersContainer
 
-ERRORS = [ResumeIsCreatedByUserError, AttachedDocumentIsNotPDFError]
+ERRORS = [ResumeIsCreatedByUserError, AttachedDocumentIsNotPDFError, ResumeAlreadyAddedToWishlistError]
 
 
 class ResumesContainer(containers.DeclarativeContainer):
@@ -70,8 +74,10 @@ class ResumesContainer(containers.DeclarativeContainer):
         updating_resume_service=updating_resume_service,
     )
     resumes_handlers = providers.Singleton(ResumesHandlers)
-    wishlist_resumes_handlers = providers.Singleton(
-        ResumesWishlistHandlers, resumes_wishlist_service=resumes_wishlist_service
+    resumes_wishlist_handlers = providers.Singleton(
+        ResumesWishlistHandlers,
+        resumes_wishlist_service=resumes_wishlist_service,
+        getting_resume_service=getting_resume_service,
     )
 
     resume_router = providers.Singleton(
@@ -80,7 +86,7 @@ class ResumesContainer(containers.DeclarativeContainer):
         auth=auth,
     )
     resumes_wishlist_router = providers.Singleton(
-        ResumesWishlistRouter, wishlist_resumes_handlers=wishlist_resumes_handlers, auth=auth
+        ResumesWishlistRouter, wishlist_resumes_handlers=resumes_wishlist_handlers, auth=auth
     )
     resumes_router = providers.Singleton(
         ResumesRouter,

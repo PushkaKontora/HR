@@ -16,7 +16,11 @@ from api.internal.v1.resumes.domain.entities import (
     ResumesWishlistIn,
     ResumesWishlistParameters,
 )
-from api.internal.v1.resumes.presentation.exceptions import AttachedDocumentIsNotPDFError, ResumeIsCreatedByUserError
+from api.internal.v1.resumes.presentation.exceptions import (
+    AttachedDocumentIsNotPDFError,
+    ResumeAlreadyAddedToWishlistError,
+    ResumeIsCreatedByUserError,
+)
 from api.internal.v1.resumes.presentation.routers import IResumeHandlers, IResumesHandlers, IResumesWishlistHandlers
 from api.models import User
 
@@ -86,6 +90,14 @@ class IResumesWishlistService(ABC):
 
     @abstractmethod
     def get_user_wishlist(self, auth_user: User, params: ResumesWishlistParameters) -> Iterable[ResumeOut]:
+        pass
+
+    @abstractmethod
+    def exists_resume_in_wishlist(self, auth_user: User, resume_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def add_resume_to_wishlist(self, auth_user: User, resume_id: int) -> None:
         pass
 
 
@@ -177,7 +189,10 @@ class ResumeHandlers(IResumeHandlers):
 
 
 class ResumesWishlistHandlers(IResumesWishlistHandlers):
-    def __init__(self, resumes_wishlist_service: IResumesWishlistService):
+    def __init__(
+        self, resumes_wishlist_service: IResumesWishlistService, getting_resume_service: IGettingResumeService
+    ):
+        self.getting_resume_service = getting_resume_service
         self.resumes_wishlist_service = resumes_wishlist_service
 
     def get_resumes_wishlist(
@@ -188,5 +203,16 @@ class ResumesWishlistHandlers(IResumesWishlistHandlers):
 
         return self.resumes_wishlist_service.get_user_wishlist(request.user, params)
 
-    def add_resume_to_wishlist(self, request: HttpRequest, body: ResumesWishlistIn = Body(...)) -> SuccessResponse:
-        raise NotImplementedError()
+    def add_resume_to_wishlist(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
+        if not self.getting_resume_service.exists_resume_with_id(resume_id):
+            raise NotFoundError()
+
+        if not self.resumes_wishlist_service.authorize(request.user):
+            raise ForbiddenError()
+
+        if self.resumes_wishlist_service.exists_resume_in_wishlist(request.user, resume_id):
+            raise ResumeAlreadyAddedToWishlistError()
+
+        self.resumes_wishlist_service.add_resume_to_wishlist(request.user, resume_id)
+
+        return SuccessResponse()

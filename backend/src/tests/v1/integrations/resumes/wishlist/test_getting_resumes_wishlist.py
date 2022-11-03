@@ -1,3 +1,4 @@
+import time
 from unittest import mock
 from unittest.mock import PropertyMock
 
@@ -24,9 +25,11 @@ def test_get_wishlist_by_employer(
     resumes = []
     for usr in (user, another_user, employer):
         resumes.append(Resume.objects.create(owner=usr, desired_job="123"))
+        time.sleep(1 / 4)
 
     for res in resumes[::-1]:
         FavouriteResume.objects.create(user=employer, resume=res)
+        time.sleep(1 / 4)
 
     document = PropertyMock()
     document.url = "https://lima_dykov.gg"

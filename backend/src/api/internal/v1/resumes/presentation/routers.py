@@ -63,7 +63,7 @@ class IResumesWishlistHandlers(ABC):
         pass
 
     @abstractmethod
-    def add_resume_to_wishlist(self, request: HttpRequest, body: ResumesWishlistIn = Body(...)) -> SuccessResponse:
+    def add_resume_to_wishlist(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
         pass
 
 
@@ -153,7 +153,7 @@ class ResumesWishlistRouter(Router):
         )
 
         self.add_api_operation(
-            path="",
+            path="/{int:resume_id}",
             methods=["POST"],
             view_func=wishlist_resumes_handlers.add_resume_to_wishlist,
             response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: MessageResponse},
