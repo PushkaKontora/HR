@@ -156,5 +156,5 @@ class ResumesWishlistRouter(Router):
             path="",
             methods=["POST"],
             view_func=wishlist_resumes_handlers.add_resume_to_wishlist,
-            response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 422: ErrorResponse},
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: MessageResponse},
         )

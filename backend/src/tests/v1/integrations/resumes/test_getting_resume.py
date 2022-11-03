@@ -4,7 +4,7 @@ from django.test import Client
 from ninja.responses import Response
 
 from api.models import Competency, Resume, ResumeCompetency, User
-from tests.v1.integrations.conftest import forbidden, get, not_found
+from tests.v1.integrations.conftest import forbidden, get, not_found, datetime_to_string
 from tests.v1.integrations.resumes.conftest import RESUME
 
 
@@ -25,7 +25,7 @@ def resume_out(resume: Resume) -> dict:
         "desired_salary": resume.desired_salary,
         "experience": resume.experience,
         "document": resume.document.url,
-        "published_at": resume.published_at,
+        "published_at": datetime_to_string(resume.published_at) if resume.published_at else None,
         "competencies": list(resume.competencies.values_list("name", flat=True)),
     }
 

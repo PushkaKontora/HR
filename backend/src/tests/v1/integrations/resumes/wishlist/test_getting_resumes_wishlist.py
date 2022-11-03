@@ -21,13 +21,18 @@ def get_wishlist(client: Client, token: str, sort_by: ResumesSortBy) -> Response
 def test_get_wishlist_by_employer(
     client: Client, user: User, another_user: User, employer: User, employer_token: str
 ) -> None:
-    resumes = Resume.objects.bulk_create(Resume(owner=usr, desired_job="123") for usr in (user, another_user, employer))
-    FavouriteResume.objects.bulk_create(FavouriteResume(user=employer, resume=res) for res in resumes[::-1])
+    resumes = []
+    for usr in (user, another_user, employer):
+        resumes.append(Resume.objects.create(owner=usr, desired_job="123"))
+
+    for res in resumes[::-1]:
+        FavouriteResume.objects.create(user=employer, resume=res)
 
     document = PropertyMock()
     document.url = "https://lima_dykov.gg"
     with mock.patch.object(Resume, "document", new_callable=PropertyMock, return_value=document):
         _test_sort_by_published_at_asc(client, employer, employer_token)
+        _test_sort_by_added_at_desc(client, employer, employer_token)
 
 
 def _test_sort_by_published_at_asc(client: Client, employer: User, employer_token: str) -> None:
