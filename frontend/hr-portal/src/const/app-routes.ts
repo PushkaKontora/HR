@@ -1,6 +1,7 @@
 enum NoAuthRoutes {
   Login = '/login',
-  SignUp = '/signup'
+  SignUp = '/signup',
+  Vacancy = '/vacancy'
 }
 
 enum AuthRoutes {
@@ -8,3 +9,5 @@ enum AuthRoutes {
 }
 
 export {NoAuthRoutes, AuthRoutes};
+
+//todo: переделать роуты - заглушка для предпоказа

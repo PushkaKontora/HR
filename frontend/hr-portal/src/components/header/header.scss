@@ -14,11 +14,19 @@
       align-items: center;
       gap: 1.4rem;
 
-      &__leftSide{
+      &__leftSide {
         gap: 5.7rem;
         font-size: 1.4rem;
         line-height: 20px;
         letter-spacing: 0.05em;
+
+        .header-navItem {
+          cursor: pointer;
+        }
+      }
+
+      .header-nav-personal {
+        cursor: pointer;
       }
     }
   }
