@@ -12,6 +12,7 @@ import PrivateRoute from './components/private-route/private-route';
 import {UserStatus} from './types/user-status';
 import {useEffect} from 'react';
 import {checkToken, getToken} from './service/token-manager';
+import JobSearchScreen from './pages/job-search-screen/job-search-screen';
 
 function App() {
   const count = useAppSelector((state) => state.example.valueCount);
@@ -45,8 +46,7 @@ function App() {
           }/>
           <Route path={NoAuthRoutes.Login} element={<LoginPage/>}/>
           <Route path={NoAuthRoutes.SignUp} element={<SignUpPage/>}/>
-
-
+          <Route path={NoAuthRoutes.Vacancy} element={<JobSearchScreen/>}/>
         </Route>
       </Routes>
     </div>
