@@ -1,10 +1,12 @@
+import {useSelector} from 'react-redux';
 import {Fragment} from 'react';
-import {Outlet} from 'react-router-dom';
-import Logo from '../../headers/logo/logo';
 import styled from 'styled-components';
+import {Outlet} from 'react-router-dom';
+
+
+import Logo from '../../headers/logo/logo';
 import Footer from '../../footer/footer';
 import {CONTENT_WIDTH} from '../../../const/styled/style-const';
-import {useSelector} from 'react-redux';
 import {useAppSelector} from '../../../app/hooks';
 import {UserStatus} from '../../../types/user-status';
 import Header from '../../header/header';

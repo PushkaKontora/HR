@@ -1,6 +1,7 @@
+import {useEffect, useState} from 'react';
+
 import './card-sorting.scss';
 import arrowIcon from '../../assets/img/job-seach/Arrow-select.svg';
-import {useEffect, useState} from 'react';
 
 enum SelectFilterCard {
   DEFAULT = 'По умолчанию',
@@ -20,7 +21,7 @@ function CardSorting() {
   useEffect(() => {
     const child = document.getElementById('child');
     if (child) {
-      child.style.width = 258 + 'px';
+      child.style.width = 280 + 'px';
       //(cWidth + 25) > pWidth ? child.style.width = (cWidth) + 'px' : child.style.width = pWidth + 'px';
     }
   },);

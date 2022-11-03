@@ -41,12 +41,11 @@ function App() {
         <Route path={'/'} element={<DefaultLayout/>}>
           <Route index element={
             <PrivateRoute requiredUserStatus={UserStatus.user}>
-              <div>Example private page</div>
+              <JobSearchScreen/>
             </PrivateRoute>
           }/>
           <Route path={NoAuthRoutes.Login} element={<LoginPage/>}/>
           <Route path={NoAuthRoutes.SignUp} element={<SignUpPage/>}/>
-          <Route path={NoAuthRoutes.Vacancy} element={<JobSearchScreen/>}/>
         </Route>
       </Routes>
     </div>
