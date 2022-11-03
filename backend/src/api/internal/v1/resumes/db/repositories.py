@@ -3,12 +3,14 @@ from typing import Optional, Set
 from django.db.models import QuerySet
 from ninja import UploadedFile
 
+from api.internal.v1.resumes.db.sorters import FavouriteResumeSorter
 from api.internal.v1.resumes.domain.services import (
     ICompetencyRepository,
+    IFavouriteResumeRepository,
     IResumeCompetenciesRepository,
     IResumeRepository,
 )
-from api.models import Competency, Experiences, Resume, ResumeCompetency
+from api.models import Competency, Experiences, FavouriteResume, Resume, ResumeCompetency
 
 
 class ResumeRepository(IResumeRepository):
@@ -57,3 +59,17 @@ class ResumeCompetenciesRepository(IResumeCompetenciesRepository):
         ResumeCompetency.objects.bulk_create(
             ResumeCompetency(resume_id=resume_id, competency_id=competency) for competency in competencies
         )
+
+
+class FavouriteResumeRepository(IFavouriteResumeRepository):
+    def get_all_with_resume_and_resume_owner_and_competencies_by_user_id(
+        self, user_id: int, sorter: FavouriteResumeSorter
+    ) -> QuerySet[FavouriteResume]:
+        queryset = (
+            FavouriteResume.objects.select_related("resume")
+            .select_related("resume__owner")
+            .prefetch_related("resume__competencies")
+            .filter(user_id=user_id)
+        )
+
+        return sorter.execute(queryset)

@@ -21,8 +21,8 @@ class User(models.Model):
     name = models.CharField(max_length=128)
     patronymic = models.CharField(max_length=128)
     photo = models.ImageField(upload_to="photos/%Y/%m/%d/", null=True)
-    favorite_vacancies = models.ManyToManyField("Vacancy", through="FavoriteVacancy")
-    favorite_resumes = models.ManyToManyField("Resume", through="FavoriteResume")
+    favourite_vacancies = models.ManyToManyField("Vacancy", through="FavouriteVacancy")
+    favourite_resumes = models.ManyToManyField("Resume", through="FavouriteResume")
 
     class Meta:
         db_table = "users"
@@ -107,19 +107,19 @@ class IssuedToken(models.Model):
         db_table = "issued_tokens"
 
 
-class FavoriteVacancy(models.Model):
+class FavouriteVacancy(models.Model):
     user = models.ForeignKey("User", on_delete=models.CASCADE)
     vacancy = models.ForeignKey("Vacancy", on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "favorite_vacancies"
+        db_table = "favourite_vacancies"
 
 
-class FavoriteResume(models.Model):
+class FavouriteResume(models.Model):
     user = models.ForeignKey("User", on_delete=models.CASCADE)
     resume = models.ForeignKey("Resume", on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "favorite_resumes"
+        db_table = "favourite_resumes"

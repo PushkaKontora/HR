@@ -13,8 +13,8 @@ from api.internal.v1.resumes.domain.entities import (
     ResumeIn,
     ResumeOut,
     ResumesFilters,
-    ResumesWishlistFilters,
     ResumesWishlistIn,
+    ResumesWishlistParameters,
 )
 from api.internal.v1.resumes.presentation.exceptions import AttachedDocumentIsNotPDFError, ResumeIsCreatedByUserError
 from api.internal.v1.resumes.presentation.routers import IResumeHandlers, IResumesHandlers, IResumesWishlistHandlers
@@ -76,6 +76,16 @@ class IUpdatingResumeService(ABC):
 class IDocumentService(ABC):
     @abstractmethod
     def is_pdf(self, document: UploadedFile) -> bool:
+        pass
+
+
+class IResumesWishlistService(ABC):
+    @abstractmethod
+    def authorize(self, auth_user: User) -> bool:
+        pass
+
+    @abstractmethod
+    def get_user_wishlist(self, auth_user: User, params: ResumesWishlistParameters) -> Iterable[ResumeOut]:
         pass
 
 
@@ -167,10 +177,16 @@ class ResumeHandlers(IResumeHandlers):
 
 
 class ResumesWishlistHandlers(IResumesWishlistHandlers):
+    def __init__(self, resumes_wishlist_service: IResumesWishlistService):
+        self.resumes_wishlist_service = resumes_wishlist_service
+
     def get_resumes_wishlist(
-        self, request: HttpRequest, filters: ResumesWishlistFilters = Query(...)
+        self, request: HttpRequest, params: ResumesWishlistParameters = Query(...)
     ) -> Iterable[ResumeOut]:
-        raise NotImplementedError()
+        if not self.resumes_wishlist_service.authorize(request.user):
+            raise ForbiddenError()
+
+        return self.resumes_wishlist_service.get_user_wishlist(request.user, params)
 
     def add_resume_to_wishlist(self, request: HttpRequest, body: ResumesWishlistIn = Body(...)) -> SuccessResponse:
         raise NotImplementedError()

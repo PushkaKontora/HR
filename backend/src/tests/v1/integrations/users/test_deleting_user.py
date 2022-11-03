@@ -4,8 +4,8 @@ from ninja.responses import Response
 
 from api.models import (
     Department,
-    FavoriteResume,
-    FavoriteVacancy,
+    FavouriteResume,
+    FavouriteVacancy,
     IssuedToken,
     Password,
     Resume,
@@ -30,8 +30,8 @@ def test_delete_user(client: Client, user: User, user_token: str, another_user: 
 
     Password.objects.create(owner=user, value="123")
     Resume.objects.create(owner=user, desired_job="abc")
-    FavoriteResume.objects.create(user=user, resume=another_resume)
-    FavoriteVacancy.objects.create(user=user, vacancy=another_vacancy)
+    FavouriteResume.objects.create(user=user, resume=another_resume)
+    FavouriteVacancy.objects.create(user=user, vacancy=another_vacancy)
     VacancyRequest.objects.create(owner=user, vacancy=another_vacancy)
     IssuedToken.objects.create(owner=user, value="1234")
 
@@ -46,8 +46,8 @@ def test_delete_user(client: Client, user: User, user_token: str, another_user: 
 
     assert not Password.objects.filter(owner=user).exists()
     assert not Resume.objects.filter(owner=user).exists()
-    assert not FavoriteResume.objects.filter(user=user).exists()
-    assert not FavoriteVacancy.objects.filter(user=user).exists()
+    assert not FavouriteResume.objects.filter(user=user).exists()
+    assert not FavouriteVacancy.objects.filter(user=user).exists()
     assert not VacancyRequest.objects.filter(owner=user).exists()
     assert not IssuedToken.objects.filter(owner=user).exists()
 

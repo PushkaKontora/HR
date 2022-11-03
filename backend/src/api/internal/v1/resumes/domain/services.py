@@ -1,20 +1,30 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Set
+from typing import Dict, Iterable, Optional, Set
 
 from django.db.models import QuerySet
 from django.db.transaction import atomic
 from django.utils.timezone import now
 from ninja import UploadedFile
 
-from api.internal.v1.resumes.domain.entities import NewResumeIn, OwnerOut, PublishingOut, ResumeIn, ResumeOut
+from api.internal.v1.resumes.db.sorters import FavouriteResumeSorter, SortByAddedAtDESC, SortByPublishedAtASC
+from api.internal.v1.resumes.domain.entities import (
+    NewResumeIn,
+    OwnerOut,
+    PublishingOut,
+    ResumeIn,
+    ResumeOut,
+    ResumesSortBy,
+    ResumesWishlistParameters,
+)
 from api.internal.v1.resumes.presentation.handlers import (
     ICreatingResumeService,
     IDocumentService,
     IGettingResumeService,
     IPublishingResumeService,
+    IResumesWishlistService,
     IUpdatingResumeService,
 )
-from api.models import Experiences, Permissions, Resume, User
+from api.models import Experiences, FavouriteResume, Permissions, Resume, User
 
 
 class IResumeRepository(ABC):
@@ -63,6 +73,14 @@ class IResumeCompetenciesRepository(ABC):
 
     @abstractmethod
     def delete_all_competencies_from_resume(self, resume_id: int) -> None:
+        pass
+
+
+class IFavouriteResumeRepository(ABC):
+    @abstractmethod
+    def get_all_with_resume_and_resume_owner_and_competencies_by_user_id(
+        self, user_id: int, sorter: FavouriteResumeSorter
+    ) -> QuerySet[FavouriteResume]:
         pass
 
 
@@ -184,3 +202,43 @@ class UpdatingResumeService(IUpdatingResumeService):
 
             competencies = set(self.competency_repo.get_existed_competencies_by_names(set(extra.competencies)))
             self.resume_competencies_repo.attach_competencies_to_resume(resume_id, competencies)
+
+
+class ResumesWishlistService(IResumesWishlistService):
+    def __init__(
+        self,
+        favourite_resume_repo: IFavouriteResumeRepository,
+        resumes_published_at_asc_sorter: SortByPublishedAtASC,
+        resumes_added_at_desc_sorter: SortByAddedAtDESC,
+    ):
+        self.favourite_resume_repo = favourite_resume_repo
+        self.sorters = {
+            ResumesSortBy.PUBLISHED_AT_ASC: resumes_published_at_asc_sorter,
+            ResumesSortBy.ADDED_AT_DESC: resumes_added_at_desc_sorter,
+        }
+
+    def authorize(self, auth_user: User) -> bool:
+        return auth_user.permission == Permissions.EMPLOYER
+
+    def get_user_wishlist(self, auth_user: User, params: ResumesWishlistParameters) -> Iterable[ResumeOut]:
+        favourites = self.favourite_resume_repo.get_all_with_resume_and_resume_owner_and_competencies_by_user_id(
+            auth_user.id, self.sorters[params.sort_by]
+        )
+
+        return (
+            ResumeOut(
+                owner=OwnerOut(
+                    surname=favourite.resume.owner.surname,
+                    name=favourite.resume.owner.name,
+                    patronymic=favourite.resume.owner.patronymic,
+                    email=favourite.resume.owner.email,
+                ),
+                desired_job=favourite.resume.desired_job,
+                desired_salary=favourite.resume.desired_salary,
+                experience=favourite.resume.experience,
+                document=favourite.resume.document.url,
+                published_at=favourite.resume.published_at,
+                competencies=list(favourite.resume.competencies.values_list("name", flat=True)),
+            )
+            for favourite in favourites
+        )

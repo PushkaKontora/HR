@@ -8,10 +8,9 @@ from pydantic import EmailStr, Field, HttpUrl
 from api.models import Experiences
 
 
-class ResumesSortParameters(Enum):
-    NAME = "name"
-    PUBLISHED_AT = "published_at"
-    LIKED_AT = "liked_at"
+class ResumesSortBy(Enum):
+    PUBLISHED_AT_ASC = "published_at_asc"
+    ADDED_AT_DESC = "added_at_desc"
 
 
 class ResumesFilters(Schema):
@@ -50,8 +49,8 @@ class NewResumeIn(ResumeIn):
     user_id: int
 
 
-class ResumesWishlistFilters(Schema):
-    sort_by: ResumesSortParameters
+class ResumesWishlistParameters(Schema):
+    sort_by: ResumesSortBy
 
 
 class ResumesWishlistIn(Schema):

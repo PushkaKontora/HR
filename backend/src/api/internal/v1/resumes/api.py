@@ -5,12 +5,19 @@ from ninja import NinjaAPI
 from ninja.security import HttpBearer
 
 from api.internal.v1.exceptions import APIBaseError
-from api.internal.v1.resumes.db.repositories import CompetencyRepository, ResumeCompetenciesRepository, ResumeRepository
+from api.internal.v1.resumes.db.repositories import (
+    CompetencyRepository,
+    FavouriteResumeRepository,
+    ResumeCompetenciesRepository,
+    ResumeRepository,
+)
+from api.internal.v1.resumes.db.sorters import SortByAddedAtDESC, SortByPublishedAtASC
 from api.internal.v1.resumes.domain.services import (
     CreatingResumeService,
     DocumentService,
     GettingResumeService,
     PublishingResumeService,
+    ResumesWishlistService,
     UpdatingResumeService,
 )
 from api.internal.v1.resumes.presentation.exceptions import AttachedDocumentIsNotPDFError, ResumeIsCreatedByUserError
@@ -24,9 +31,13 @@ ERRORS = [ResumeIsCreatedByUserError, AttachedDocumentIsNotPDFError]
 class ResumesContainer(containers.DeclarativeContainer):
     auth = providers.ExternalDependency(HttpBearer)
 
+    resumes_published_at_asc_sorter = providers.Factory(SortByPublishedAtASC)
+    resumes_added_at_desc_sorter = providers.Factory(SortByAddedAtDESC)
+
     resume_repo = providers.Singleton(ResumeRepository)
     competency_repo = providers.Singleton(CompetencyRepository)
     resume_competencies_repo = providers.Singleton(ResumeCompetenciesRepository)
+    favourite_resume_repo = providers.Singleton(FavouriteResumeRepository)
 
     creating_resume_service = providers.Singleton(
         CreatingResumeService,
@@ -43,6 +54,12 @@ class ResumesContainer(containers.DeclarativeContainer):
         competency_repo=competency_repo,
         resume_competencies_repo=resume_competencies_repo,
     )
+    resumes_wishlist_service = providers.Singleton(
+        ResumesWishlistService,
+        favourite_resume_repo=favourite_resume_repo,
+        resumes_published_at_asc_sorter=resumes_published_at_asc_sorter,
+        resumes_added_at_desc_sorter=resumes_added_at_desc_sorter,
+    )
 
     resume_handlers = providers.Singleton(
         ResumeHandlers,
@@ -53,7 +70,9 @@ class ResumesContainer(containers.DeclarativeContainer):
         updating_resume_service=updating_resume_service,
     )
     resumes_handlers = providers.Singleton(ResumesHandlers)
-    wishlist_resumes_handlers = providers.Singleton(ResumesWishlistHandlers)
+    wishlist_resumes_handlers = providers.Singleton(
+        ResumesWishlistHandlers, resumes_wishlist_service=resumes_wishlist_service
+    )
 
     resume_router = providers.Singleton(
         ResumeRouter,

@@ -11,8 +11,8 @@ from api.internal.v1.resumes.domain.entities import (
     PublishingOut,
     ResumeOut,
     ResumesFilters,
-    ResumesWishlistFilters,
     ResumesWishlistIn,
+    ResumesWishlistParameters,
 )
 from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 
@@ -58,7 +58,7 @@ class IResumeHandlers(ABC):
 class IResumesWishlistHandlers(ABC):
     @abstractmethod
     def get_resumes_wishlist(
-        self, request: HttpRequest, filters: ResumesWishlistFilters = Query(...)
+        self, request: HttpRequest, filters: ResumesWishlistParameters = Query(...)
     ) -> Iterable[ResumeOut]:
         pass
 
@@ -143,22 +143,18 @@ class ResumeRouter(Router):
 
 class ResumesWishlistRouter(Router):
     def __init__(self, wishlist_resumes_handlers: IResumesWishlistHandlers, auth: HttpBearer):
-        super(ResumesWishlistRouter, self).__init__(tags=[RESUMES_TAG])
+        super(ResumesWishlistRouter, self).__init__(tags=[RESUMES_TAG], auth=[auth])
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
-            auth=[auth],
             view_func=wishlist_resumes_handlers.get_resumes_wishlist,
-            response={200: List[ResumeOut], 401: ErrorResponse, 403: ErrorResponse},
+            response={200: List[ResumeOut], 401: MessageResponse, 403: MessageResponse},
         )
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["POST"],
-            auth=[auth],
             view_func=wishlist_resumes_handlers.add_resume_to_wishlist,
             response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 422: ErrorResponse},
         )
