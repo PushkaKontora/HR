@@ -4,7 +4,8 @@ from django.db.models import QuerySet
 from ninja import UploadedFile
 
 from api.internal.v1.resumes.db.searchers import IResumesSearcher
-from api.internal.v1.resumes.db.sorters import FavouriteResumeSorter
+from api.internal.v1.resumes.db.sorters import IFavouriteResumeSorter
+from api.internal.v1.resumes.domain.entities import ResumesSortBy
 from api.internal.v1.resumes.domain.services import (
     ICompetencyRepository,
     IFavouriteResumeRepository,
@@ -100,8 +101,18 @@ class ResumeCompetenciesRepository(IResumeCompetenciesRepository):
 
 
 class FavouriteResumeRepository(IFavouriteResumeRepository):
+    def __init__(
+        self,
+        resumes_published_at_asc_sorter: IFavouriteResumeSorter,
+        resumes_added_at_desc_sorter: IFavouriteResumeSorter,
+    ):
+        self.sorters = {
+            ResumesSortBy.PUBLISHED_AT_ASC: resumes_published_at_asc_sorter,
+            ResumesSortBy.ADDED_AT_DESC: resumes_added_at_desc_sorter,
+        }
+
     def get_all_with_resume_and_resume_owner_and_competencies_by_user_id(
-        self, user_id: int, sorter: FavouriteResumeSorter
+        self, user_id: int, sort_by: ResumesSortBy
     ) -> QuerySet[FavouriteResume]:
         queryset = (
             FavouriteResume.objects.select_related("resume")
@@ -110,7 +121,7 @@ class FavouriteResumeRepository(IFavouriteResumeRepository):
             .filter(user_id=user_id)
         )
 
-        return sorter.execute(queryset)
+        return self.sorters[sort_by].execute(queryset)
 
     def add_resume_to_wishlist(self, user_id: int, resume_id: int) -> None:
         FavouriteResume.objects.create(user_id=user_id, resume_id=resume_id)

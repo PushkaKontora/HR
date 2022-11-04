@@ -61,7 +61,11 @@ class ResumesContainer(containers.DeclarativeContainer):
     )
     competency_repo = providers.Singleton(CompetencyRepository)
     resume_competencies_repo = providers.Singleton(ResumeCompetenciesRepository)
-    favourite_resume_repo = providers.Singleton(FavouriteResumeRepository)
+    favourite_resume_repo = providers.Singleton(
+        FavouriteResumeRepository,
+        resumes_published_at_asc_sorter=resumes_published_at_asc_sorter,
+        resumes_added_at_desc_sorter=resumes_added_at_desc_sorter,
+    )
 
     creating_resume_service = providers.Singleton(
         CreatingResumeService,
@@ -82,8 +86,6 @@ class ResumesContainer(containers.DeclarativeContainer):
     resumes_wishlist_service = providers.Singleton(
         ResumesWishlistService,
         favourite_resume_repo=favourite_resume_repo,
-        resumes_published_at_asc_sorter=resumes_published_at_asc_sorter,
-        resumes_added_at_desc_sorter=resumes_added_at_desc_sorter,
     )
 
     resume_handlers = providers.Singleton(
