@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Iterable, Optional, Set
+from typing import Dict, Iterable, List, Optional, Set
 
 from django.db.models import QuerySet
 from django.db.transaction import atomic
@@ -13,6 +13,8 @@ from api.internal.v1.resumes.domain.entities import (
     PublishingOut,
     ResumeIn,
     ResumeOut,
+    ResumesOut,
+    ResumesParams,
     ResumesSortBy,
     ResumesWishlistParameters,
 )
@@ -20,11 +22,12 @@ from api.internal.v1.resumes.presentation.handlers import (
     ICreatingResumeService,
     IDocumentService,
     IGettingResumeService,
+    IGettingResumesService,
     IPublishingResumeService,
     IResumesWishlistService,
     IUpdatingResumeService,
 )
-from api.models import Experiences, FavouriteResume, Permissions, Resume, User
+from api.models import Experience, FavouriteResume, Permissions, Resume, User
 
 
 class IResumeRepository(ABC):
@@ -38,7 +41,7 @@ class IResumeRepository(ABC):
         owner_id: int,
         document: UploadedFile,
         desired_job: str,
-        experience: Optional[Experiences] = None,
+        experience: Optional[Experience] = None,
         desired_salary: Optional[int] = None,
     ) -> Resume:
         pass
@@ -57,6 +60,17 @@ class IResumeRepository(ABC):
 
     @abstractmethod
     def get_one_by_id(self, resume_id: int) -> Resume:
+        pass
+
+    @abstractmethod
+    def get_filtered_resumes(
+        self,
+        search: Optional[str],
+        experience: Optional[Experience],
+        salary_from: Optional[int],
+        salary_to: Optional[int],
+        competencies: Optional[Set[str]],
+    ) -> QuerySet[Resume]:
         pass
 
 
@@ -163,7 +177,13 @@ class GettingResumeService(IGettingResumeService):
         return is_employer or is_owner
 
     def get_resume_out(self, resume_id: int) -> ResumeOut:
-        resume = self.resume_repo.get_one_with_user_by_id(resume_id)
+        return self.resume_out(self.resume_repo.get_one_with_user_by_id(resume_id))
+
+    def exists_resume_with_id(self, resume_id: int) -> bool:
+        return self.resume_repo.exists_resume_with_id(resume_id)
+
+    @staticmethod
+    def resume_out(resume: Resume) -> ResumeOut:
         owner = resume.owner
 
         return ResumeOut(
@@ -180,9 +200,6 @@ class GettingResumeService(IGettingResumeService):
             published_at=resume.published_at,
             competencies=list(resume.competencies.values_list("name", flat=True)),
         )
-
-    def exists_resume_with_id(self, resume_id: int) -> bool:
-        return self.resume_repo.exists_resume_with_id(resume_id)
 
 
 class UpdatingResumeService(IUpdatingResumeService):
@@ -237,23 +254,7 @@ class ResumesWishlistService(IResumesWishlistService):
             auth_user.id, self.sorters[params.sort_by]
         )
 
-        return (
-            ResumeOut(
-                owner=OwnerOut(
-                    surname=favourite.resume.owner.surname,
-                    name=favourite.resume.owner.name,
-                    patronymic=favourite.resume.owner.patronymic,
-                    email=favourite.resume.owner.email,
-                ),
-                desired_job=favourite.resume.desired_job,
-                desired_salary=favourite.resume.desired_salary,
-                experience=favourite.resume.experience,
-                document=favourite.resume.document.url,
-                published_at=favourite.resume.published_at,
-                competencies=list(favourite.resume.competencies.values_list("name", flat=True)),
-            )
-            for favourite in favourites
-        )
+        return (GettingResumeService.resume_out(favourite.resume) for favourite in favourites)
 
     def exists_resume_in_wishlist(self, auth_user: User, resume_id: int) -> bool:
         return self.favourite_resume_repo.exists_resume_in_user_wishlist(auth_user.id, resume_id)
@@ -263,3 +264,23 @@ class ResumesWishlistService(IResumesWishlistService):
 
     def delete_resume_from_wishlist(self, auth_user: User, resume_id: int) -> None:
         self.favourite_resume_repo.delete_resume_from_wishlist(auth_user.id, resume_id)
+
+
+class GettingResumesService(IGettingResumesService):
+    def __init__(self, resume_repo: IResumeRepository):
+        self.resume_repo = resume_repo
+
+    def authorize(self, auth_user: User) -> bool:
+        return auth_user.permission == Permissions.EMPLOYER
+
+    def get_resumes_out(self, params: ResumesParams) -> ResumesOut:
+        offset, limit = params.offset, params.limit
+
+        resumes = self.resume_repo.get_filtered_resumes(
+            params.search, params.experience, params.salary_from, params.salary_to, params.competencies
+        )
+
+        return ResumesOut(
+            items=[GettingResumeService.resume_out(resume) for resume in resumes[offset : offset + limit]],
+            count=resumes.count(),
+        )

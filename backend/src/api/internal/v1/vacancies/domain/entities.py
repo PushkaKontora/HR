@@ -5,7 +5,7 @@ from typing import Optional
 from ninja import Schema
 from pydantic import Field
 
-from api.models import Experiences
+from api.models import Experience
 
 
 class VacanciesSortParameters(Enum):
@@ -30,7 +30,7 @@ class VacanciesFilters(Schema):
     search: Optional[str] = None
     department_id: Optional[int] = None
     department_name: Optional[str] = None
-    experience: Optional[Experiences] = None
+    experience: Optional[Experience] = None
     salary_from: Optional[int] = Field(None, gte=0)
     salary_to: Optional[int] = Field(None, gte=0)
     status: VacanciesStatus
@@ -58,7 +58,7 @@ class VacancyOut(Schema):
     id: int
     name: str
     description: str
-    expected_experience: Experiences
+    expected_experience: Experience
     salary_from: Optional[int]
     salary_to: Optional[int]
     department: VacancyDepartmentOut
@@ -68,7 +68,7 @@ class VacancyOut(Schema):
 class VacancyIn(Schema):
     name: str
     description: str
-    expected_experience: Experiences
+    expected_experience: Experience
     salary_from: Optional[int]
     salary_to: Optional[int]
     published: bool

@@ -5,7 +5,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client
 from ninja.responses import Response
 
-from api.models import Competency, Experiences, Resume, ResumeCompetency, User
+from api.models import Competency, Experience, Resume, ResumeCompetency, User
 from tests.v1.integrations.conftest import error_422, forbidden, get_headers, not_found, success
 from tests.v1.integrations.resumes.conftest import RESUME
 
@@ -19,7 +19,7 @@ def update(
     desired_job: str,
     document: SimpleUploadedFile,
     desired_salary: int = None,
-    experience: Experiences = None,
+    experience: Experience = None,
     competencies: List[str] = None,
 ) -> Response:
     body = {
@@ -46,7 +46,7 @@ def test_update_resume(
     pdf_document: Optional[SimpleUploadedFile],
     desired_job: str = "Frontend",
     desired_salary: Optional[int] = 100,
-    experience: Optional[Experiences] = Experiences.NO_EXPERIENCE,
+    experience: Optional[Experience] = Experience.NO_EXPERIENCE,
     competencies: Optional[Tuple] = ("Simpsons", "redux", "angular"),
 ) -> None:
     expected_competencies = competencies[1:] if competencies else None

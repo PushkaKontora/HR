@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Iterable, Optional
 
 from django.http import HttpRequest
-from ninja import Body, File, Form, Path, Query, UploadedFile
+from ninja import File, Form, Path, Query, UploadedFile
 from ninja.pagination import LimitOffsetPagination, paginate
 
 from api.internal.v1.exceptions import ForbiddenError, NotFoundError
@@ -12,8 +12,8 @@ from api.internal.v1.resumes.domain.entities import (
     PublishingOut,
     ResumeIn,
     ResumeOut,
-    ResumesFilters,
-    ResumesWishlistIn,
+    ResumesOut,
+    ResumesParams,
     ResumesWishlistParameters,
 )
 from api.internal.v1.resumes.presentation.exceptions import (
@@ -67,6 +67,16 @@ class IGettingResumeService(ABC):
         pass
 
 
+class IGettingResumesService(ABC):
+    @abstractmethod
+    def authorize(self, auth_user: User) -> bool:
+        pass
+
+    @abstractmethod
+    def get_resumes_out(self, params: ResumesParams) -> ResumesOut:
+        pass
+
+
 class IUpdatingResumeService(ABC):
     @abstractmethod
     def authorize(self, auth_user: User, resume_id: int) -> bool:
@@ -106,9 +116,14 @@ class IResumesWishlistService(ABC):
 
 
 class ResumesHandlers(IResumesHandlers):
-    @paginate(LimitOffsetPagination)
-    def get_resumes(self, request: HttpRequest, filters: ResumesFilters = Query(...)) -> Iterable[ResumeOut]:
-        raise NotImplementedError()
+    def __init__(self, getting_resumes_service: IGettingResumesService):
+        self.getting_resumes_service = getting_resumes_service
+
+    def get_resumes(self, request: HttpRequest, params: ResumesParams = Query(...)) -> ResumesOut:
+        if not self.getting_resumes_service.authorize(request.user):
+            raise ForbiddenError()
+
+        return self.getting_resumes_service.get_resumes_out(params)
 
 
 class ResumeHandlers(IResumeHandlers):

@@ -11,11 +11,19 @@ from api.internal.v1.resumes.db.repositories import (
     ResumeCompetenciesRepository,
     ResumeRepository,
 )
+from api.internal.v1.resumes.db.searchers import (
+    CompetenciesSearcher,
+    DesiredJobSearcher,
+    ExperienceSearcher,
+    SalaryFromSearcher,
+    SalaryToSearcher,
+)
 from api.internal.v1.resumes.db.sorters import SortByAddedAtDESC, SortByPublishedAtASC
 from api.internal.v1.resumes.domain.services import (
     CreatingResumeService,
     DocumentService,
     GettingResumeService,
+    GettingResumesService,
     PublishingResumeService,
     ResumesWishlistService,
     UpdatingResumeService,
@@ -37,8 +45,20 @@ class ResumesContainer(containers.DeclarativeContainer):
 
     resumes_published_at_asc_sorter = providers.Factory(SortByPublishedAtASC)
     resumes_added_at_desc_sorter = providers.Factory(SortByAddedAtDESC)
+    desired_job_searcher = providers.Factory(DesiredJobSearcher)
+    experience_searcher = providers.Factory(ExperienceSearcher)
+    salary_from_searcher = providers.Factory(SalaryFromSearcher)
+    salary_to_searcher = providers.Factory(SalaryToSearcher)
+    competencies_searcher = providers.Factory(CompetenciesSearcher)
 
-    resume_repo = providers.Singleton(ResumeRepository)
+    resume_repo = providers.Singleton(
+        ResumeRepository,
+        desired_job_searcher=desired_job_searcher,
+        experience_searcher=experience_searcher,
+        salary_from_searcher=salary_from_searcher,
+        salary_to_searcher=salary_to_searcher,
+        competencies_searcher=competencies_searcher,
+    )
     competency_repo = providers.Singleton(CompetencyRepository)
     resume_competencies_repo = providers.Singleton(ResumeCompetenciesRepository)
     favourite_resume_repo = providers.Singleton(FavouriteResumeRepository)
@@ -51,6 +71,7 @@ class ResumesContainer(containers.DeclarativeContainer):
     )
     publishing_resume_service = providers.Singleton(PublishingResumeService, resume_repo=resume_repo)
     getting_resume_service = providers.Singleton(GettingResumeService, resume_repo=resume_repo)
+    getting_resumes_service = providers.Singleton(GettingResumesService, resume_repo=resume_repo)
     document_service = providers.Singleton(DocumentService)
     updating_resume_service = providers.Singleton(
         UpdatingResumeService,
@@ -73,7 +94,7 @@ class ResumesContainer(containers.DeclarativeContainer):
         document_service=document_service,
         updating_resume_service=updating_resume_service,
     )
-    resumes_handlers = providers.Singleton(ResumesHandlers)
+    resumes_handlers = providers.Singleton(ResumesHandlers, getting_resumes_service)
     resumes_wishlist_handlers = providers.Singleton(
         ResumesWishlistHandlers,
         resumes_wishlist_service=resumes_wishlist_service,

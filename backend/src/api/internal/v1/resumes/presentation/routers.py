@@ -10,18 +10,17 @@ from api.internal.v1.resumes.domain.entities import (
     NewResumeIn,
     PublishingOut,
     ResumeOut,
-    ResumesFilters,
-    ResumesWishlistIn,
+    ResumesOut,
+    ResumesParams,
     ResumesWishlistParameters,
 )
-from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 
 RESUMES_TAG = "resumes"
 
 
 class IResumesHandlers(ABC):
     @abstractmethod
-    def get_resumes(self, request: HttpRequest, filters: ResumesFilters = Query(...)) -> Iterable[ResumeOut]:
+    def get_resumes(self, request: HttpRequest, params: ResumesParams = Query(...)) -> ResumesOut:
         pass
 
 
@@ -83,11 +82,11 @@ class ResumesRouter(Router):
         super(ResumesRouter, self).__init__(tags=[RESUMES_TAG])
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
             view_func=resumes_handlers.get_resumes,
-            response={200: List[ResumeOut]},
+            auth=[auth],
+            response={200: ResumesOut},
         )
 
         self.add_api_operation(

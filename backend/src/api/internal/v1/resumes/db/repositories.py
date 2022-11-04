@@ -1,8 +1,9 @@
-from typing import Optional, Set
+from typing import List, Optional, Set
 
 from django.db.models import QuerySet
 from ninja import UploadedFile
 
+from api.internal.v1.resumes.db.searchers import IResumesSearcher
 from api.internal.v1.resumes.db.sorters import FavouriteResumeSorter
 from api.internal.v1.resumes.domain.services import (
     ICompetencyRepository,
@@ -10,10 +11,24 @@ from api.internal.v1.resumes.domain.services import (
     IResumeCompetenciesRepository,
     IResumeRepository,
 )
-from api.models import Competency, Experiences, FavouriteResume, Resume, ResumeCompetency
+from api.models import Competency, Experience, FavouriteResume, Resume, ResumeCompetency
 
 
 class ResumeRepository(IResumeRepository):
+    def __init__(
+        self,
+        desired_job_searcher: IResumesSearcher,
+        experience_searcher: IResumesSearcher,
+        salary_from_searcher: IResumesSearcher,
+        salary_to_searcher: IResumesSearcher,
+        competencies_searcher: IResumesSearcher,
+    ):
+        self.desired_job_searcher = desired_job_searcher
+        self.experience_searcher = experience_searcher
+        self.salary_from_searcher = salary_from_searcher
+        self.salary_to_searcher = salary_to_searcher
+        self.competencies_searcher = competencies_searcher
+
     def exists_resume_with_id(self, resume_id: int) -> bool:
         return Resume.objects.filter(id=resume_id).exists()
 
@@ -28,7 +43,7 @@ class ResumeRepository(IResumeRepository):
         owner_id: int,
         document: UploadedFile,
         desired_job: str,
-        experience: Optional[Experiences] = None,
+        experience: Optional[Experience] = None,
         desired_salary: Optional[int] = None,
     ) -> Resume:
         return Resume.objects.create(
@@ -44,6 +59,29 @@ class ResumeRepository(IResumeRepository):
 
     def get_one_with_user_by_id(self, resume_id: int) -> Resume:
         return Resume.objects.select_related("owner").get(id=resume_id)
+
+    def get_filtered_resumes(
+        self,
+        search: Optional[str],
+        experience: Optional[Experience],
+        salary_from: Optional[int],
+        salary_to: Optional[int],
+        competencies: Optional[Set[str]],
+    ) -> QuerySet[Resume]:
+        searchers = {
+            self.desired_job_searcher: search,
+            self.experience_searcher: experience,
+            self.salary_from_searcher: salary_from,
+            self.salary_to_searcher: salary_to,
+            self.competencies_searcher: competencies,
+        }
+
+        queryset = Resume.objects.all()
+
+        for searcher, value in searchers.items():
+            queryset = queryset if value is None else searcher.search(queryset, value)
+
+        return queryset
 
 
 class CompetencyRepository(ICompetencyRepository):
