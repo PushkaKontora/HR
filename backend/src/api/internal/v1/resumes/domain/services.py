@@ -187,6 +187,7 @@ class GettingResumeService(IGettingResumeService):
         owner = resume.owner
 
         return ResumeOut(
+            id=resume.id,
             owner=OwnerOut(
                 surname=owner.surname,
                 name=owner.name,

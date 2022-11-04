@@ -33,6 +33,7 @@ class OwnerOut(Schema):
 
 
 class ResumeOut(Schema):
+    id: int
     owner: OwnerOut
     desired_job: str
     desired_salary: Optional[int]

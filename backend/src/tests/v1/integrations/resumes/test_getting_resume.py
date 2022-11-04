@@ -18,6 +18,7 @@ def get_one(client: Client, resume_id: int, token: str) -> Response:
 def resume_out(resume: Resume) -> dict:
     owner = resume.owner
     return {
+        "id": resume.id,
         "owner": {
             "surname": owner.surname,
             "name": owner.name,
