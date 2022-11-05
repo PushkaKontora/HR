@@ -105,11 +105,10 @@ class VacancyRouter(Router):
         super(VacancyRouter, self).__init__(tags=[VACANCIES_TAG])
 
         self.add_api_operation(
-            tags=[VACANCIES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
             view_func=vacancy_handlers.get_vacancy,
-            response={200: VacancyOut, 404: ErrorResponse},
+            response={200: VacancyOut, 404: MessageResponse},
         )
 
         self.add_api_operation(

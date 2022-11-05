@@ -81,7 +81,7 @@ class Vacancy(models.Model):
     department = models.ForeignKey("Department", on_delete=models.CASCADE, related_name="vacancies")
     name = models.CharField(max_length=256)
     description = models.TextField(null=True)
-    expected_experience = models.CharField(max_length=32, choices=Experience.choices, null=True)
+    expected_experience = models.CharField(max_length=32, choices=Experience.choices)
     salary_from = models.PositiveIntegerField(null=True)
     salary_to = models.PositiveIntegerField(null=True)
     published_at = models.DateTimeField(null=True)

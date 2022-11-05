@@ -26,6 +26,9 @@ class VacancyRepository(IVacancyRepository):
             published_at=published_at,
         )
 
+    def try_get_vacancy_by_id(self, vacancy_id: int) -> Optional[Vacancy]:
+        return Vacancy.objects.filter(id=vacancy_id).first()
+
 
 class DepartmentRepository(IDepartmentRepository):
     def exists_department_with_id(self, department_id: int) -> bool:

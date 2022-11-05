@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Iterable
+from typing import Iterable, Optional
 
 from django.http import HttpRequest
 from ninja import Body, Path, Query
 from ninja.pagination import LimitOffsetPagination, paginate
 
-from api.internal.v1.exceptions import ForbiddenError
+from api.internal.v1.exceptions import ForbiddenError, NotFoundError
 from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.vacancies.domain.entities import (
     PublishingOut,
@@ -39,6 +39,12 @@ class ICreatingVacancyService(ABC):
         pass
 
 
+class IGettingService(ABC):
+    @abstractmethod
+    def try_get_vacancy_out_by_id(self, vacancy_id: int) -> Optional[VacancyOut]:
+        pass
+
+
 class VacanciesHandlers(IVacanciesHandlers):
     def __init__(self, creating_vacancy_service: ICreatingVacancyService):
         self.creating_vacancy_service = creating_vacancy_service
@@ -60,8 +66,16 @@ class VacanciesHandlers(IVacanciesHandlers):
 
 
 class VacancyHandlers(IVacancyHandlers):
+    def __init__(self, getting_service: IGettingService):
+        self.getting_service = getting_service
+
     def get_vacancy(self, request: HttpRequest, vacancy_id: int = Path(...)) -> VacancyOut:
-        raise NotImplementedError()
+        vacancy_out = self.getting_service.try_get_vacancy_out_by_id(vacancy_id)
+
+        if not vacancy_out:
+            raise NotFoundError()
+
+        return vacancy_out
 
     def update_vacancy(
         self, request: HttpRequest, vacancy_id: int = Path(...), body: VacancyIn = Body(...)

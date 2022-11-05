@@ -4,8 +4,8 @@ from typing import Optional
 
 from django.utils.timezone import now
 
-from api.internal.v1.vacancies.domain.entities import VacancyIn
-from api.internal.v1.vacancies.presentation.handlers import ICreatingVacancyService
+from api.internal.v1.vacancies.domain.entities import DepartmentLeaderOut, VacancyDepartmentOut, VacancyIn, VacancyOut
+from api.internal.v1.vacancies.presentation.handlers import ICreatingVacancyService, IGettingService
 from api.models import Experience, Permission, User, Vacancy
 
 
@@ -21,6 +21,10 @@ class IVacancyRepository(ABC):
         salary_from: Optional[int],
         published_at: Optional[datetime],
     ) -> Vacancy:
+        pass
+
+    @abstractmethod
+    def try_get_vacancy_by_id(self, vacancy_id: int) -> Optional[Vacancy]:
         pass
 
 
@@ -53,4 +57,35 @@ class CreatingVacancyService(ICreatingVacancyService):
             body.salary_to,
             body.salary_from,
             published_at=now() if body.published else None,
+        )
+
+
+class GettingService(IGettingService):
+    def __init__(self, vacancy_repo: IVacancyRepository):
+        self.vacancy_repo = vacancy_repo
+
+    def try_get_vacancy_out_by_id(self, vacancy_id: int) -> Optional[VacancyOut]:
+        vacancy = self.vacancy_repo.try_get_vacancy_by_id(vacancy_id)
+
+        if not vacancy:
+            return None
+
+        department = vacancy.department
+        leader = department.leader
+
+        return VacancyOut(
+            id=vacancy.id,
+            name=vacancy.name,
+            description=vacancy.description,
+            expected_experience=vacancy.expected_experience,
+            salary_from=vacancy.salary_from,
+            salary_to=vacancy.salary_to,
+            department=VacancyDepartmentOut(
+                id=department.id,
+                name=department.name,
+                leader=DepartmentLeaderOut(
+                    id=leader.id, surname=leader.surname, name=leader.name, patronymic=leader.patronymic
+                ),
+            ),
+            published_at=vacancy.published_at,
         )
