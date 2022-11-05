@@ -3,7 +3,6 @@ from typing import Iterable, Optional
 
 from django.http import HttpRequest
 from ninja import File, Form, Path, Query, UploadedFile
-from ninja.pagination import LimitOffsetPagination, paginate
 
 from api.internal.v1.exceptions import ForbiddenError, NotFoundError
 from api.internal.v1.responses import SuccessResponse
