@@ -46,7 +46,7 @@ class IVacancyRepository(ABC):
         pass
 
     @abstractmethod
-    def set_published_at_to_vacancy_by_id(self, vacancy_id: int, published_at: datetime) -> None:
+    def set_published_at_to_vacancy_by_id(self, vacancy_id: int, published_at: Optional[datetime]) -> None:
         pass
 
     @abstractmethod
@@ -137,3 +137,6 @@ class PublishingVacancyService(IPublishingVacancyService):
         self.vacancy_repo.set_published_at_to_vacancy_by_id(vacancy_id, published_at)
 
         return PublishingOut(published_at=published_at)
+
+    def unpublish(self, vacancy_id: int) -> None:
+        self.vacancy_repo.set_published_at_to_vacancy_by_id(vacancy_id, None)

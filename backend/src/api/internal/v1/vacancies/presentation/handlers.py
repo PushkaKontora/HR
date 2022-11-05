@@ -58,6 +58,10 @@ class IPublishingVacancyService(ABC):
     def publish(self, vacancy_id: int) -> PublishingOut:
         pass
 
+    @abstractmethod
+    def unpublish(self, vacancy_id: int) -> None:
+        pass
+
 
 class VacanciesHandlers(IVacanciesHandlers):
     def __init__(self, creating_vacancy_service: ICreatingVacancyService):
@@ -110,7 +114,15 @@ class VacancyHandlers(IVacancyHandlers):
         return self.publishing_vacancy_service.publish(vacancy_id)
 
     def unpublish_vacancy(self, request: HttpRequest, vacancy_id: int = Path(...)) -> SuccessResponse:
-        raise NotImplementedError()
+        if not self.getting_service.exists_vacancy_by_id(vacancy_id):
+            raise NotFoundError()
+
+        if not self.publishing_vacancy_service.authorize(request.user, vacancy_id):
+            raise ForbiddenError()
+
+        self.publishing_vacancy_service.unpublish(vacancy_id)
+
+        return SuccessResponse()
 
     def get_vacancy_request(self, request: HttpRequest, vacancy_id: int = Path(...)) -> RequestOut:
         raise NotImplementedError()
