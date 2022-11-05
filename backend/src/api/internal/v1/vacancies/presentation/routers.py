@@ -139,12 +139,11 @@ class VacancyRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[VACANCIES_TAG, NOT_IMPLEMENTED_TAG],
             path="/publish",
             methods=["PATCH"],
             view_func=vacancy_handlers.publish_vacancy,
             auth=[auth],
-            response={200: PublishingOut, 401: ErrorResponse, 403: ErrorResponse, 404: ErrorResponse},
+            response={200: PublishingOut, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
         )
 
         self.add_api_operation(

@@ -7,7 +7,7 @@ from ninja.security import HttpBearer
 from api.internal.v1.exceptions import APIBaseError
 from api.internal.v1.users.api import UsersContainer
 from api.internal.v1.vacancies.db.repositories import DepartmentRepository, VacancyRepository
-from api.internal.v1.vacancies.domain.services import CreatingVacancyService, GettingService
+from api.internal.v1.vacancies.domain.services import CreatingVacancyService, GettingService, PublishingVacancyService
 from api.internal.v1.vacancies.presentation.errors import UnknownDepartmentIdError
 from api.internal.v1.vacancies.presentation.handlers import (
     VacanciesHandlers,
@@ -29,9 +29,12 @@ class VacanciesContainer(containers.DeclarativeContainer):
         CreatingVacancyService, vacancy_repo=vacancy_repo, department_repo=department_repo
     )
     getting_service = providers.Singleton(GettingService, vacancy_repo=vacancy_repo)
+    publishing_vacancy_service = providers.Singleton(PublishingVacancyService, vacancy_repo=vacancy_repo)
 
     vacancies_wishlist_handlers = providers.Singleton(VacanciesWishlistHandlers)
-    vacancy_handlers = providers.Singleton(VacancyHandlers, getting_service=getting_service)
+    vacancy_handlers = providers.Singleton(
+        VacancyHandlers, getting_service=getting_service, publishing_vacancy_service=publishing_vacancy_service
+    )
     vacancies_handlers = providers.Singleton(VacanciesHandlers, creating_vacancy_service=creating_vacancy_service)
 
     vacancies_wishlist_router = providers.Singleton(

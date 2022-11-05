@@ -4,8 +4,18 @@ from typing import Optional
 
 from django.utils.timezone import now
 
-from api.internal.v1.vacancies.domain.entities import DepartmentLeaderOut, VacancyDepartmentOut, VacancyIn, VacancyOut
-from api.internal.v1.vacancies.presentation.handlers import ICreatingVacancyService, IGettingService
+from api.internal.v1.vacancies.domain.entities import (
+    DepartmentLeaderOut,
+    PublishingOut,
+    VacancyDepartmentOut,
+    VacancyIn,
+    VacancyOut,
+)
+from api.internal.v1.vacancies.presentation.handlers import (
+    ICreatingVacancyService,
+    IGettingService,
+    IPublishingVacancyService,
+)
 from api.models import Experience, Permission, User, Vacancy
 
 
@@ -25,6 +35,22 @@ class IVacancyRepository(ABC):
 
     @abstractmethod
     def try_get_vacancy_by_id(self, vacancy_id: int) -> Optional[Vacancy]:
+        pass
+
+    @abstractmethod
+    def exists_vacancy_by_id(self, vacancy_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def is_vacancy_owned(self, vacancy_id: int, employer_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def set_published_at_to_vacancy_by_id(self, vacancy_id: int, published_at: datetime) -> None:
+        pass
+
+    @abstractmethod
+    def get_only_published_at_by_id(self, vacancy_id: int) -> Vacancy:
         pass
 
 
@@ -89,3 +115,25 @@ class GettingService(IGettingService):
             ),
             published_at=vacancy.published_at,
         )
+
+    def exists_vacancy_by_id(self, vacancy_id: int) -> bool:
+        return self.vacancy_repo.exists_vacancy_by_id(vacancy_id)
+
+
+class PublishingVacancyService(IPublishingVacancyService):
+    def __init__(self, vacancy_repo: IVacancyRepository):
+        self.vacancy_repo = vacancy_repo
+
+    def authorize(self, auth_user: User, vacancy_id: int) -> bool:
+        is_employer = auth_user.permission == Permission.EMPLOYER
+        is_leader = hasattr(auth_user, "department") and self.vacancy_repo.is_vacancy_owned(vacancy_id, auth_user.id)
+
+        return is_employer and is_leader
+
+    def publish(self, vacancy_id: int) -> PublishingOut:
+        vacancy = self.vacancy_repo.get_only_published_at_by_id(vacancy_id)
+        published_at = vacancy.published_at or now()
+
+        self.vacancy_repo.set_published_at_to_vacancy_by_id(vacancy_id, published_at)
+
+        return PublishingOut(published_at=published_at)

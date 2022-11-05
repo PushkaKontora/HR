@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import freezegun
 import pytest
-from django.test import Client, override_settings
+from django.test import Client
 from django.utils.timezone import now
 from ninja.responses import Response
 
