@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Set
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, TrigramWordSimilarity
-from django.db.models import QuerySet
+from django.db.models import Q, QuerySet
 
 from api.models import Experience, Resume
 
@@ -40,3 +40,8 @@ class SalaryToSearcher(IResumesSearcher):
 class CompetenciesSearcher(IResumesSearcher):
     def search(self, resumes: QuerySet[Resume], value: Set[str]) -> QuerySet[Resume]:
         return resumes.filter(competencies__in=value).distinct()
+
+
+class PublishedStatusSearcher(IResumesSearcher):
+    def search(self, resumes: QuerySet[Resume], value: bool) -> QuerySet[Resume]:
+        return resumes.filter(~Q(published_at=None) if value else Q(published_at=None))

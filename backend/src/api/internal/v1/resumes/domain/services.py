@@ -70,6 +70,7 @@ class IResumeRepository(ABC):
         salary_from: Optional[int],
         salary_to: Optional[int],
         competencies: Optional[Set[str]],
+        published: Optional[bool],
     ) -> QuerySet[Resume]:
         pass
 
@@ -272,7 +273,12 @@ class GettingResumesService(IGettingResumesService):
         offset, limit = params.offset, params.limit
 
         resumes = self.resume_repo.get_filtered_resumes(
-            params.search, params.experience, params.salary_from, params.salary_to, params.competencies
+            params.search,
+            params.experience,
+            params.salary_from,
+            params.salary_to,
+            params.competencies,
+            params.published,
         )
 
         return ResumesOut(

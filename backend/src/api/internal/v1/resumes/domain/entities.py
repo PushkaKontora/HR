@@ -16,6 +16,7 @@ class ResumesSortBy(Enum):
 
 
 class ResumesParams(Schema):
+    published: Optional[bool] = None
     search: Optional[str] = None
     experience: Optional[Experience] = None
     salary_from: Optional[int] = None

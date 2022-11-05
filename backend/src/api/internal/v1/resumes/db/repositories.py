@@ -23,12 +23,14 @@ class ResumeRepository(IResumeRepository):
         salary_from_searcher: IResumesSearcher,
         salary_to_searcher: IResumesSearcher,
         competencies_searcher: IResumesSearcher,
+        published_status_searcher: IResumesSearcher,
     ):
         self.desired_job_searcher = desired_job_searcher
         self.experience_searcher = experience_searcher
         self.salary_from_searcher = salary_from_searcher
         self.salary_to_searcher = salary_to_searcher
         self.competencies_searcher = competencies_searcher
+        self.published_status_searcher = published_status_searcher
 
     def exists_resume_with_id(self, resume_id: int) -> bool:
         return Resume.objects.filter(id=resume_id).exists()
@@ -68,6 +70,7 @@ class ResumeRepository(IResumeRepository):
         salary_from: Optional[int],
         salary_to: Optional[int],
         competencies: Optional[Set[str]],
+        published: Optional[bool],
     ) -> QuerySet[Resume]:
         searchers = {
             self.desired_job_searcher: search,
@@ -75,6 +78,7 @@ class ResumeRepository(IResumeRepository):
             self.salary_from_searcher: salary_from,
             self.salary_to_searcher: salary_to,
             self.competencies_searcher: competencies,
+            self.published_status_searcher: published,
         }
 
         queryset = Resume.objects.all()

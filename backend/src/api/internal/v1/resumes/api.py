@@ -15,6 +15,7 @@ from api.internal.v1.resumes.db.searchers import (
     CompetenciesSearcher,
     DesiredJobSearcher,
     ExperienceSearcher,
+    PublishedStatusSearcher,
     SalaryFromSearcher,
     SalaryToSearcher,
 )
@@ -50,6 +51,7 @@ class ResumesContainer(containers.DeclarativeContainer):
     salary_from_searcher = providers.Factory(SalaryFromSearcher)
     salary_to_searcher = providers.Factory(SalaryToSearcher)
     competencies_searcher = providers.Factory(CompetenciesSearcher)
+    published_status_searcher = providers.Factory(PublishedStatusSearcher)
 
     resume_repo = providers.Singleton(
         ResumeRepository,
@@ -58,6 +60,7 @@ class ResumesContainer(containers.DeclarativeContainer):
         salary_from_searcher=salary_from_searcher,
         salary_to_searcher=salary_to_searcher,
         competencies_searcher=competencies_searcher,
+        published_status_searcher=published_status_searcher,
     )
     competency_repo = providers.Singleton(CompetencyRepository)
     resume_competencies_repo = providers.Singleton(ResumeCompetenciesRepository)

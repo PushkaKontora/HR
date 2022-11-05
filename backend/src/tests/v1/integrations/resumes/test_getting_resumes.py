@@ -5,6 +5,7 @@ from unittest.mock import PropertyMock
 import pytest
 from django.db.models import QuerySet
 from django.test import Client
+from django.utils.timezone import now
 from ninja.responses import Response
 
 from api.models import Competency, Experience, Resume, ResumeCompetency, User
@@ -21,12 +22,14 @@ def get_resumes(
     salary_from: Optional[int] = None,
     salary_to: Optional[int] = None,
     competencies: Optional[Set[str]] = None,
+    published: Optional[bool] = None,
 ) -> Response:
     params = {
         "search": search,
         "experience": experience.value if experience else None,
         "salary_from": salary_from,
         "salary_to": salary_to,
+        "published": published,
     }
 
     for key in list(params.keys()):
@@ -177,3 +180,26 @@ def test_get_resumes_by_employer_filtering_by_competencies(
 
         assert response.status_code == 200
         assert response.json() == resumes_out([resumes[key] for key in expected_resumes])
+
+
+@pytest.mark.integration
+@pytest.mark.django_db
+def test_get_resumes_by_employer_filtering_by_published(
+    client: Client, user: User, another_user: User, employer_token: str
+) -> None:
+    published_resume, unpublished_resume = Resume.objects.bulk_create(
+        Resume(owner=usr, desired_job="1", published_at=pub) for usr, pub in [[user, now()], [another_user, None]]
+    )
+
+    document = PropertyMock()
+    document.url = "https://lima_dykov.gg"
+    with mock.patch.object(Resume, "document", new_callable=PropertyMock, return_value=document):
+        _test_get_resume_by_published(client, employer_token, True, published_resume)
+        _test_get_resume_by_published(client, employer_token, False, unpublished_resume)
+
+
+def _test_get_resume_by_published(client: Client, employer_token: str, published: bool, resume: Resume) -> None:
+    response = get_resumes(client, employer_token, published=published)
+
+    assert response.status_code == 200
+    assert response.json() == resumes_out([resume])
