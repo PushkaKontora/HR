@@ -27,7 +27,7 @@ from api.internal.v1.resumes.presentation.handlers import (
     IResumesWishlistService,
     IUpdatingResumeService,
 )
-from api.models import Experience, FavouriteResume, Permissions, Resume, User
+from api.models import Experience, FavouriteResume, Permission, Resume, User
 
 
 class IResumeRepository(ABC):
@@ -172,7 +172,7 @@ class GettingResumeService(IGettingResumeService):
         self.resume_repo = resume_repo
 
     def authorize(self, auth_user: User, resume_id: int) -> bool:
-        is_employer = auth_user.permission == Permissions.EMPLOYER
+        is_employer = auth_user.permission == Permission.EMPLOYER
         is_owner = hasattr(auth_user, "resume") and auth_user.resume.id == resume_id
 
         return is_employer or is_owner
@@ -243,7 +243,7 @@ class ResumesWishlistService(IResumesWishlistService):
         self.favourite_resume_repo = favourite_resume_repo
 
     def authorize(self, auth_user: User) -> bool:
-        return auth_user.permission == Permissions.EMPLOYER
+        return auth_user.permission == Permission.EMPLOYER
 
     def get_user_wishlist(self, auth_user: User, params: ResumesWishlistParameters) -> Iterable[ResumeOut]:
         favourites = self.favourite_resume_repo.get_all_with_resume_and_resume_owner_and_competencies_by_user_id(
@@ -267,7 +267,7 @@ class GettingResumesService(IGettingResumesService):
         self.resume_repo = resume_repo
 
     def authorize(self, auth_user: User) -> bool:
-        return auth_user.permission == Permissions.EMPLOYER
+        return auth_user.permission == Permission.EMPLOYER
 
     def get_resumes_out(self, params: ResumesParams) -> ResumesOut:
         offset, limit = params.offset, params.limit

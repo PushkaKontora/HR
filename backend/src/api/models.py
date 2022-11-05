@@ -2,7 +2,7 @@ from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 
 
-class Permissions(models.TextChoices):
+class Permission(models.TextChoices):
     USER = "user"
     EMPLOYER = "employer"
     ADMIN = "admin"
@@ -17,7 +17,7 @@ class Experience(models.TextChoices):
 
 class User(models.Model):
     email = models.EmailField(max_length=256, unique=True)
-    permission = models.CharField(max_length=32, choices=Permissions.choices, default=Permissions.USER)
+    permission = models.CharField(max_length=32, choices=Permission.choices, default=Permission.USER)
     surname = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
     patronymic = models.CharField(max_length=128)

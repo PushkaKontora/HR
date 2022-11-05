@@ -5,7 +5,7 @@ from typing import Optional
 from ninja import Schema
 from pydantic import EmailStr, Field, FilePath, HttpUrl, validator
 
-from api.models import Permissions
+from api.models import Permission
 
 PDF_RE = r"([^\\s]+(\\.(?i)(pdf))$)"
 
@@ -47,7 +47,7 @@ class PasswordOut(Schema):
 class UserOut(Schema):
     id: int
     email: EmailStr
-    permission: Permissions
+    permission: Permission
     surname: str
     name: str
     patronymic: str
@@ -96,5 +96,5 @@ class Tokens(Schema):
 class Payload(Schema):
     type: TokenType
     user_id: int
-    permission: Permissions
+    permission: Permission
     expires_in: int

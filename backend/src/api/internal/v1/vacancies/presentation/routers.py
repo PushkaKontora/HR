@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from ninja import Body, Path, Query, Router
 from ninja.security import HttpBearer
 
-from api.internal.v1.responses import ErrorResponse, SuccessResponse
+from api.internal.v1.responses import ErrorResponse, MessageResponse, SuccessResponse
 from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 from api.internal.v1.vacancies.domain.entities import (
     PublishingOut,
@@ -89,12 +89,11 @@ class VacanciesRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[VACANCIES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["POST"],
             view_func=vacancies_handlers.create_vacancy,
             auth=[auth],
-            response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 422: ErrorResponse},
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: ErrorResponse},
         )
 
         self.add_router("/{int:vacancy_id}", vacancy_router)

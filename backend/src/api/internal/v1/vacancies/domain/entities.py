@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional
 
 from ninja import Schema
-from pydantic import Field
+from pydantic import Field, validator
 
 from api.models import Experience
 
@@ -66,12 +66,26 @@ class VacancyOut(Schema):
 
 
 class VacancyIn(Schema):
+    department_id: int
     name: str
     description: str
     expected_experience: Experience
     salary_from: Optional[int]
     salary_to: Optional[int]
     published: bool
+
+    @validator("salary_to")
+    @classmethod
+    def validate_not_equality_of_passwords(cls, field_value, values, field, config):
+        salary_to, salary_from = field_value, values["salary_from"]
+
+        if salary_from is None or salary_to is None:
+            return field_value
+
+        if salary_from > salary_to:
+            raise ValueError("A salary_from parameter must be less or equal than a salary_to parameter")
+
+        return field_value
 
 
 class VacanciesWishlistIn(Schema):
