@@ -19,5 +19,5 @@ class ResumeAlreadyAddedToWishlistError(APIBaseError):
 class UnpublishedResumeCannotBeAddedToWishlistError(APIBaseError):
     def __init__(self):
         super(UnpublishedResumeCannotBeAddedToWishlistError, self).__init__(
-            4, "You cannot add a unpublished resume to wishlist", 422
+            4, "You cannot add an unpublished resume to wishlist", 422
         )

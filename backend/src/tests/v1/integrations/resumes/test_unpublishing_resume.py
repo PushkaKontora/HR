@@ -25,7 +25,7 @@ def test_unpublish_resume__after_publish_state(
 ) -> None:
     favourite = FavouriteResume.objects.create(user=another_user, resume=resume)
 
-    _test_unpublish_resume(client, resume, another_user, user_token, published_at=now())
+    _test_unpublish_resume(client, resume, user_token, published_at=now())
 
     assert not FavouriteResume.objects.filter(pk=favourite.pk).exists()
 
@@ -33,13 +33,13 @@ def test_unpublish_resume__after_publish_state(
 @pytest.mark.integration
 @pytest.mark.django_db
 def test_unpublish_resume__alter_unpublish_state(
-    client: Client, resume: Resume, another_user: User, user_token: str
+    client: Client, resume: Resume, user_token: str
 ) -> None:
-    _test_unpublish_resume(client, resume, another_user, user_token, published_at=None)
+    _test_unpublish_resume(client, resume, user_token, published_at=None)
 
 
 def _test_unpublish_resume(
-    client: Client, resume: Resume, another_user: User, user_token: str, published_at: Optional[datetime]
+    client: Client, resume: Resume, user_token: str, published_at: Optional[datetime]
 ) -> None:
     resume.published_at = published_at
     resume.save()

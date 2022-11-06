@@ -83,5 +83,5 @@ def test_adding_unpublished_resume_by_employer(
     response = add_resume_to_wishlist(client, resume.id, employer_token)
 
     assert response.status_code == 422
-    assert response.json() == error_422(4, "You cannot add a unpublished resume to wishlist")
+    assert response.json() == error_422(4, "You cannot add an unpublished resume to wishlist")
     assert not employer.favourite_resumes.exists()
