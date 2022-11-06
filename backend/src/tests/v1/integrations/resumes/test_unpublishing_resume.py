@@ -91,7 +91,7 @@ def test_unpublish_resume__that_does_not_belong_to_authenticated_user(
 
 @pytest.mark.integration
 @pytest.mark.django_db
-def test_publish_unknown_resume(client: Client, resume: Resume, user_token: str) -> None:
+def test_unpublish_unknown_resume(client: Client, resume: Resume, user_token: str) -> None:
     assert resume.id != 0
 
     response = unpublish(client, 0, user_token)
