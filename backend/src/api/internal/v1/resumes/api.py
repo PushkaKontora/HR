@@ -29,16 +29,22 @@ from api.internal.v1.resumes.domain.services import (
     ResumesWishlistService,
     UpdatingResumeService,
 )
-from api.internal.v1.resumes.presentation.exceptions import (
+from api.internal.v1.resumes.presentation.errors import (
     AttachedDocumentIsNotPDFError,
     ResumeAlreadyAddedToWishlistError,
     ResumeIsCreatedByUserError,
+    UnpublishedResumeCannotBeAddedToWishlistError,
 )
 from api.internal.v1.resumes.presentation.handlers import ResumeHandlers, ResumesHandlers, ResumesWishlistHandlers
 from api.internal.v1.resumes.presentation.routers import ResumeRouter, ResumesRouter, ResumesWishlistRouter
 from api.internal.v1.users.api import UsersContainer
 
-ERRORS = [ResumeIsCreatedByUserError, AttachedDocumentIsNotPDFError, ResumeAlreadyAddedToWishlistError]
+ERRORS = [
+    ResumeIsCreatedByUserError,
+    AttachedDocumentIsNotPDFError,
+    ResumeAlreadyAddedToWishlistError,
+    UnpublishedResumeCannotBeAddedToWishlistError,
+]
 
 
 class ResumesContainer(containers.DeclarativeContainer):
@@ -76,7 +82,9 @@ class ResumesContainer(containers.DeclarativeContainer):
         competency_repo=competency_repo,
         resume_competencies_repo=resume_competencies_repo,
     )
-    publishing_resume_service = providers.Singleton(PublishingResumeService, resume_repo=resume_repo)
+    publishing_resume_service = providers.Singleton(
+        PublishingResumeService, resume_repo=resume_repo, favourite_resume_repo=favourite_resume_repo
+    )
     getting_resume_service = providers.Singleton(GettingResumeService, resume_repo=resume_repo)
     getting_resumes_service = providers.Singleton(GettingResumesService, resume_repo=resume_repo)
     document_service = providers.Singleton(DocumentService)
@@ -89,6 +97,7 @@ class ResumesContainer(containers.DeclarativeContainer):
     resumes_wishlist_service = providers.Singleton(
         ResumesWishlistService,
         favourite_resume_repo=favourite_resume_repo,
+        resume_repo=resume_repo,
     )
 
     resume_handlers = providers.Singleton(

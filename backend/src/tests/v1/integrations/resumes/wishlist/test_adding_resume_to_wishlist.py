@@ -70,3 +70,18 @@ def test_add_unknown_resume_to_wishlist_by_employer(
     assert response.json() == not_found()
 
     assert employer.favourite_resumes.count() == 0
+
+
+@pytest.mark.integration
+@pytest.mark.django_db
+def test_adding_unpublished_resume_by_employer(
+    client: Client, resume: Resume, employer: User, employer_token: str
+) -> None:
+    resume.published_at = None
+    resume.save()
+
+    response = add_resume_to_wishlist(client, resume.id, employer_token)
+
+    assert response.status_code == 422
+    assert response.json() == error_422(4, "You cannot add a unpublished resume to wishlist")
+    assert not employer.favourite_resumes.exists()

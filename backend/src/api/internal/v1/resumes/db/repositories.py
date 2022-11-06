@@ -57,7 +57,7 @@ class ResumeRepository(IResumeRepository):
             desired_salary=desired_salary,
         )
 
-    def get_one_with_only_published_at(self, resume_id: int) -> Resume:
+    def get_published_at(self, resume_id: int) -> Resume:
         return Resume.objects.only("published_at").get(id=resume_id)
 
     def get_one_with_user_by_id(self, resume_id: int) -> Resume:
@@ -135,3 +135,6 @@ class FavouriteResumeRepository(IFavouriteResumeRepository):
 
     def delete_resume_from_wishlist(self, user_id: int, resume_id: int) -> None:
         FavouriteResume.objects.filter(user_id=user_id, resume_id=resume_id).delete()
+
+    def delete_resume_from_wishlists(self, resume_id: int) -> None:
+        FavouriteResume.objects.filter(resume_id=resume_id).delete()

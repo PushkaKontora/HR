@@ -78,6 +78,7 @@ def test_publish_resume__user_has_not_resume(
 def test_publish_resume__that_does_not_belong_to_authenticated_user(
     client: Client, resume: Resume, user_token: str, another_user: User
 ) -> None:
+    expected_published_at = resume.published_at
     another_resume = Resume.objects.create(owner=another_user, desired_job="123")
 
     response = publish(client, another_resume.id, user_token)
@@ -86,7 +87,7 @@ def test_publish_resume__that_does_not_belong_to_authenticated_user(
     assert response.json() == forbidden()
 
     resume.refresh_from_db()
-    assert resume.published_at is None
+    assert resume.published_at == expected_published_at
 
 
 @pytest.mark.integration

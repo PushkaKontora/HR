@@ -47,7 +47,7 @@ class IResumeRepository(ABC):
         pass
 
     @abstractmethod
-    def get_one_with_only_published_at(self, resume_id: int) -> Resume:
+    def get_published_at(self, resume_id: int) -> Resume:
         pass
 
     @abstractmethod
@@ -110,6 +110,10 @@ class IFavouriteResumeRepository(ABC):
     def delete_resume_from_wishlist(self, user_id: int, resume_id: int) -> None:
         pass
 
+    @abstractmethod
+    def delete_resume_from_wishlists(self, resume_id: int) -> None:
+        pass
+
 
 class DocumentService(IDocumentService):
     def is_pdf(self, document: UploadedFile) -> bool:
@@ -145,14 +149,15 @@ class CreatingResumeService(ICreatingResumeService):
 
 
 class PublishingResumeService(IPublishingResumeService):
-    def __init__(self, resume_repo: IResumeRepository):
+    def __init__(self, resume_repo: IResumeRepository, favourite_resume_repo: IFavouriteResumeRepository):
+        self.favourite_resume_repo = favourite_resume_repo
         self.resume_repo = resume_repo
 
     def authorize(self, auth_user: User, resume_id: int) -> bool:
         return hasattr(auth_user, "resume") and auth_user.resume.id == resume_id
 
     def publish(self, resume_id: int) -> PublishingOut:
-        resume = self.resume_repo.get_one_with_only_published_at(resume_id)
+        resume = self.resume_repo.get_published_at(resume_id)
 
         if resume.published_at is None:
             resume.published_at = now()
@@ -160,11 +165,14 @@ class PublishingResumeService(IPublishingResumeService):
 
         return PublishingOut(published_at=resume.published_at)
 
+    @atomic
     def unpublish(self, resume_id: int) -> None:
-        resume = self.resume_repo.get_one_with_only_published_at(resume_id)
+        resume = self.resume_repo.get_published_at(resume_id)
 
         resume.published_at = None
         resume.save(update_fields=["published_at"])
+
+        self.favourite_resume_repo.delete_resume_from_wishlists(resume_id)
 
 
 class GettingResumeService(IGettingResumeService):
@@ -239,7 +247,9 @@ class ResumesWishlistService(IResumesWishlistService):
     def __init__(
         self,
         favourite_resume_repo: IFavouriteResumeRepository,
+        resume_repo: IResumeRepository,
     ):
+        self.resume_repo = resume_repo
         self.favourite_resume_repo = favourite_resume_repo
 
     def authorize(self, auth_user: User) -> bool:
@@ -260,6 +270,9 @@ class ResumesWishlistService(IResumesWishlistService):
 
     def delete_resume_from_wishlist(self, auth_user: User, resume_id: int) -> None:
         self.favourite_resume_repo.delete_resume_from_wishlist(auth_user.id, resume_id)
+
+    def is_resume_published(self, resume_id: int) -> bool:
+        return self.resume_repo.get_published_at(resume_id).published_at is not None
 
 
 class GettingResumesService(IGettingResumesService):
