@@ -32,15 +32,11 @@ def test_unpublish_resume__after_publish_state(
 
 @pytest.mark.integration
 @pytest.mark.django_db
-def test_unpublish_resume__alter_unpublish_state(
-    client: Client, resume: Resume, user_token: str
-) -> None:
+def test_unpublish_resume__alter_unpublish_state(client: Client, resume: Resume, user_token: str) -> None:
     _test_unpublish_resume(client, resume, user_token, published_at=None)
 
 
-def _test_unpublish_resume(
-    client: Client, resume: Resume, user_token: str, published_at: Optional[datetime]
-) -> None:
+def _test_unpublish_resume(client: Client, resume: Resume, user_token: str, published_at: Optional[datetime]) -> None:
     resume.published_at = published_at
     resume.save()
 
