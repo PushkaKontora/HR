@@ -8,16 +8,17 @@ from django.utils.timezone import now
 
 from api.internal.v1.vacancies.db.sorters import IVacanciesWishlistSorter
 from api.internal.v1.vacancies.domain.entities import (
+    NewVacancyIn,
     PublishingOut,
     VacanciesWishlistParams,
     VacanciesWishlistSortBy,
-    VacancyIn,
     VacancyOut,
 )
 from api.internal.v1.vacancies.presentation.handlers import (
     ICreatingVacancyService,
     IGettingService,
     IPublishingVacancyService,
+    IUpdatingVacancyService,
     IVacanciesWishlistService,
 )
 from api.models import Experience, FavouriteVacancy, Permission, User, Vacancy
@@ -42,7 +43,7 @@ class IVacancyRepository(ABC):
         pass
 
     @abstractmethod
-    def exists_vacancy_by_id(self, vacancy_id: int) -> bool:
+    def exists_vacancy_with_id(self, vacancy_id: int) -> bool:
         pass
 
     @abstractmethod
@@ -55,6 +56,23 @@ class IVacancyRepository(ABC):
 
     @abstractmethod
     def get_only_published_at_by_id(self, vacancy_id: int) -> Vacancy:
+        pass
+
+    @abstractmethod
+    def exists_vacancy_with_id_and_leader_of_department_id(self, vacancy_id: int, leader_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def update(
+        self,
+        vacancy_id: int,
+        name: str,
+        description: Optional[str],
+        expected_experience: Experience,
+        salary_to: Optional[int],
+        salary_from: Optional[int],
+        published_at: Optional[datetime],
+    ) -> None:
         pass
 
 
@@ -96,13 +114,13 @@ class CreatingVacancyService(ICreatingVacancyService):
     def exists_department_with_id(self, department_id: int) -> bool:
         return self.department_repo.exists_department_with_id(department_id)
 
-    def authorize(self, auth_user: User, body: VacancyIn) -> bool:
+    def authorize(self, auth_user: User, body: NewVacancyIn) -> bool:
         is_employer = auth_user.permission == Permission.EMPLOYER
         is_leader = hasattr(auth_user, "department") and auth_user.department.id == body.department_id
 
         return is_employer and is_leader
 
-    def create(self, body: VacancyIn) -> None:
+    def create(self, body: NewVacancyIn) -> None:
         self.vacancy_repo.create(
             body.department_id,
             body.name,
@@ -126,8 +144,8 @@ class GettingService(IGettingService):
 
         return VacancyOut.from_vacancy(vacancy)
 
-    def exists_vacancy_by_id(self, vacancy_id: int) -> bool:
-        return self.vacancy_repo.exists_vacancy_by_id(vacancy_id)
+    def exists_vacancy_with_id(self, vacancy_id: int) -> bool:
+        return self.vacancy_repo.exists_vacancy_with_id(vacancy_id)
 
     def is_published(self, vacancy_id: int) -> bool:
         return self.vacancy_repo.get_only_published_at_by_id(vacancy_id).published_at is not None
@@ -188,3 +206,24 @@ class VacanciesWishlistService(IVacanciesWishlistService):
 
     def delete_vacancy_from_wishlist(self, auth_user: User, vacancy_id: int) -> None:
         self.favourite_vacancy_repo.delete_vacancy_from_wishlist(auth_user.id, vacancy_id)
+
+
+class UpdatingVacancyService(IUpdatingVacancyService):
+    def __init__(self, vacancy_repo: IVacancyRepository):
+        self.vacancy_repo = vacancy_repo
+
+    def authorize(self, auth_user: User, vacancy_id: int) -> bool:
+        return hasattr(auth_user, "department") and self.vacancy_repo.exists_vacancy_with_id_and_leader_of_department_id(
+            vacancy_id, auth_user.id
+        )
+
+    def update_vacancy(self, vacancy_id: int, body: NewVacancyIn) -> None:
+        self.vacancy_repo.update(
+            vacancy_id,
+            body.name,
+            body.description,
+            body.expected_experience,
+            body.salary_to,
+            body.salary_from,
+            published_at=now() if body.published else None,
+        )

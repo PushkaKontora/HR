@@ -19,6 +19,7 @@ from api.internal.v1.vacancies.domain.services import (
     CreatingVacancyService,
     GettingService,
     PublishingVacancyService,
+    UpdatingVacancyService,
     VacanciesWishlistService,
 )
 from api.internal.v1.vacancies.presentation.errors import (
@@ -59,6 +60,7 @@ class VacanciesContainer(containers.DeclarativeContainer):
         published_at_asc_sorter=published_at_asc_sorter,
         added_at_desc_sorter=added_at_desc_sorter,
     )
+    updating_vacancy_service = providers.Singleton(UpdatingVacancyService, vacancy_repo=vacancy_repo)
 
     vacancies_wishlist_handlers = providers.Singleton(
         VacanciesWishlistHandlers,
@@ -66,7 +68,10 @@ class VacanciesContainer(containers.DeclarativeContainer):
         getting_service=getting_service,
     )
     vacancy_handlers = providers.Singleton(
-        VacancyHandlers, getting_service=getting_service, publishing_vacancy_service=publishing_vacancy_service
+        VacancyHandlers,
+        getting_service=getting_service,
+        publishing_vacancy_service=publishing_vacancy_service,
+        updating_vacancy_service=updating_vacancy_service,
     )
     vacancies_handlers = providers.Singleton(VacanciesHandlers, creating_vacancy_service=creating_vacancy_service)
 
