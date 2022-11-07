@@ -3,7 +3,7 @@ from typing import Type
 from dependency_injector import containers, providers
 from ninja import NinjaAPI
 
-from api.internal.v1.exceptions import APIBaseError
+from api.internal.v1.errors import APIBaseError
 from api.internal.v1.users.db.repositories import (
     DepartmentRepository,
     IssuedTokenRepository,
@@ -22,7 +22,7 @@ from api.internal.v1.users.domain.services import (
     ResettingPasswordService,
 )
 from api.internal.v1.users.presentation.authentication import JWTAuth
-from api.internal.v1.users.presentation.exceptions import (
+from api.internal.v1.users.presentation.errors import (
     EmailIsAlreadyRegisteredError,
     FileIsNotImageError,
     PasswordDoesNotMatchError,
@@ -32,7 +32,7 @@ from api.internal.v1.users.presentation.exceptions import (
 from api.internal.v1.users.presentation.handlers import AuthHandlers, UserHandlers
 from api.internal.v1.users.presentation.routers import UserRouter, UsersRouter
 
-EXCEPTIONS = [
+ERRORS = [
     PasswordHasAlreadyRegisteredError,
     PasswordDoesNotMatchError,
     UserIsLeaderOfDepartmentError,
@@ -84,7 +84,7 @@ class UsersContainer(containers.DeclarativeContainer):
 def register_users_api(base: NinjaAPI) -> None:
     container = UsersContainer()
 
-    for exception_cls in EXCEPTIONS:
+    for exception_cls in ERRORS:
         base.add_exception_handler(exception_cls, _get_handler(exception_cls))
 
     base.add_router("/users", container.users_router())

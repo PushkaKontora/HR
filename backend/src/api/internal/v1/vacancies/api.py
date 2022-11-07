@@ -4,7 +4,7 @@ from dependency_injector import containers, providers
 from ninja import NinjaAPI
 from ninja.security import HttpBearer
 
-from api.internal.v1.exceptions import APIBaseError
+from api.internal.v1.errors import APIBaseError
 from api.internal.v1.users.api import UsersContainer
 from api.internal.v1.vacancies.db.repositories import (
     DepartmentRepository,

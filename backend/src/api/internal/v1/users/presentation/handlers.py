@@ -7,7 +7,7 @@ from django.http import HttpRequest
 from ninja import Body, File, Path, UploadedFile
 from ninja.responses import Response
 
-from api.internal.v1.exceptions import BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError
+from api.internal.v1.errors import BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError
 from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
@@ -23,7 +23,7 @@ from api.internal.v1.users.domain.entities import (
     TokenType,
     UserOut,
 )
-from api.internal.v1.users.presentation.exceptions import (
+from api.internal.v1.users.presentation.errors import (
     EmailIsAlreadyRegisteredError,
     FileIsNotImageError,
     PasswordDoesNotMatchError,

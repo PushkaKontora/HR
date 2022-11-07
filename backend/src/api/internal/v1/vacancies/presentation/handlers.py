@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from ninja import Body, Path, Query
 from ninja.pagination import LimitOffsetPagination, paginate
 
-from api.internal.v1.exceptions import ForbiddenError, NotFoundError
+from api.internal.v1.errors import ForbiddenError, NotFoundError
 from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.vacancies.domain.entities import (
     PublishingOut,
