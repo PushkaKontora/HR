@@ -11,7 +11,6 @@ from api.internal.v1.vacancies.domain.entities import (
     PublishingOut,
     RequestOut,
     VacanciesFilters,
-    VacanciesWishlistIn,
     VacanciesWishlistParams,
     VacancyIn,
     VacancyOut,
@@ -66,7 +65,7 @@ class IVacanciesWishlistHandlers(ABC):
         pass
 
     @abstractmethod
-    def add_vacancy_to_wishlist(self, request: HttpRequest, body: VacanciesWishlistIn = Body(...)) -> SuccessResponse:
+    def add_vacancy_to_wishlist(self, request: HttpRequest, vacancy_id: int = Path(...)) -> SuccessResponse:
         pass
 
 
@@ -167,9 +166,8 @@ class VacanciesWishlistRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[VACANCIES_TAG, NOT_IMPLEMENTED_TAG],
-            path="",
+            path="/{int:vacancy_id}",
             methods=["POST"],
             view_func=vacancies_wishlist_handlers.add_vacancy_to_wishlist,
-            response={200: SuccessResponse, 401: ErrorResponse},
+            response={200: SuccessResponse, 401: MessageResponse, 404: MessageResponse, 422: ErrorResponse},
         )

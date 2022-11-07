@@ -63,3 +63,9 @@ class FavouriteVacancyRepository(IFavouriteVacancyRepository):
         ).filter(user_id=user_id)
 
         return sorter.sort(wishlist)
+
+    def exists_vacancy_in_wishlist(self, user_id: int, vacancy_id: int) -> bool:
+        return FavouriteVacancy.objects.filter(user_id=user_id, vacancy_id=vacancy_id).exists()
+
+    def add_vacancy_to_wishlist(self, user_id: int, vacancy_id: int) -> None:
+        FavouriteVacancy.objects.create(user_id=user_id, vacancy_id=vacancy_id)

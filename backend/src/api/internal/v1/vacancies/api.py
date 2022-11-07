@@ -21,7 +21,11 @@ from api.internal.v1.vacancies.domain.services import (
     PublishingVacancyService,
     VacanciesWishlistService,
 )
-from api.internal.v1.vacancies.presentation.errors import UnknownDepartmentIdError
+from api.internal.v1.vacancies.presentation.errors import (
+    UnknownDepartmentIdError,
+    VacancyAlreadyAddedToWishlistError,
+    YouCannotAddUnpublishedVacancyToWishlistError,
+)
 from api.internal.v1.vacancies.presentation.handlers import (
     VacanciesHandlers,
     VacanciesWishlistHandlers,
@@ -29,7 +33,7 @@ from api.internal.v1.vacancies.presentation.handlers import (
 )
 from api.internal.v1.vacancies.presentation.routers import VacanciesRouter, VacanciesWishlistRouter, VacancyRouter
 
-ERRORS = [UnknownDepartmentIdError]
+ERRORS = [UnknownDepartmentIdError, YouCannotAddUnpublishedVacancyToWishlistError, VacancyAlreadyAddedToWishlistError]
 
 
 class VacanciesContainer(containers.DeclarativeContainer):
@@ -55,7 +59,9 @@ class VacanciesContainer(containers.DeclarativeContainer):
     )
 
     vacancies_wishlist_handlers = providers.Singleton(
-        VacanciesWishlistHandlers, vacancies_wishlist_service=vacancies_wishlist_service
+        VacanciesWishlistHandlers,
+        vacancies_wishlist_service=vacancies_wishlist_service,
+        getting_service=getting_service,
     )
     vacancy_handlers = providers.Singleton(
         VacancyHandlers, getting_service=getting_service, publishing_vacancy_service=publishing_vacancy_service

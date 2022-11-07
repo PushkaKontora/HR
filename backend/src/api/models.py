@@ -116,6 +116,7 @@ class FavouriteVacancy(models.Model):
 
     class Meta:
         db_table = "favourite_vacancies"
+        unique_together = ["user", "vacancy"]
 
 
 class FavouriteResume(models.Model):
@@ -125,3 +126,4 @@ class FavouriteResume(models.Model):
 
     class Meta:
         db_table = "favourite_resumes"
+        unique_together = ["user", "resume"]

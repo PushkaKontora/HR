@@ -70,6 +70,14 @@ class IFavouriteVacancyRepository(ABC):
     ) -> QuerySet[FavouriteVacancy]:
         pass
 
+    @abstractmethod
+    def exists_vacancy_in_wishlist(self, user_id: int, vacancy_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def add_vacancy_to_wishlist(self, user_id: int, vacancy_id: int) -> None:
+        pass
+
 
 class CreatingVacancyService(ICreatingVacancyService):
     def __init__(self, vacancy_repo: IVacancyRepository, department_repo: IDepartmentRepository):
@@ -111,6 +119,9 @@ class GettingService(IGettingService):
 
     def exists_vacancy_by_id(self, vacancy_id: int) -> bool:
         return self.vacancy_repo.exists_vacancy_by_id(vacancy_id)
+
+    def is_published(self, vacancy_id: int) -> bool:
+        return self.vacancy_repo.get_only_published_at_by_id(vacancy_id).published_at is not None
 
 
 class PublishingVacancyService(IPublishingVacancyService):
@@ -156,3 +167,9 @@ class VacanciesWishlistService(IVacanciesWishlistService):
         )
 
         return (VacancyOut.from_vacancy(favourite.vacancy) for favourite in wishlist)
+
+    def exists_vacancy_in_wishlist(self, auth_user: User, vacancy_id: int) -> bool:
+        return self.favourite_vacancy_repo.exists_vacancy_in_wishlist(auth_user.id, vacancy_id)
+
+    def add_vacancy_to_wishlist(self, auth_user: User, vacancy_id: int) -> None:
+        self.favourite_vacancy_repo.add_vacancy_to_wishlist(auth_user.id, vacancy_id)

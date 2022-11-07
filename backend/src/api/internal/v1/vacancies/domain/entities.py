@@ -110,10 +110,6 @@ class VacancyIn(Schema):
         return field_value
 
 
-class VacanciesWishlistIn(Schema):
-    vacancy_id: int
-
-
 class PublishingOut(Schema):
     published_at: datetime
 

@@ -11,12 +11,15 @@ from api.internal.v1.vacancies.domain.entities import (
     PublishingOut,
     RequestOut,
     VacanciesFilters,
-    VacanciesWishlistIn,
     VacanciesWishlistParams,
     VacancyIn,
     VacancyOut,
 )
-from api.internal.v1.vacancies.presentation.errors import UnknownDepartmentIdError
+from api.internal.v1.vacancies.presentation.errors import (
+    UnknownDepartmentIdError,
+    VacancyAlreadyAddedToWishlistError,
+    YouCannotAddUnpublishedVacancyToWishlistError,
+)
 from api.internal.v1.vacancies.presentation.routers import (
     IVacanciesHandlers,
     IVacanciesWishlistHandlers,
@@ -48,6 +51,10 @@ class IGettingService(ABC):
     def exists_vacancy_by_id(self, vacancy_id: int) -> bool:
         pass
 
+    @abstractmethod
+    def is_published(self, vacancy_id: int) -> bool:
+        pass
+
 
 class IPublishingVacancyService(ABC):
     @abstractmethod
@@ -66,6 +73,14 @@ class IPublishingVacancyService(ABC):
 class IVacanciesWishlistService(ABC):
     @abstractmethod
     def get_user_wishlist(self, auth_user: User, params: VacanciesWishlistParams) -> Iterable[VacancyOut]:
+        pass
+
+    @abstractmethod
+    def exists_vacancy_in_wishlist(self, auth_user: User, vacancy_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def add_vacancy_to_wishlist(self, auth_user: User, vacancy_id: int) -> None:
         pass
 
 
@@ -135,7 +150,8 @@ class VacancyHandlers(IVacancyHandlers):
 
 
 class VacanciesWishlistHandlers(IVacanciesWishlistHandlers):
-    def __init__(self, vacancies_wishlist_service: IVacanciesWishlistService):
+    def __init__(self, vacancies_wishlist_service: IVacanciesWishlistService, getting_service: IGettingService):
+        self.getting_service = getting_service
         self.vacancies_wishlist_service = vacancies_wishlist_service
 
     def get_vacancies_wishlist(
@@ -143,5 +159,16 @@ class VacanciesWishlistHandlers(IVacanciesWishlistHandlers):
     ) -> Iterable[VacancyOut]:
         return self.vacancies_wishlist_service.get_user_wishlist(request.user, params)
 
-    def add_vacancy_to_wishlist(self, request: HttpRequest, body: VacanciesWishlistIn = Body(...)) -> SuccessResponse:
-        raise NotImplementedError()
+    def add_vacancy_to_wishlist(self, request: HttpRequest, vacancy_id: int = Path(...)) -> SuccessResponse:
+        if not self.getting_service.exists_vacancy_by_id(vacancy_id):
+            raise NotFoundError()
+
+        if not self.getting_service.is_published(vacancy_id):
+            raise YouCannotAddUnpublishedVacancyToWishlistError()
+
+        if self.vacancies_wishlist_service.exists_vacancy_in_wishlist(request.user, vacancy_id):
+            raise VacancyAlreadyAddedToWishlistError()
+
+        self.vacancies_wishlist_service.add_vacancy_to_wishlist(request.user, vacancy_id)
+
+        return SuccessResponse()
