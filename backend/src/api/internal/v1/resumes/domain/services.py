@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Iterable, List, Optional, Set
+from typing import Iterable, Optional, Set
 
 from django.db.models import QuerySet
 from django.db.transaction import atomic
 from django.utils.timezone import now
 from ninja import UploadedFile
 
-from api.internal.v1.resumes.db.sorters import IFavouriteResumeSorter, SortByAddedAtDESC, SortByPublishedAtASC
+from api.internal.v1.resumes.db.sorters import IFavouriteResumeSorter
 from api.internal.v1.resumes.domain.entities import (
     NewResumeIn,
     OwnerOut,
@@ -93,8 +93,8 @@ class IResumeCompetenciesRepository(ABC):
 
 class IFavouriteResumeRepository(ABC):
     @abstractmethod
-    def get_all_with_resume_and_resume_owner_and_competencies_by_user_id(
-        self, user_id: int, sort_by: ResumesSortBy
+    def get_wishlist_with_resumes_and_resume_owners_and_competencies_by_user_id(
+        self, user_id: int, sorter: IFavouriteResumeSorter
     ) -> QuerySet[FavouriteResume]:
         pass
 
@@ -248,16 +248,22 @@ class ResumesWishlistService(IResumesWishlistService):
         self,
         favourite_resume_repo: IFavouriteResumeRepository,
         resume_repo: IResumeRepository,
+        resumes_published_at_asc_sorter: IFavouriteResumeSorter,
+        resumes_wishlist_added_at_desc_sorter: IFavouriteResumeSorter,
     ):
         self.resume_repo = resume_repo
         self.favourite_resume_repo = favourite_resume_repo
+        self.sorters = {
+            ResumesSortBy.PUBLISHED_AT_ASC: resumes_published_at_asc_sorter,
+            ResumesSortBy.ADDED_AT_DESC: resumes_wishlist_added_at_desc_sorter,
+        }
 
     def authorize(self, auth_user: User) -> bool:
         return auth_user.permission == Permission.EMPLOYER
 
     def get_user_wishlist(self, auth_user: User, params: ResumesWishlistParameters) -> Iterable[ResumeOut]:
-        favourites = self.favourite_resume_repo.get_all_with_resume_and_resume_owner_and_competencies_by_user_id(
-            auth_user.id, params.sort_by
+        favourites = self.favourite_resume_repo.get_wishlist_with_resumes_and_resume_owners_and_competencies_by_user_id(
+            auth_user.id, self.sorters[params.sort_by]
         )
 
         return (GettingResumeService.resume_out(favourite.resume) for favourite in favourites)

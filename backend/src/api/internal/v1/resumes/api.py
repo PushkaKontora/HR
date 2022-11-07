@@ -19,7 +19,7 @@ from api.internal.v1.resumes.db.searchers import (
     SalaryFromSearcher,
     SalaryToSearcher,
 )
-from api.internal.v1.resumes.db.sorters import SortByAddedAtDESC, SortByPublishedAtASC
+from api.internal.v1.resumes.db.sorters import ResumesPublishedAtASCSorter, ResumesWishlistAddedAtDESCSorter
 from api.internal.v1.resumes.domain.services import (
     CreatingResumeService,
     DocumentService,
@@ -50,8 +50,8 @@ ERRORS = [
 class ResumesContainer(containers.DeclarativeContainer):
     auth = providers.ExternalDependency(HttpBearer)
 
-    resumes_published_at_asc_sorter = providers.Factory(SortByPublishedAtASC)
-    resumes_added_at_desc_sorter = providers.Factory(SortByAddedAtDESC)
+    resumes_published_at_asc_sorter = providers.Factory(ResumesPublishedAtASCSorter)
+    resumes_wishlist_added_at_desc_sorter = providers.Factory(ResumesWishlistAddedAtDESCSorter)
     desired_job_searcher = providers.Factory(DesiredJobSearcher)
     experience_searcher = providers.Factory(ExperienceSearcher)
     salary_from_searcher = providers.Factory(SalaryFromSearcher)
@@ -70,11 +70,7 @@ class ResumesContainer(containers.DeclarativeContainer):
     )
     competency_repo = providers.Singleton(CompetencyRepository)
     resume_competencies_repo = providers.Singleton(ResumeCompetenciesRepository)
-    favourite_resume_repo = providers.Singleton(
-        FavouriteResumeRepository,
-        resumes_published_at_asc_sorter=resumes_published_at_asc_sorter,
-        resumes_added_at_desc_sorter=resumes_added_at_desc_sorter,
-    )
+    favourite_resume_repo = providers.Singleton(FavouriteResumeRepository)
 
     creating_resume_service = providers.Singleton(
         CreatingResumeService,
@@ -98,6 +94,8 @@ class ResumesContainer(containers.DeclarativeContainer):
         ResumesWishlistService,
         favourite_resume_repo=favourite_resume_repo,
         resume_repo=resume_repo,
+        resumes_wishlist_added_at_desc_sorter=resumes_wishlist_added_at_desc_sorter,
+        resumes_published_at_asc_sorter=resumes_published_at_asc_sorter,
     )
 
     resume_handlers = providers.Singleton(

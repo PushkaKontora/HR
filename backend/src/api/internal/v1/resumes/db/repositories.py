@@ -105,27 +105,17 @@ class ResumeCompetenciesRepository(IResumeCompetenciesRepository):
 
 
 class FavouriteResumeRepository(IFavouriteResumeRepository):
-    def __init__(
-        self,
-        resumes_published_at_asc_sorter: IFavouriteResumeSorter,
-        resumes_added_at_desc_sorter: IFavouriteResumeSorter,
-    ):
-        self.sorters = {
-            ResumesSortBy.PUBLISHED_AT_ASC: resumes_published_at_asc_sorter,
-            ResumesSortBy.ADDED_AT_DESC: resumes_added_at_desc_sorter,
-        }
-
-    def get_all_with_resume_and_resume_owner_and_competencies_by_user_id(
-        self, user_id: int, sort_by: ResumesSortBy
+    def get_wishlist_with_resumes_and_resume_owners_and_competencies_by_user_id(
+        self, user_id: int, sorter: IFavouriteResumeSorter
     ) -> QuerySet[FavouriteResume]:
-        queryset = (
+        wishlist = (
             FavouriteResume.objects.select_related("resume")
             .select_related("resume__owner")
             .prefetch_related("resume__competencies")
             .filter(user_id=user_id)
         )
 
-        return self.sorters[sort_by].execute(queryset)
+        return sorter.sort(wishlist)
 
     def add_resume_to_wishlist(self, user_id: int, resume_id: int) -> None:
         FavouriteResume.objects.create(user_id=user_id, resume_id=resume_id)

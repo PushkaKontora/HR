@@ -7,15 +7,15 @@ from api.models import FavouriteResume
 
 class IFavouriteResumeSorter(ABC):
     @abstractmethod
-    def execute(self, resumes: QuerySet[FavouriteResume]) -> QuerySet[FavouriteResume]:
+    def sort(self, resumes: QuerySet[FavouriteResume]) -> QuerySet[FavouriteResume]:
         pass
 
 
-class SortByPublishedAtASC(IFavouriteResumeSorter):
-    def execute(self, favourites: QuerySet[FavouriteResume]) -> QuerySet[FavouriteResume]:
+class ResumesPublishedAtASCSorter(IFavouriteResumeSorter):
+    def sort(self, favourites: QuerySet[FavouriteResume]) -> QuerySet[FavouriteResume]:
         return favourites.order_by("resume__published_at")
 
 
-class SortByAddedAtDESC(IFavouriteResumeSorter):
-    def execute(self, favourites: QuerySet[FavouriteResume]) -> QuerySet[FavouriteResume]:
+class ResumesWishlistAddedAtDESCSorter(IFavouriteResumeSorter):
+    def sort(self, favourites: QuerySet[FavouriteResume]) -> QuerySet[FavouriteResume]:
         return favourites.order_by("-added_at")
