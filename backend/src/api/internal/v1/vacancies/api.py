@@ -50,7 +50,9 @@ class VacanciesContainer(containers.DeclarativeContainer):
         CreatingVacancyService, vacancy_repo=vacancy_repo, department_repo=department_repo
     )
     getting_service = providers.Singleton(GettingService, vacancy_repo=vacancy_repo)
-    publishing_vacancy_service = providers.Singleton(PublishingVacancyService, vacancy_repo=vacancy_repo)
+    publishing_vacancy_service = providers.Singleton(
+        PublishingVacancyService, vacancy_repo=vacancy_repo, favourite_vacancy_repo=favourite_vacancy_repo
+    )
     vacancies_wishlist_service = providers.Singleton(
         VacanciesWishlistService,
         favourite_vacancy_repo=favourite_vacancy_repo,

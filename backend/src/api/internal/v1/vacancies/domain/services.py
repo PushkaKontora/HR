@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Iterable, Optional
 
 from django.db.models import QuerySet
+from django.db.transaction import atomic
 from django.utils.timezone import now
 
 from api.internal.v1.vacancies.db.sorters import IVacanciesWishlistSorter
@@ -78,6 +79,10 @@ class IFavouriteVacancyRepository(ABC):
     def add_vacancy_to_wishlist(self, user_id: int, vacancy_id: int) -> None:
         pass
 
+    @abstractmethod
+    def delete_vacancy_from_all_wishlists(self, vacancy_id: int) -> None:
+        pass
+
 
 class CreatingVacancyService(ICreatingVacancyService):
     def __init__(self, vacancy_repo: IVacancyRepository, department_repo: IDepartmentRepository):
@@ -125,7 +130,8 @@ class GettingService(IGettingService):
 
 
 class PublishingVacancyService(IPublishingVacancyService):
-    def __init__(self, vacancy_repo: IVacancyRepository):
+    def __init__(self, vacancy_repo: IVacancyRepository, favourite_vacancy_repo: IFavouriteVacancyRepository):
+        self.favourite_vacancy_repo = favourite_vacancy_repo
         self.vacancy_repo = vacancy_repo
 
     def authorize(self, auth_user: User, vacancy_id: int) -> bool:
@@ -142,8 +148,10 @@ class PublishingVacancyService(IPublishingVacancyService):
 
         return PublishingOut(published_at=published_at)
 
+    @atomic
     def unpublish(self, vacancy_id: int) -> None:
         self.vacancy_repo.set_published_at_to_vacancy_by_id(vacancy_id, None)
+        self.favourite_vacancy_repo.delete_vacancy_from_all_wishlists(vacancy_id)
 
 
 class VacanciesWishlistService(IVacanciesWishlistService):

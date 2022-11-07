@@ -7,7 +7,7 @@ from django.test import Client
 from django.utils.timezone import now
 from ninja.responses import Response
 
-from api.models import Department, User, Vacancy
+from api.models import Department, FavouriteVacancy, User, Vacancy
 from tests.v1.integrations.conftest import forbidden, not_found, patch, success
 from tests.v1.integrations.vacancies.conftest import VACANCY
 
@@ -36,25 +36,27 @@ def test_unpublishing_vacancy_by_user(client: Client, vacancy: Vacancy, user_tok
 @pytest.mark.django_db
 @freezegun.freeze_time(now())
 def test_unpublishing_vacancy_by_employer_after_publishing(
-    client: Client, vacancy: Vacancy, employer_token: str
+    client: Client, vacancy: Vacancy, employer: User, employer_token: str
 ) -> None:
-    _test_unpublishing_by_employer(client, vacancy, employer_token, published_at=now())
+    _test_unpublishing_by_employer(client, vacancy, employer, employer_token, published_at=now())
 
 
 @pytest.mark.integration
 @pytest.mark.django_db
 @freezegun.freeze_time(now())
 def test_unpublishing_vacancy_by_employer_after_unpublishing(
-    client: Client, vacancy: Vacancy, employer_token: str
+    client: Client, vacancy: Vacancy, employer: User, employer_token: str
 ) -> None:
-    _test_unpublishing_by_employer(client, vacancy, employer_token, published_at=None)
+    _test_unpublishing_by_employer(client, vacancy, employer, employer_token, published_at=None)
 
 
 def _test_unpublishing_by_employer(
-    client: Client, vacancy: Vacancy, employer_token: str, published_at: Optional[datetime]
+    client: Client, vacancy: Vacancy, employer: User, employer_token: str, published_at: Optional[datetime]
 ) -> None:
     vacancy.published_at = published_at
     vacancy.save()
+
+    FavouriteVacancy.objects.create(user=employer, vacancy=vacancy)
 
     response = unpublish(client, vacancy.id, employer_token)
 
@@ -63,6 +65,7 @@ def _test_unpublishing_by_employer(
 
     vacancy.refresh_from_db()
     assert vacancy.published_at is None
+    assert employer.favourite_vacancies.count() == 0
 
 
 @pytest.mark.integration
