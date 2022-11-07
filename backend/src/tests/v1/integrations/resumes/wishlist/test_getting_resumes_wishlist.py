@@ -4,17 +4,18 @@ from unittest.mock import PropertyMock
 
 import pytest
 from django.test import Client
+from django.utils.timezone import now
 from ninja.responses import Response
 
 from api.internal.v1.resumes.domain.entities import ResumesSortBy
 from api.models import FavouriteResume, Resume, User
 from tests.v1.integrations.conftest import forbidden, get
 from tests.v1.integrations.resumes.test_getting_resume import resume_out
-from tests.v1.integrations.resumes.wishlist.conftest import WISHLIST
+from tests.v1.integrations.resumes.wishlist.conftest import RESUMES_WISHLIST
 
 
 def get_wishlist(client: Client, token: str, sort_by: ResumesSortBy) -> Response:
-    return get(client, f"{WISHLIST}?sort_by={sort_by.value}", token)
+    return get(client, f"{RESUMES_WISHLIST}?sort_by={sort_by.value}", token)
 
 
 @pytest.mark.integration
@@ -24,7 +25,7 @@ def test_get_wishlist_by_employer(
 ) -> None:
     resumes = []
     for usr in (user, another_user, employer):
-        resumes.append(Resume.objects.create(owner=usr, desired_job="123"))
+        resumes.append(Resume.objects.create(owner=usr, desired_job="123", published_at=now()))
         time.sleep(1 / 4)
 
     for res in resumes[::-1]:

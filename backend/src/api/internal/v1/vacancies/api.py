@@ -6,8 +6,21 @@ from ninja.security import HttpBearer
 
 from api.internal.v1.exceptions import APIBaseError
 from api.internal.v1.users.api import UsersContainer
-from api.internal.v1.vacancies.db.repositories import DepartmentRepository, VacancyRepository
-from api.internal.v1.vacancies.domain.services import CreatingVacancyService, GettingService, PublishingVacancyService
+from api.internal.v1.vacancies.db.repositories import (
+    DepartmentRepository,
+    FavouriteVacancyRepository,
+    VacancyRepository,
+)
+from api.internal.v1.vacancies.db.sorters import (
+    VacanciesWishlistSortByAddedAtDESC,
+    VacanciesWishlistSortByPublishedAtASC,
+)
+from api.internal.v1.vacancies.domain.services import (
+    CreatingVacancyService,
+    GettingService,
+    PublishingVacancyService,
+    VacanciesWishlistService,
+)
 from api.internal.v1.vacancies.presentation.errors import UnknownDepartmentIdError
 from api.internal.v1.vacancies.presentation.handlers import (
     VacanciesHandlers,
@@ -22,16 +35,28 @@ ERRORS = [UnknownDepartmentIdError]
 class VacanciesContainer(containers.DeclarativeContainer):
     auth = providers.ExternalDependency(HttpBearer)
 
+    published_at_asc_sorter = providers.Factory(VacanciesWishlistSortByPublishedAtASC)
+    added_at_desc_sorter = providers.Factory(VacanciesWishlistSortByAddedAtDESC)
+
     vacancy_repo = providers.Singleton(VacancyRepository)
     department_repo = providers.Singleton(DepartmentRepository)
+    favourite_vacancy_repo = providers.Singleton(FavouriteVacancyRepository)
 
     creating_vacancy_service = providers.Singleton(
         CreatingVacancyService, vacancy_repo=vacancy_repo, department_repo=department_repo
     )
     getting_service = providers.Singleton(GettingService, vacancy_repo=vacancy_repo)
     publishing_vacancy_service = providers.Singleton(PublishingVacancyService, vacancy_repo=vacancy_repo)
+    vacancies_wishlist_service = providers.Singleton(
+        VacanciesWishlistService,
+        favourite_vacancy_repo=favourite_vacancy_repo,
+        published_at_asc_sorter=published_at_asc_sorter,
+        added_at_desc_sorter=added_at_desc_sorter,
+    )
 
-    vacancies_wishlist_handlers = providers.Singleton(VacanciesWishlistHandlers)
+    vacancies_wishlist_handlers = providers.Singleton(
+        VacanciesWishlistHandlers, vacancies_wishlist_service=vacancies_wishlist_service
+    )
     vacancy_handlers = providers.Singleton(
         VacancyHandlers, getting_service=getting_service, publishing_vacancy_service=publishing_vacancy_service
     )

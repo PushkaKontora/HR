@@ -1,13 +1,15 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Optional
+from typing import Iterable, Optional
 
+from django.db.models import QuerySet
 from django.utils.timezone import now
 
+from api.internal.v1.vacancies.db.sorters import IVacanciesWishlistSorter
 from api.internal.v1.vacancies.domain.entities import (
-    DepartmentLeaderOut,
     PublishingOut,
-    VacancyDepartmentOut,
+    VacanciesWishlistParams,
+    VacanciesWishlistSortBy,
     VacancyIn,
     VacancyOut,
 )
@@ -15,8 +17,9 @@ from api.internal.v1.vacancies.presentation.handlers import (
     ICreatingVacancyService,
     IGettingService,
     IPublishingVacancyService,
+    IVacanciesWishlistService,
 )
-from api.models import Experience, Permission, User, Vacancy
+from api.models import Experience, FavouriteVacancy, Permission, User, Vacancy
 
 
 class IVacancyRepository(ABC):
@@ -60,6 +63,14 @@ class IDepartmentRepository(ABC):
         pass
 
 
+class IFavouriteVacancyRepository(ABC):
+    @abstractmethod
+    def get_sorted_wishlist_with_vacancies_and_departments_and_leaders_by_user_id(
+        self, user_id: int, sorter: IVacanciesWishlistSorter
+    ) -> QuerySet[FavouriteVacancy]:
+        pass
+
+
 class CreatingVacancyService(ICreatingVacancyService):
     def __init__(self, vacancy_repo: IVacancyRepository, department_repo: IDepartmentRepository):
         self.department_repo = department_repo
@@ -96,25 +107,7 @@ class GettingService(IGettingService):
         if not vacancy:
             return None
 
-        department = vacancy.department
-        leader = department.leader
-
-        return VacancyOut(
-            id=vacancy.id,
-            name=vacancy.name,
-            description=vacancy.description,
-            expected_experience=vacancy.expected_experience,
-            salary_from=vacancy.salary_from,
-            salary_to=vacancy.salary_to,
-            department=VacancyDepartmentOut(
-                id=department.id,
-                name=department.name,
-                leader=DepartmentLeaderOut(
-                    id=leader.id, surname=leader.surname, name=leader.name, patronymic=leader.patronymic
-                ),
-            ),
-            published_at=vacancy.published_at,
-        )
+        return VacancyOut.from_vacancy(vacancy)
 
     def exists_vacancy_by_id(self, vacancy_id: int) -> bool:
         return self.vacancy_repo.exists_vacancy_by_id(vacancy_id)
@@ -140,3 +133,26 @@ class PublishingVacancyService(IPublishingVacancyService):
 
     def unpublish(self, vacancy_id: int) -> None:
         self.vacancy_repo.set_published_at_to_vacancy_by_id(vacancy_id, None)
+
+
+class VacanciesWishlistService(IVacanciesWishlistService):
+    def __init__(
+        self,
+        favourite_vacancy_repo: IFavouriteVacancyRepository,
+        published_at_asc_sorter: IVacanciesWishlistSorter,
+        added_at_desc_sorter: IVacanciesWishlistSorter,
+    ):
+        self.favourite_vacancy_repo = favourite_vacancy_repo
+        self.sorters = {
+            VacanciesWishlistSortBy.PUBLISHED_AT_ASC: published_at_asc_sorter,
+            VacanciesWishlistSortBy.ADDED_AT_DESC: added_at_desc_sorter,
+        }
+
+    def get_user_wishlist(self, auth_user: User, params: VacanciesWishlistParams) -> Iterable[VacancyOut]:
+        wishlist = (
+            self.favourite_vacancy_repo.get_sorted_wishlist_with_vacancies_and_departments_and_leaders_by_user_id(
+                auth_user.id, self.sorters[params.sort_by]
+            )
+        )
+
+        return (VacancyOut.from_vacancy(favourite.vacancy) for favourite in wishlist)

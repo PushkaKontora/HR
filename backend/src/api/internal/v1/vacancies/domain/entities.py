@@ -5,7 +5,7 @@ from typing import Optional
 from ninja import Schema
 from pydantic import Field, validator
 
-from api.models import Experience
+from api.models import Experience, Vacancy
 
 
 class VacanciesSortParameters(Enum):
@@ -15,9 +15,9 @@ class VacanciesSortParameters(Enum):
     SALARY_DESC = "salary_desc"
 
 
-class VacanciesWishlistSortParameters(Enum):
-    NAME = "name"
-    LIKED_AT = "liked_at"
+class VacanciesWishlistSortBy(Enum):
+    PUBLISHED_AT_ASC = "published_at_asc"
+    ADDED_AT_DESC = "added_at_desc"
 
 
 class VacanciesStatus(Enum):
@@ -37,8 +37,8 @@ class VacanciesFilters(Schema):
     sort_by: VacanciesSortParameters
 
 
-class VacanciesWishlistFilters(Schema):
-    sort_by: VacanciesWishlistSortParameters
+class VacanciesWishlistParams(Schema):
+    sort_by: VacanciesWishlistSortBy
 
 
 class DepartmentLeaderOut(Schema):
@@ -57,18 +57,40 @@ class VacancyDepartmentOut(Schema):
 class VacancyOut(Schema):
     id: int
     name: str
-    description: str
+    description: Optional[str]
     expected_experience: Experience
     salary_from: Optional[int]
     salary_to: Optional[int]
     department: VacancyDepartmentOut
     published_at: Optional[datetime]
 
+    @staticmethod
+    def from_vacancy(vacancy: Vacancy) -> "VacancyOut":
+        department = vacancy.department
+        leader = department.leader
+
+        return VacancyOut(
+            id=vacancy.id,
+            name=vacancy.name,
+            description=vacancy.description,
+            expected_experience=vacancy.expected_experience,
+            salary_from=vacancy.salary_from,
+            salary_to=vacancy.salary_to,
+            department=VacancyDepartmentOut(
+                id=department.id,
+                name=department.name,
+                leader=DepartmentLeaderOut(
+                    id=leader.id, surname=leader.surname, name=leader.name, patronymic=leader.patronymic
+                ),
+            ),
+            published_at=vacancy.published_at,
+        )
+
 
 class VacancyIn(Schema):
     department_id: int
     name: str
-    description: str
+    description: Optional[str]
     expected_experience: Experience
     salary_from: Optional[int]
     salary_to: Optional[int]

@@ -1,8 +1,15 @@
 from datetime import datetime
 from typing import Optional
 
-from api.internal.v1.vacancies.domain.services import IDepartmentRepository, IVacancyRepository
-from api.models import Department, Experience, Vacancy
+from django.db.models import QuerySet
+
+from api.internal.v1.vacancies.db.sorters import IVacanciesWishlistSorter
+from api.internal.v1.vacancies.domain.services import (
+    IDepartmentRepository,
+    IFavouriteVacancyRepository,
+    IVacancyRepository,
+)
+from api.models import Department, Experience, FavouriteVacancy, Vacancy
 
 
 class VacancyRepository(IVacancyRepository):
@@ -45,3 +52,14 @@ class VacancyRepository(IVacancyRepository):
 class DepartmentRepository(IDepartmentRepository):
     def exists_department_with_id(self, department_id: int) -> bool:
         return Department.objects.filter(id=department_id).exists()
+
+
+class FavouriteVacancyRepository(IFavouriteVacancyRepository):
+    def get_sorted_wishlist_with_vacancies_and_departments_and_leaders_by_user_id(
+        self, user_id: int, sorter: IVacanciesWishlistSorter
+    ) -> QuerySet[FavouriteVacancy]:
+        wishlist = FavouriteVacancy.objects.select_related(
+            "vacancy", "vacancy__department", "vacancy__department__leader"
+        ).filter(user_id=user_id)
+
+        return sorter.sort(wishlist)

@@ -1,7 +1,7 @@
 import pytest
 
 from api.models import Department, Experience, Permission, User, Vacancy
-from tests.v1.integrations.conftest import V1
+from tests.v1.integrations.conftest import V1, datetime_to_string
 
 VACANCIES = V1 + "/vacancies"
 VACANCY = VACANCIES + "/{vacancy_id}"
@@ -50,5 +50,5 @@ def vacancy_out(vacancy: Vacancy) -> dict:
                 "patronymic": leader.patronymic,
             },
         },
-        "published_at": vacancy.published_at,
+        "published_at": datetime_to_string(vacancy.published_at) if vacancy.published_at else None,
     }

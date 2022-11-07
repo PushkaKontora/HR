@@ -11,8 +11,8 @@ from api.internal.v1.vacancies.domain.entities import (
     PublishingOut,
     RequestOut,
     VacanciesFilters,
-    VacanciesWishlistFilters,
     VacanciesWishlistIn,
+    VacanciesWishlistParams,
     VacancyIn,
     VacancyOut,
 )
@@ -60,6 +60,12 @@ class IPublishingVacancyService(ABC):
 
     @abstractmethod
     def unpublish(self, vacancy_id: int) -> None:
+        pass
+
+
+class IVacanciesWishlistService(ABC):
+    @abstractmethod
+    def get_user_wishlist(self, auth_user: User, params: VacanciesWishlistParams) -> Iterable[VacancyOut]:
         pass
 
 
@@ -129,10 +135,13 @@ class VacancyHandlers(IVacancyHandlers):
 
 
 class VacanciesWishlistHandlers(IVacanciesWishlistHandlers):
+    def __init__(self, vacancies_wishlist_service: IVacanciesWishlistService):
+        self.vacancies_wishlist_service = vacancies_wishlist_service
+
     def get_vacancies_wishlist(
-        self, request: HttpRequest, filters: VacanciesWishlistFilters = Query(...)
+        self, request: HttpRequest, params: VacanciesWishlistParams = Query(...)
     ) -> Iterable[VacancyOut]:
-        raise NotImplementedError()
+        return self.vacancies_wishlist_service.get_user_wishlist(request.user, params)
 
     def add_vacancy_to_wishlist(self, request: HttpRequest, body: VacanciesWishlistIn = Body(...)) -> SuccessResponse:
         raise NotImplementedError()
