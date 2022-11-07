@@ -28,18 +28,7 @@ class GettingService(IGettingService):
         if not department:
             return None
 
-        return self.get_department_out(department)
+        return DepartmentOut.from_department(department)
 
     def get_many_department_out(self) -> List[DepartmentOut]:
-        return [self.get_department_out(department) for department in self.department_repo.get_all()]
-
-    @staticmethod
-    def get_department_out(department: Department) -> DepartmentOut:
-        leader = department.leader
-        return DepartmentOut(
-            id=department.id,
-            name=department.name,
-            description=department.description,
-            vacancies_amount=department.vacancies.count(),
-            leader=LeaderOut(id=leader.id, surname=leader.surname, name=leader.name, patronymic=leader.patronymic),
-        )
+        return [DepartmentOut.from_department(department) for department in self.department_repo.get_all()]

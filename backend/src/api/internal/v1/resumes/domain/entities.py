@@ -1,13 +1,14 @@
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional, Set
+from typing import Iterable, List, Optional, Set
 
 from django.conf import settings
+from django.db.models import QuerySet
 from ninja import Schema
 from ninja.pagination import LimitOffsetPagination
 from pydantic import EmailStr, Field, HttpUrl
 
-from api.models import Experience
+from api.models import Experience, Resume
 
 
 class ResumesSortBy(Enum):
@@ -43,10 +44,37 @@ class ResumeOut(Schema):
     published_at: Optional[datetime]
     competencies: List[str]
 
+    @staticmethod
+    def from_resume(resume: Resume) -> "ResumeOut":
+        owner = resume.owner
+
+        return ResumeOut(
+            id=resume.id,
+            owner=OwnerOut(
+                surname=owner.surname,
+                name=owner.name,
+                patronymic=owner.patronymic,
+                email=owner.email,
+            ),
+            desired_job=resume.desired_job,
+            desired_salary=resume.desired_salary,
+            experience=resume.experience,
+            document=resume.document.url,
+            published_at=resume.published_at,
+            competencies=list(resume.competencies.values_list("name", flat=True)),
+        )
+
 
 class ResumesOut(Schema):
     items: List[ResumeOut]
     count: int
+
+    @staticmethod
+    def from_resumes_with_pagination(resumes: QuerySet[Resume], limit: int, offset: int) -> "ResumesOut":
+        return ResumesOut(
+            items=[ResumeOut.from_resume(resume) for resume in resumes[offset : offset + limit]],
+            count=resumes.count(),
+        )
 
 
 class ResumeIn(Schema):
@@ -66,3 +94,7 @@ class ResumesWishlistParameters(Schema):
 
 class PublishingOut(Schema):
     published_at: datetime
+
+    @staticmethod
+    def from_resume(resume: Resume) -> "PublishingOut":
+        return PublishingOut(published_at=resume.published_at)

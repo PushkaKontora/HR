@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from datetime import timedelta
-from re import match
 from typing import Optional
 
 from bcrypt import checkpw
@@ -40,7 +39,7 @@ from api.internal.v1.users.presentation.handlers import (
     IRenamingUserService,
     IResettingPasswordService,
 )
-from api.models import IssuedToken, Password, User
+from api.models import IssuedToken, Password, Permission, User
 
 
 class IUserRepository(ABC):
@@ -138,7 +137,7 @@ class JWTService(IJWTService):
 
     def try_get_payload(self, value: str) -> Optional[Payload]:
         try:
-            return Payload(**decode(value, settings.SECRET_KEY, algorithms=self.ALGORITHMS))
+            return Payload.from_dict(decode(value, settings.SECRET_KEY, algorithms=self.ALGORITHMS))
         except (PyJWTError, ValidationError):
             return None
 
@@ -155,9 +154,9 @@ class JWTService(IJWTService):
         self.issued_token_repo.revoke_all_tokens_for_user(owner.id)
 
     def create_tokens(self, user: User) -> Tokens:
-        tokens = Tokens(
-            access=self.generate_token(user, TokenType.ACCESS, settings.ACCESS_TOKEN_TTL),
-            refresh=self.generate_token(user, TokenType.REFRESH, settings.REFRESH_TOKEN_TTL),
+        tokens = Tokens.create(
+            self.generate_token(user, TokenType.ACCESS, settings.ACCESS_TOKEN_TTL),
+            self.generate_token(user, TokenType.REFRESH, settings.REFRESH_TOKEN_TTL),
         )
 
         with atomic():
@@ -167,14 +166,14 @@ class JWTService(IJWTService):
         return tokens
 
     def get_tokens_out(self, tokens: Tokens) -> AuthenticationOut:
-        return AuthenticationOut(access_token=tokens.access)
+        return AuthenticationOut.from_tokens(tokens)
 
     def generate_token(self, user: User, token_type: TokenType, ttl: timedelta) -> str:
-        payload = Payload(
-            type=token_type.value,
-            user_id=user.id,
-            permission=str(user.permission),
-            expires_in=int((now() + ttl).timestamp()),
+        payload = Payload.create(
+            token_type,
+            user.id,
+            Permission(user.permission),
+            int((now() + ttl).timestamp()),
         )
 
         return encode(payload.dict(), settings.SECRET_KEY, algorithm=self.ALGORITHMS[0])
@@ -190,18 +189,7 @@ class GettingUserService(IGettingUserService):
         if not user:
             return None
 
-        return UserOut(
-            id=user.id,
-            email=user.email,
-            permission=user.permission,
-            surname=user.surname,
-            name=user.name,
-            patronymic=user.patronymic,
-            photo=user.photo.url if user.photo else None,
-            resume=UserResumeOut.from_orm(user.resume) if hasattr(user, "resume") else None,
-            department=UserDepartmentOut.from_orm(user.department) if hasattr(user, "department") else None,
-            password=PasswordOut.from_orm(user.password),
-        )
+        return UserOut.from_user(user)
 
     def exists_user_with_id(self, user_id: int) -> bool:
         return self.user_repo.exists_user_with_id(user_id)
@@ -219,7 +207,7 @@ class ResettingPasswordService(IResettingPasswordService):
         password.value = hash_password(body.new_password)
         password.save(update_fields=["value", "updated_at"])
 
-        return PasswordUpdatedAtOut(updated_at=password.updated_at)
+        return PasswordUpdatedAtOut.from_password(password)
 
 
 class DeletingUserService(IDeletingUserService):
@@ -290,7 +278,7 @@ class PhotoService(IPhotoService):
         user.photo = UploadedFile(photo, f"{user.id}{photo.name}")
         user.save(update_fields=["photo"])
 
-        return PhotoOut(photo=user.photo.url)
+        return PhotoOut.from_user(user)
 
     def delete(self, user_id: int) -> None:
         user = self.user_repo.get_user_by_id(user_id)

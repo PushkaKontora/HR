@@ -113,6 +113,10 @@ class VacancyIn(Schema):
 class PublishingOut(Schema):
     published_at: datetime
 
+    @staticmethod
+    def create(time: datetime) -> "PublishingOut":
+        return PublishingOut(published_at=time)
+
 
 class RequestOut(Schema):
     updated_at: datetime

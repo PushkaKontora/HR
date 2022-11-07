@@ -19,4 +19,4 @@ class GettingCompetenciesService(IGettingCompetenciesService):
         self.competency_repo = competency_repo
 
     def get_competencies(self) -> Iterable[CompetencyOut]:
-        return (CompetencyOut(name=competency.name) for competency in self.competency_repo.get_all())
+        return (CompetencyOut.from_competency(competency) for competency in self.competency_repo.get_all())

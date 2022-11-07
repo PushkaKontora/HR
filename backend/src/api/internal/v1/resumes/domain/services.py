@@ -9,7 +9,6 @@ from ninja import UploadedFile
 from api.internal.v1.resumes.db.sorters import IFavouriteResumeSorter
 from api.internal.v1.resumes.domain.entities import (
     NewResumeIn,
-    OwnerOut,
     PublishingOut,
     ResumeIn,
     ResumeOut,
@@ -163,14 +162,15 @@ class PublishingResumeService(IPublishingResumeService):
             resume.published_at = now()
             resume.save(update_fields=["published_at"])
 
-        return PublishingOut(published_at=resume.published_at)
+        return PublishingOut.from_resume(resume)
 
     @atomic
     def unpublish(self, resume_id: int) -> None:
         resume = self.resume_repo.get_published_at(resume_id)
 
-        resume.published_at = None
-        resume.save(update_fields=["published_at"])
+        if resume.published_at is not None:
+            resume.published_at = None
+            resume.save(update_fields=["published_at"])
 
         self.favourite_resume_repo.delete_resume_from_wishlists(resume_id)
 
@@ -186,30 +186,10 @@ class GettingResumeService(IGettingResumeService):
         return is_employer or is_owner
 
     def get_resume_out(self, resume_id: int) -> ResumeOut:
-        return self.resume_out(self.resume_repo.get_one_with_user_by_id(resume_id))
+        return ResumeOut.from_resume(self.resume_repo.get_one_with_user_by_id(resume_id))
 
     def exists_resume_with_id(self, resume_id: int) -> bool:
         return self.resume_repo.exists_resume_with_id(resume_id)
-
-    @staticmethod
-    def resume_out(resume: Resume) -> ResumeOut:
-        owner = resume.owner
-
-        return ResumeOut(
-            id=resume.id,
-            owner=OwnerOut(
-                surname=owner.surname,
-                name=owner.name,
-                patronymic=owner.patronymic,
-                email=owner.email,
-            ),
-            desired_job=resume.desired_job,
-            desired_salary=resume.desired_salary,
-            experience=resume.experience,
-            document=resume.document.url,
-            published_at=resume.published_at,
-            competencies=list(resume.competencies.values_list("name", flat=True)),
-        )
 
 
 class UpdatingResumeService(IUpdatingResumeService):
@@ -266,7 +246,7 @@ class ResumesWishlistService(IResumesWishlistService):
             auth_user.id, self.sorters[params.sort_by]
         )
 
-        return (GettingResumeService.resume_out(favourite.resume) for favourite in favourites)
+        return (ResumeOut.from_resume(favourite.resume) for favourite in favourites)
 
     def exists_resume_in_wishlist(self, auth_user: User, resume_id: int) -> bool:
         return self.favourite_resume_repo.exists_resume_in_user_wishlist(auth_user.id, resume_id)
@@ -300,7 +280,4 @@ class GettingResumesService(IGettingResumesService):
             params.published,
         )
 
-        return ResumesOut(
-            items=[GettingResumeService.resume_out(resume) for resume in resumes[offset : offset + limit]],
-            count=resumes.count(),
-        )
+        return ResumesOut.from_resumes_with_pagination(resumes, limit, offset)

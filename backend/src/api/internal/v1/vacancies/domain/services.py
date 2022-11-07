@@ -150,7 +150,7 @@ class PublishingVacancyService(IPublishingVacancyService):
 
         self.vacancy_repo.set_published_at_to_vacancy_by_id(vacancy_id, published_at)
 
-        return PublishingOut(published_at=published_at)
+        return PublishingOut.create(published_at)
 
     @atomic
     def unpublish(self, vacancy_id: int) -> None:
