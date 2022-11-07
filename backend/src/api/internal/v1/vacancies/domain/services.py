@@ -83,6 +83,10 @@ class IFavouriteVacancyRepository(ABC):
     def delete_vacancy_from_all_wishlists(self, vacancy_id: int) -> None:
         pass
 
+    @abstractmethod
+    def delete_vacancy_from_wishlist(self, user_id: int, vacancy_id: int) -> None:
+        pass
+
 
 class CreatingVacancyService(ICreatingVacancyService):
     def __init__(self, vacancy_repo: IVacancyRepository, department_repo: IDepartmentRepository):
@@ -181,3 +185,6 @@ class VacanciesWishlistService(IVacanciesWishlistService):
 
     def add_vacancy_to_wishlist(self, auth_user: User, vacancy_id: int) -> None:
         self.favourite_vacancy_repo.add_vacancy_to_wishlist(auth_user.id, vacancy_id)
+
+    def delete_vacancy_from_wishlist(self, auth_user: User, vacancy_id: int) -> None:
+        self.favourite_vacancy_repo.delete_vacancy_from_wishlist(auth_user.id, vacancy_id)

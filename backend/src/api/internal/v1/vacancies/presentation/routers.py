@@ -68,6 +68,10 @@ class IVacanciesWishlistHandlers(ABC):
     def add_vacancy_to_wishlist(self, request: HttpRequest, vacancy_id: int = Path(...)) -> SuccessResponse:
         pass
 
+    @abstractmethod
+    def delete_vacancy_from_wishlist(self, request: HttpRequest, vacancy_id: int = Path(...)) -> SuccessResponse:
+        pass
+
 
 class VacanciesRouter(Router):
     def __init__(
@@ -170,4 +174,11 @@ class VacanciesWishlistRouter(Router):
             methods=["POST"],
             view_func=vacancies_wishlist_handlers.add_vacancy_to_wishlist,
             response={200: SuccessResponse, 401: MessageResponse, 404: MessageResponse, 422: ErrorResponse},
+        )
+
+        self.add_api_operation(
+            path="/{int:vacancy_id}",
+            methods=["DELETE"],
+            view_func=vacancies_wishlist_handlers.delete_vacancy_from_wishlist,
+            response={200: SuccessResponse, 401: MessageResponse, 404: MessageResponse},
         )

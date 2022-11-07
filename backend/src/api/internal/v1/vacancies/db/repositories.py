@@ -72,3 +72,6 @@ class FavouriteVacancyRepository(IFavouriteVacancyRepository):
 
     def delete_vacancy_from_all_wishlists(self, vacancy_id: int) -> None:
         FavouriteVacancy.objects.filter(vacancy_id=vacancy_id).delete()
+
+    def delete_vacancy_from_wishlist(self, user_id: int, vacancy_id: int) -> None:
+        FavouriteVacancy.objects.filter(user_id=user_id, vacancy_id=vacancy_id).delete()

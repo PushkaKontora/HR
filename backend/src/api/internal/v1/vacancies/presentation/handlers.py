@@ -83,6 +83,10 @@ class IVacanciesWishlistService(ABC):
     def add_vacancy_to_wishlist(self, auth_user: User, vacancy_id: int) -> None:
         pass
 
+    @abstractmethod
+    def delete_vacancy_from_wishlist(self, auth_user: User, vacancy_id: int) -> None:
+        pass
+
 
 class VacanciesHandlers(IVacanciesHandlers):
     def __init__(self, creating_vacancy_service: ICreatingVacancyService):
@@ -170,5 +174,13 @@ class VacanciesWishlistHandlers(IVacanciesWishlistHandlers):
             raise VacancyAlreadyAddedToWishlistError()
 
         self.vacancies_wishlist_service.add_vacancy_to_wishlist(request.user, vacancy_id)
+
+        return SuccessResponse()
+
+    def delete_vacancy_from_wishlist(self, request: HttpRequest, vacancy_id: int = Path(...)) -> SuccessResponse:
+        if not self.vacancies_wishlist_service.exists_vacancy_in_wishlist(request.user, vacancy_id):
+            raise NotFoundError()
+
+        self.vacancies_wishlist_service.delete_vacancy_from_wishlist(request.user, vacancy_id)
 
         return SuccessResponse()
