@@ -213,9 +213,9 @@ class UpdatingVacancyService(IUpdatingVacancyService):
         self.vacancy_repo = vacancy_repo
 
     def authorize(self, auth_user: User, vacancy_id: int) -> bool:
-        return hasattr(auth_user, "department") and self.vacancy_repo.exists_vacancy_with_id_and_leader_of_department_id(
-            vacancy_id, auth_user.id
-        )
+        return hasattr(
+            auth_user, "department"
+        ) and self.vacancy_repo.exists_vacancy_with_id_and_leader_of_department_id(vacancy_id, auth_user.id)
 
     def update_vacancy(self, vacancy_id: int, body: NewVacancyIn) -> None:
         self.vacancy_repo.update(
