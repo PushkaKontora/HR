@@ -10,6 +10,7 @@ export type Vacancy = {
   'department': {
     'id': number,
     'name': string,
+    'description'?: string,
     'leader': {
       'id': number,
       'surname': string,

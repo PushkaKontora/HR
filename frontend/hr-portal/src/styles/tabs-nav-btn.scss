@@ -1,0 +1,19 @@
+.navTabs {
+  display: flex;
+  gap: 12px;
+
+  .navTabs-btnItem {
+    background: none;
+
+    &__respond {
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 16px;
+      letter-spacing: 0.05em;
+
+      padding: 16px 24px;
+      border: 0.7px solid #000000;
+      border-radius: 26px;
+    }
+  }
+}

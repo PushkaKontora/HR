@@ -317,6 +317,14 @@ input[type=checkbox] + label:before {
                 }
               }
             }
+            .filterItem-title__clearForm{
+              color: #9C9C9C;
+              font-weight: 600;
+              font-size: 16px;
+              line-height: 16px;
+              letter-spacing: 0.05em;
+              cursor: pointer;
+            }
           }
         }
 

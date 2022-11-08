@@ -1,0 +1,97 @@
+@import "./src/styles/tabs-description";
+@import "./src/styles/tabs-nav-btn";
+
+.tabsItem {
+  &__department {
+    background-color: #C7DBFF;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 16px;
+    letter-spacing: 0.05em;
+  }
+}
+
+.jobSearchDetails-wrapper {
+  margin-top: 16px;
+  padding: 2.8rem;
+  height: 32rem;
+  background: #C7DBFF;
+  border-radius: 20px;
+
+  .jobSearchDetails-item {
+    &__card {
+      display: flex;
+      gap: 20px;
+      justify-content: space-between;
+      align-items: flex-start;
+
+      height: 100%;
+
+      .cardSide-item {
+        &__criteria {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+
+          .name-vacancy {
+            font-weight: 600;
+            font-size: 40px;
+            line-height: 40px;
+          }
+
+          .tabsInfo {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            margin: 40px 0;
+          }
+
+          .navTabs {
+            margin-top: auto;
+          }
+        }
+
+        &__departmentInfo {
+          padding: 40px;
+          width: 452px;
+          height: 371px;
+          background: #FFFFFF;
+          border-radius: 20px;
+
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+
+          .departmentInfo-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 22px;
+            letter-spacing: 0.05em;
+          }
+
+          .departmentInfo-content {
+            margin: 20px 0;
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 18px;
+            letter-spacing: 0.05em;
+          }
+
+          .departmentInfo-viewAllVacancies {
+            justify-content: flex-end;
+          }
+        }
+      }
+    }
+
+    &__description {
+      margin: 66px 0;
+      width: 63rem;
+    }
+  }
+}

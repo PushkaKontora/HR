@@ -30,7 +30,7 @@ const departments = [
   }, {
     'value': 543,
     'label': 'аналитика'
-  },{
+  }, {
     'value': 661,
     'label': 'SEO'
   }, {
@@ -55,13 +55,19 @@ const departments = [
   },
 ];
 
+const initialStateJobScreen = {
+  radioChecked: radioInput[0],
+  salaryMin: '',
+  salaryMax: '',
+  selectDepartment: null
+};
 
 function JobSearchScreen() {
   const [pageSearch, setPageSearch] = useState('');
-  const [radioChecked, setRadioChecked] = useState(radioInput[0]);
-  const [selectDepartment, setSelectDepartment] = useState<null | string | undefined>(null);
-  const [salaryMin, setSalaryMin] = useState('');
-  const [salaryMax, setSalaryMax] = useState('');
+  const [radioChecked, setRadioChecked] = useState(initialStateJobScreen.radioChecked);
+  const [selectDepartment, setSelectDepartment] = useState<null | string | undefined>(initialStateJobScreen.selectDepartment);
+  const [salaryMin, setSalaryMin] = useState(initialStateJobScreen.salaryMin);
+  const [salaryMax, setSalaryMax] = useState(initialStateJobScreen.salaryMax);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -89,7 +95,13 @@ function JobSearchScreen() {
 
   const onHandleFilterDepartment = (e: any) => {
     setSelectDepartment(e.target.value);
-    console.log(e.target.value);
+  };
+
+  const handlerClearFilters = () => {
+    setRadioChecked(initialStateJobScreen.radioChecked);
+    setSalaryMax(initialStateJobScreen.salaryMax);
+    setSalaryMin(initialStateJobScreen.salaryMin);
+    setSelectDepartment(initialStateJobScreen.selectDepartment);
   };
 
   return (
@@ -153,8 +165,8 @@ function JobSearchScreen() {
               </div>
             </div>
           </div>
-          <div className="filterItem">
-            <div className="filterItem-title">Сбросить фильтр</div>
+          <div className="filterItem" onClick={handlerClearFilters}>
+            <div className="filterItem-title filterItem-title__clearForm">Сбросить фильтр</div>
           </div>
         </div>
         <div className="contentItem contentItem__vacancies">

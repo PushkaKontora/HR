@@ -1,0 +1,26 @@
+.tabsItem {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  letter-spacing: 0.05em;
+
+  padding: 6px 16px;
+  background: #FFFFFF;
+  border-radius: 30px;
+
+  .tabs-image-rus {
+    height: 12.5px;
+  }
+
+  .tabs-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tabs-flex {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}

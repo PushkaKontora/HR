@@ -18,10 +18,10 @@ function Header() {
           {
             statusUser !== UserStatus.noAuth && (
               <div className="header-nav">
-                <div className="header-navItem">Вакансии</div>
+                <div className="header-navItem header-navItem__active">Вакансии</div>
                 {statusUser !== UserStatus.user ? (
                   <Fragment>
-                    <div className="header-navItem header-navItem__active">Резюме</div>
+                    <div className="header-navItem">Резюме</div>
                     <div className="header-navItem">Мои вакансии</div>
                   </Fragment>
                 ) : undefined}
