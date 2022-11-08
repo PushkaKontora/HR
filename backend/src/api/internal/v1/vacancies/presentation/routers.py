@@ -11,7 +11,7 @@ from api.internal.v1.vacancies.domain.entities import (
     NewVacancyIn,
     PublishingOut,
     RequestOut,
-    VacanciesFilters,
+    VacanciesParams,
     VacanciesWishlistParams,
     VacancyIn,
     VacancyOut,
@@ -22,7 +22,7 @@ VACANCIES_TAG = "vacancies"
 
 class IVacanciesHandlers(ABC):
     @abstractmethod
-    def get_vacancies(self, request: HttpRequest, filters: VacanciesFilters = Query(...)) -> Iterable[VacancyOut]:
+    def get_vacancies(self, request: HttpRequest, params: VacanciesParams = Query(...)) -> Iterable[VacancyOut]:
         pass
 
     @abstractmethod

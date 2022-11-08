@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Set
 
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, TrigramWordSimilarity
+from django.contrib.postgres.search import TrigramWordSimilarity
 from django.db.models import Q, QuerySet
 
 from api.models import Experience, Resume
