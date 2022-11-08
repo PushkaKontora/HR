@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Iterable, Optional
 
 from django.http import HttpRequest
-from ninja import Body, Path, Query
+from ninja import Body, File, Form, Path, Query, UploadedFile
 from ninja.pagination import LimitOffsetPagination, paginate
 
 from api.internal.v1.errors import ForbiddenError, NotFoundError
@@ -10,6 +10,7 @@ from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.vacancies.domain.entities import (
     NewVacancyIn,
     PublishingOut,
+    RequestIn,
     RequestOut,
     VacanciesFilters,
     VacanciesWishlistParams,
@@ -17,6 +18,7 @@ from api.internal.v1.vacancies.domain.entities import (
     VacancyOut,
 )
 from api.internal.v1.vacancies.presentation.errors import (
+    ResumeIsNotPDFError,
     UnknownDepartmentIdError,
     VacancyAlreadyAddedToWishlistError,
     YouCannotAddUnpublishedVacancyToWishlistError,
@@ -99,6 +101,20 @@ class IUpdatingVacancyService(ABC):
         pass
 
 
+class IVacancyRequestService(ABC):
+    @abstractmethod
+    def create_request(
+        self, auth_user: User, vacancy_id: int, extra: RequestIn, resume: Optional[UploadedFile]
+    ) -> RequestOut:
+        pass
+
+
+class IDocumentService(ABC):
+    @abstractmethod
+    def is_pdf(self, file: UploadedFile) -> bool:
+        pass
+
+
 class VacanciesHandlers(IVacanciesHandlers):
     def __init__(self, creating_vacancy_service: ICreatingVacancyService):
         self.creating_vacancy_service = creating_vacancy_service
@@ -125,7 +141,11 @@ class VacancyHandlers(IVacancyHandlers):
         getting_service: IGettingService,
         publishing_vacancy_service: IPublishingVacancyService,
         updating_vacancy_service: IUpdatingVacancyService,
+        vacancy_request_service: IVacancyRequestService,
+        document_service: IDocumentService,
     ):
+        self.document_service = document_service
+        self.vacancy_request_service = vacancy_request_service
         self.updating_vacancy_service = updating_vacancy_service
         self.publishing_vacancy_service = publishing_vacancy_service
         self.getting_service = getting_service
@@ -151,8 +171,20 @@ class VacancyHandlers(IVacancyHandlers):
 
         return SuccessResponse()
 
-    def create_vacancy_request(self, request: HttpRequest, vacancy_id: int = Path(...)) -> RequestOut:
-        raise NotImplementedError()
+    def create_vacancy_request(
+        self,
+        request: HttpRequest,
+        vacancy_id: int = Path(...),
+        extra: RequestIn = Form(...),
+        resume: Optional[UploadedFile] = File(None),
+    ) -> RequestOut:
+        if not self.getting_service.exists_vacancy_with_id(vacancy_id):
+            raise NotFoundError()
+
+        if resume is not None and not self.document_service.is_pdf(resume):
+            raise ResumeIsNotPDFError()
+
+        return self.vacancy_request_service.create_request(request.user, vacancy_id, extra, resume)
 
     def publish_vacancy(self, request: HttpRequest, vacancy_id: int = Path(...)) -> PublishingOut:
         if not self.getting_service.exists_vacancy_with_id(vacancy_id):

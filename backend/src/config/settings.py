@@ -65,7 +65,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, "api", "internal", "v1", "vacancies", "domain", "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -166,3 +166,12 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Pagination
 
 PAGINATION_PER_PAGE = 100
+
+
+# Emailing
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", str)
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", str)
+EMAIL_PORT = env("EMAIL_PORT", int)

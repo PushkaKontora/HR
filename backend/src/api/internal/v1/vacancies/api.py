@@ -9,20 +9,26 @@ from api.internal.v1.users.api import UsersContainer
 from api.internal.v1.vacancies.db.repositories import (
     DepartmentRepository,
     FavouriteVacancyRepository,
+    UserRepository,
     VacancyRepository,
+    VacancyRequestRepository,
 )
 from api.internal.v1.vacancies.db.sorters import (
     VacanciesWishlistSortByAddedAtDESC,
     VacanciesWishlistSortByPublishedAtASC,
 )
+from api.internal.v1.vacancies.domain.notifiers import EmailNotifier
 from api.internal.v1.vacancies.domain.services import (
     CreatingVacancyService,
+    DocumentService,
     GettingService,
     PublishingVacancyService,
     UpdatingVacancyService,
     VacanciesWishlistService,
+    VacancyRequestService,
 )
 from api.internal.v1.vacancies.presentation.errors import (
+    ResumeIsNotPDFError,
     UnknownDepartmentIdError,
     VacancyAlreadyAddedToWishlistError,
     YouCannotAddUnpublishedVacancyToWishlistError,
@@ -34,7 +40,12 @@ from api.internal.v1.vacancies.presentation.handlers import (
 )
 from api.internal.v1.vacancies.presentation.routers import VacanciesRouter, VacanciesWishlistRouter, VacancyRouter
 
-ERRORS = [UnknownDepartmentIdError, YouCannotAddUnpublishedVacancyToWishlistError, VacancyAlreadyAddedToWishlistError]
+ERRORS = [
+    UnknownDepartmentIdError,
+    YouCannotAddUnpublishedVacancyToWishlistError,
+    VacancyAlreadyAddedToWishlistError,
+    ResumeIsNotPDFError,
+]
 
 
 class VacanciesContainer(containers.DeclarativeContainer):
@@ -46,6 +57,10 @@ class VacanciesContainer(containers.DeclarativeContainer):
     vacancy_repo = providers.Singleton(VacancyRepository)
     department_repo = providers.Singleton(DepartmentRepository)
     favourite_vacancy_repo = providers.Singleton(FavouriteVacancyRepository)
+    user_repo = providers.Singleton(UserRepository)
+    vacancy_request_repo = providers.Singleton(VacancyRequestRepository)
+
+    employer_notifier = providers.Factory(EmailNotifier)
 
     creating_vacancy_service = providers.Singleton(
         CreatingVacancyService, vacancy_repo=vacancy_repo, department_repo=department_repo
@@ -61,6 +76,13 @@ class VacanciesContainer(containers.DeclarativeContainer):
         added_at_desc_sorter=added_at_desc_sorter,
     )
     updating_vacancy_service = providers.Singleton(UpdatingVacancyService, vacancy_repo=vacancy_repo)
+    vacancy_request_service = providers.Singleton(
+        VacancyRequestService,
+        user_repo=user_repo,
+        vacancy_request_repo=vacancy_request_repo,
+        employer_notifier=employer_notifier,
+    )
+    document_service = providers.Singleton(DocumentService)
 
     vacancies_wishlist_handlers = providers.Singleton(
         VacanciesWishlistHandlers,
@@ -72,6 +94,8 @@ class VacanciesContainer(containers.DeclarativeContainer):
         getting_service=getting_service,
         publishing_vacancy_service=publishing_vacancy_service,
         updating_vacancy_service=updating_vacancy_service,
+        vacancy_request_service=vacancy_request_service,
+        document_service=document_service,
     )
     vacancies_handlers = providers.Singleton(VacanciesHandlers, creating_vacancy_service=creating_vacancy_service)
 

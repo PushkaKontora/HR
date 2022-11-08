@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Iterable, List
+from typing import Iterable, List, Optional
 
 from django.http import HttpRequest
-from ninja import Body, Path, Query, Router
+from ninja import Body, File, Form, Path, Query, Router, UploadedFile
 from ninja.security import HttpBearer
 
 from api.internal.v1.responses import ErrorResponse, MessageResponse, SuccessResponse
@@ -10,6 +10,7 @@ from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 from api.internal.v1.vacancies.domain.entities import (
     NewVacancyIn,
     PublishingOut,
+    RequestIn,
     RequestOut,
     VacanciesFilters,
     VacanciesWishlistParams,
@@ -42,7 +43,13 @@ class IVacancyHandlers(ABC):
         pass
 
     @abstractmethod
-    def create_vacancy_request(self, request: HttpRequest, vacancy_id: int = Path(...)) -> RequestOut:
+    def create_vacancy_request(
+        self,
+        request: HttpRequest,
+        vacancy_id: int = Path(...),
+        extra: RequestIn = Form(...),
+        resume: Optional[UploadedFile] = File(None),
+    ) -> RequestOut:
         pass
 
     @abstractmethod
@@ -133,12 +140,11 @@ class VacancyRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[VACANCIES_TAG, NOT_IMPLEMENTED_TAG],
             path="/request",
             methods=["POST"],
             view_func=vacancy_handlers.create_vacancy_request,
             auth=[auth],
-            response={200: RequestOut, 401: ErrorResponse, 404: ErrorResponse},
+            response={200: RequestOut, 401: MessageResponse, 404: MessageResponse},
         )
 
         self.add_api_operation(
