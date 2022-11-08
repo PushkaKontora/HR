@@ -1,4 +1,4 @@
-from api.internal.v1.exceptions import APIBaseError
+from api.internal.v1.errors import APIBaseError
 
 
 class PasswordHasAlreadyRegisteredError(APIBaseError):

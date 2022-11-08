@@ -4,7 +4,7 @@ from ninja.responses import Response
 
 from api.internal.v1.competencies.api import register_competencies_api
 from api.internal.v1.departments.api import register_departments_api
-from api.internal.v1.exceptions import BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError
+from api.internal.v1.errors import BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError
 from api.internal.v1.responses import MessageResponse
 from api.internal.v1.resumes.api import register_resumes_api
 from api.internal.v1.users.api import register_users_api

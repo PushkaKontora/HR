@@ -3,7 +3,7 @@ from typing import Any, Optional
 from django.http import HttpRequest
 from ninja.security import HttpBearer
 
-from api.internal.v1.exceptions import UnauthorizedError
+from api.internal.v1.errors import UnauthorizedError
 from api.internal.v1.users.domain.entities import TokenType
 from api.internal.v1.users.presentation.handlers import IJWTService
 

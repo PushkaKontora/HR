@@ -4,16 +4,14 @@ from typing import Iterable, List
 from django.http import HttpRequest
 from ninja import Query, Router
 
-from api.internal.v1.competencies.domain.entities import CompetenciesFilters, CompetencyOut
+from api.internal.v1.competencies.domain.entities import CompetencyOut
 
 COMPETENCIES_TAG = "competencies"
 
 
 class ICompetenciesHandlers(ABC):
     @abstractmethod
-    def get_competencies(
-        self, request: HttpRequest, filters: CompetenciesFilters = Query(...)
-    ) -> Iterable[CompetencyOut]:
+    def get_competencies(self, request: HttpRequest) -> Iterable[CompetencyOut]:
         pass
 
 
