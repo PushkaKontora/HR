@@ -1,3 +1,5 @@
+import {InputFieldProps} from '../styled/input-field';
+
 type InputData = {
   options: any,
   label: string,
@@ -8,6 +10,6 @@ type InputData = {
 type FormInputProps = {
   errors: any,
   register: any
-} & InputData;
+} & InputData & InputFieldProps;
 
 export type {InputData, FormInputProps};

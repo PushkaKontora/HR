@@ -10,8 +10,10 @@ import LoginPage from './pages/login-page/login-page';
 import SignUpPage from './pages/sign-up-page/sign-up-page';
 import PrivateRoute from './components/private-route/private-route';
 import {UserStatus} from './types/user-status';
-import {useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {checkToken, getToken} from './service/token-manager';
+import {Content} from './components/styled/markup/content';
+import {ToastWrapper} from './components/toast-wrapper/toast-wrapper';
 
 function App() {
   const count = useAppSelector((state) => state.example.valueCount);
@@ -40,7 +42,9 @@ function App() {
         <Route path={'/'} element={<DefaultLayout/>}>
           <Route index element={
             <PrivateRoute requiredUserStatus={UserStatus.user}>
-              <div>Example private page</div>
+              <Content>
+                <div>Example private page</div>
+              </Content>
             </PrivateRoute>
           }/>
           <Route path={NoAuthRoutes.Login} element={<LoginPage/>}/>
@@ -49,6 +53,7 @@ function App() {
 
         </Route>
       </Routes>
+      <ToastWrapper/>
     </div>
   );
 }

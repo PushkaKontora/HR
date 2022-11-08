@@ -1,26 +1,23 @@
-import FormInput from '../form-input/form-input';
+import AuthFormInput from '../form-inputs/auth-form-input';
 import {InputData} from '../types/form-input-props';
 import {useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {FormSubmit} from '../../styled/forms/form-submit';
 import {EmailRegex} from '../../../const/email-regex';
-
-type SignUpFormData = {
-  surname: string,
-  name: string,
-  patronymic:string,
-  email: string,
-  password: string
-}
+import {useAppDispatch} from '../../../app/hooks';
+import {signIn} from '../../../service/async-actions';
+import {SignInData} from '../../../types/sign-in-data';
 
 function SignUpForm() {
   const {
     register,
     handleSubmit,
     formState: {errors}
-  } = useForm<SignUpFormData>({
+  } = useForm<SignInData>({
     mode: 'onChange'
   });
+
+  const dispatch = useAppDispatch();
 
   const [formData, setFormData] = useState({
     surname: '',
@@ -80,14 +77,14 @@ function SignUpForm() {
     }
   ];
 
-  const onSubmit = (data: SignUpFormData) => {
-    setFormData({...data});
+  const onSubmit = (data: SignInData) => {
+    dispatch(signIn(data));
   };
 
   return (
     <form action={'#'} onSubmit={handleSubmit(onSubmit)}>
       {inputs.map((item, idx) => (
-        <FormInput key={idx} {...item} errors={errors} register={register}/>
+        <AuthFormInput key={idx} {...item} errors={errors} register={register}/>
       ))}
 
       <FormSubmit type='submit' value='Далее'/>

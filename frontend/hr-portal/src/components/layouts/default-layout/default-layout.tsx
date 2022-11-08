@@ -9,8 +9,8 @@ import {useAppSelector} from '../../../app/hooks';
 import {UserStatus} from '../../../types/user-status';
 
 const Main = styled.main`
-  min-width: ${CONTENT_WIDTH};
-  width: ${CONTENT_WIDTH};
+  position: relative;
+  width: 100%;
   margin: 0 auto;
   
   flex-grow: 1;

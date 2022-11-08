@@ -1,7 +1,6 @@
-import './login-form.scss';
 import {useForm} from 'react-hook-form';
 import {useState} from 'react';
-import FormInput from '../form-input/form-input';
+import AuthFormInput from '../form-inputs/auth-form-input';
 import {InputData} from '../types/form-input-props';
 import {FormSubmit} from '../../styled/forms/form-submit';
 import {EmailRegex} from '../../../const/email-regex';
@@ -65,7 +64,7 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {inputs.map((item, idx) => (
-        <FormInput key={idx} {...item} errors={errors} register={register}/>
+        <AuthFormInput key={idx} {...item} errors={errors} register={register}/>
       ))}
 
       <FormSubmit type='submit' value='Далее' disabled={loading}/>

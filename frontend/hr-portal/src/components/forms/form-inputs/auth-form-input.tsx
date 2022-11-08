@@ -1,27 +1,9 @@
 import { FormInputProps } from '../types/form-input-props';
 import styled from 'styled-components';
+import {InputField} from '../styled/input-field';
 
 const Parent = styled.div`
   margin-bottom: 32px;
-`;
-
-const InputField = styled.input`
-  width: 525px;
-
-  border: 1px solid #9C9C9C;
-  border-radius: 0.8rem;
-  background-color: white;
-
-  padding: 20px;
-  font-size: 18px;
-
-  &:focus {
-    border: 1px solid #4AC1FF;
-  }
-
-  &:invalid, &[aria-invalid='true'] {
-    border: 1px solid #C52B1A;
-  }
 `;
 
 const ErrorField = styled.div`
@@ -45,13 +27,18 @@ const LabelField = styled.label`
   display: block;
 `;
 
-function FormInput(props: FormInputProps) {
+function AuthFormInput(props: FormInputProps) {
   const fieldName = props.name;
 
   return (
     <Parent>
       <LabelField>{props.label}</LabelField>
-      <InputField type={props.type} {...props.register(props.name, props.options)} aria-invalid={props.errors[fieldName] ? 'true' : 'false'}/>
+      <InputField
+        normalBorderColor={'#9C9C9C'}
+        padding={'20px'}
+        type={props.type}
+        {...props.register(props.name, props.options)}
+        aria-invalid={props.errors[fieldName] ? 'true' : 'false'}/>
       <ErrorField>
         {[props.errors[fieldName]] && [props.errors[fieldName]?.message]}
       </ErrorField>
@@ -59,4 +46,4 @@ function FormInput(props: FormInputProps) {
   );
 }
 
-export default FormInput;
+export default AuthFormInput;
