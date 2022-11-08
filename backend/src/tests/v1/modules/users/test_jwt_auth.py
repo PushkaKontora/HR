@@ -7,7 +7,7 @@ from django.conf import settings
 from django.utils.timezone import now
 from jwt import encode
 
-from api.internal.v1.exceptions import UnauthorizedError
+from api.internal.v1.errors import UnauthorizedError
 from api.internal.v1.users.api import UsersContainer
 from api.models import User
 from tests.v1.integrations.users.conftest import access_payload, encode_payload

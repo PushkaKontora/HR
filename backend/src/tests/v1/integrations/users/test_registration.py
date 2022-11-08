@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.test import Client
 from ninja.responses import Response
 
-from api.models import Permissions, Resume, User
+from api.models import Permission, Resume, User
 from tests.v1.integrations.conftest import error_422, post, success
 from tests.v1.integrations.users.conftest import USERS
 
@@ -32,7 +32,7 @@ def test_register_user(client: Client) -> None:
     assert user.email == body["email"]
     assert checkpw(body["password"].encode(), user.password.value.encode()) is True
 
-    assert user.permission == Permissions.USER
+    assert user.permission == Permission.USER
     assert bool(user.photo) is False
     assert not Resume.objects.filter(owner=user).exists()
 

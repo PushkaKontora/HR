@@ -5,7 +5,7 @@ from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client
 
-from api.models import Competency, Experiences, Resume, User
+from api.models import Competency, Experience, Resume, User
 from tests.v1.integrations.conftest import error_422, forbidden, get_headers, success
 from tests.v1.integrations.resumes.conftest import RESUMES
 
@@ -19,7 +19,7 @@ def create(
     desired_job: str,
     document: SimpleUploadedFile,
     desired_salary: int = None,
-    experience: Experiences = None,
+    experience: Experience = None,
     competencies: List[str] = None,
 ):
 
@@ -48,7 +48,7 @@ def test_create_resume(
     pdf_document: SimpleUploadedFile,
     desired_job: Optional[str] = "Frontend",
     desired_salary: Optional[int] = 100,
-    experience: Optional[Experiences] = Experiences.NO_EXPERIENCE,
+    experience: Optional[Experience] = Experience.NO_EXPERIENCE,
     competencies: Optional[Tuple] = ("Simpsons", "redux", "angular"),
 ) -> None:
     expected_competencies = competencies[1:] if competencies else None
@@ -67,6 +67,8 @@ def test_create_resume(
     assert resume.desired_salary == desired_salary
     if expected_competencies:
         assert set(resume.competencies.values_list("name", flat=True)) == set(expected_competencies)
+    else:
+        assert resume.competencies.count() == 0
     assert resume.published_at is None
 
 

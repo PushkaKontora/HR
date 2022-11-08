@@ -1,5 +1,6 @@
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils.timezone import now
 
 from api.models import Resume, User
 from tests.v1.integrations.conftest import V1
@@ -15,4 +16,4 @@ def pdf_document() -> SimpleUploadedFile:
 
 @pytest.fixture
 def resume(user: User) -> Resume:
-    return Resume.objects.create(owner=user, desired_job="Frontend")
+    return Resume.objects.create(owner=user, desired_job="Frontend", published_at=now())

@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from datetime import timedelta
-from re import match
 from typing import Optional
 
 from bcrypt import checkpw
@@ -40,12 +39,12 @@ from api.internal.v1.users.presentation.handlers import (
     IRenamingUserService,
     IResettingPasswordService,
 )
-from api.models import IssuedToken, Password, User
+from api.models import IssuedToken, Password, Permission, User
 
 
 class IUserRepository(ABC):
     @abstractmethod
-    def exists_email(self, email: str) -> bool:
+    def exists_user_with_email(self, email: str) -> bool:
         pass
 
     @abstractmethod
@@ -65,7 +64,15 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def get_for_update(self, user_id: int) -> User:
+    def get_user_for_update(self, user_id: int) -> User:
+        pass
+
+    @abstractmethod
+    def exists_user_with_id(self, user_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def get_user_by_id(self, user_id: int) -> User:
         pass
 
 
@@ -101,7 +108,7 @@ class RegistrationService(IRegistrationService):
         self.user_repo = user_repo
 
     def is_email_taken(self, email: str) -> bool:
-        return self.user_repo.exists_email(email)
+        return self.user_repo.exists_user_with_email(email)
 
     @atomic
     def register(self, body: RegistrationIn) -> None:
@@ -130,7 +137,7 @@ class JWTService(IJWTService):
 
     def try_get_payload(self, value: str) -> Optional[Payload]:
         try:
-            return Payload(**decode(value, settings.SECRET_KEY, algorithms=self.ALGORITHMS))
+            return Payload.from_dict(decode(value, settings.SECRET_KEY, algorithms=self.ALGORITHMS))
         except (PyJWTError, ValidationError):
             return None
 
@@ -147,9 +154,9 @@ class JWTService(IJWTService):
         self.issued_token_repo.revoke_all_tokens_for_user(owner.id)
 
     def create_tokens(self, user: User) -> Tokens:
-        tokens = Tokens(
-            access=self.generate_token(user, TokenType.ACCESS, settings.ACCESS_TOKEN_TTL),
-            refresh=self.generate_token(user, TokenType.REFRESH, settings.REFRESH_TOKEN_TTL),
+        tokens = Tokens.create(
+            self.generate_token(user, TokenType.ACCESS, settings.ACCESS_TOKEN_TTL),
+            self.generate_token(user, TokenType.REFRESH, settings.REFRESH_TOKEN_TTL),
         )
 
         with atomic():
@@ -159,14 +166,14 @@ class JWTService(IJWTService):
         return tokens
 
     def get_tokens_out(self, tokens: Tokens) -> AuthenticationOut:
-        return AuthenticationOut(access_token=tokens.access)
+        return AuthenticationOut.from_tokens(tokens)
 
     def generate_token(self, user: User, token_type: TokenType, ttl: timedelta) -> str:
-        payload = Payload(
-            type=token_type.value,
-            user_id=user.id,
-            permission=str(user.permission),
-            expires_in=int((now() + ttl).timestamp()),
+        payload = Payload.create(
+            token_type,
+            user.id,
+            Permission(user.permission),
+            int((now() + ttl).timestamp()),
         )
 
         return encode(payload.dict(), settings.SECRET_KEY, algorithm=self.ALGORITHMS[0])
@@ -182,22 +189,14 @@ class GettingUserService(IGettingUserService):
         if not user:
             return None
 
-        return UserOut(
-            id=user.id,
-            email=user.email,
-            permission=user.permission,
-            surname=user.surname,
-            name=user.name,
-            patronymic=user.patronymic,
-            photo=user.photo.url if user.photo else None,
-            resume=UserResumeOut.from_orm(user.resume) if hasattr(user, "resume") else None,
-            department=UserDepartmentOut.from_orm(user.department) if hasattr(user, "department") else None,
-            password=PasswordOut.from_orm(user.password),
-        )
+        return UserOut.from_user(user)
+
+    def exists_user_with_id(self, user_id: int) -> bool:
+        return self.user_repo.exists_user_with_id(user_id)
 
 
 class ResettingPasswordService(IResettingPasswordService):
-    def authorize_only_self(self, user: User, user_id: int) -> bool:
+    def authorize(self, user: User, user_id: int) -> bool:
         return user.id == user_id
 
     def match_password(self, user: User, body: ResetPasswordIn) -> bool:
@@ -208,7 +207,7 @@ class ResettingPasswordService(IResettingPasswordService):
         password.value = hash_password(body.new_password)
         password.save(update_fields=["value", "updated_at"])
 
-        return PasswordUpdatedAtOut(updated_at=password.updated_at)
+        return PasswordUpdatedAtOut.from_password(password)
 
 
 class DeletingUserService(IDeletingUserService):
@@ -224,7 +223,7 @@ class DeletingUserService(IDeletingUserService):
 
     @atomic
     def delete(self, user_id: int) -> None:
-        user = self.user_repo.get_for_update(user_id)
+        user = self.user_repo.get_user_for_update(user_id)
 
         user.delete()
 
@@ -238,7 +237,7 @@ class RenamingUserService(IRenamingUserService):
 
     @atomic
     def rename(self, user_id: int, body: NameIn) -> None:
-        user = self.user_repo.get_for_update(user_id)
+        user = self.user_repo.get_user_for_update(user_id)
 
         user.surname = body.surname
         user.name = body.name
@@ -254,11 +253,11 @@ class ChangingEmailService(IChangingEmailService):
         return auth_user.id == user_id
 
     def is_email_already_registered(self, body: EmailIn) -> bool:
-        return self.user_repo.exists_email(body.email)
+        return self.user_repo.exists_user_with_email(body.email)
 
     @atomic
     def change_email(self, user_id: int, body: EmailIn) -> None:
-        user = self.user_repo.get_for_update(user_id)
+        user = self.user_repo.get_user_for_update(user_id)
 
         user.email = body.email
         user.save(update_fields=["email"])
@@ -274,15 +273,15 @@ class PhotoService(IPhotoService):
         return auth_user.id == user_id
 
     def upload(self, user_id: int, photo: UploadedFile) -> PhotoOut:
-        user = self.user_repo.try_get_user_by_id(user_id)
+        user = self.user_repo.get_user_by_id(user_id)
 
         user.photo = UploadedFile(photo, f"{user.id}{photo.name}")
         user.save(update_fields=["photo"])
 
-        return PhotoOut(photo=user.photo.url)
+        return PhotoOut.from_user(user)
 
     def delete(self, user_id: int) -> None:
-        user = self.user_repo.try_get_user_by_id(user_id)
+        user = self.user_repo.get_user_by_id(user_id)
 
         user.photo = None
         user.save(update_fields=["photo"])

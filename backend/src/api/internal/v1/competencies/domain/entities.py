@@ -1,11 +1,11 @@
-from typing import Optional
-
 from ninja import Schema
 
-
-class CompetenciesFilters(Schema):
-    search: Optional[str] = None
+from api.models import Competency
 
 
 class CompetencyOut(Schema):
     name: str
+
+    @staticmethod
+    def from_competency(competency: Competency) -> "CompetencyOut":
+        return CompetencyOut(name=competency.name)

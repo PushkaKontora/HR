@@ -7,21 +7,20 @@ from ninja.security import HttpBearer
 
 from api.internal.v1.responses import ErrorResponse, MessageResponse, SuccessResponse
 from api.internal.v1.resumes.domain.entities import (
+    NewResumeIn,
     PublishingOut,
-    ResumeFormIn,
     ResumeOut,
-    ResumesFilters,
-    ResumesWishlistFilters,
-    ResumesWishlistIn,
+    ResumesOut,
+    ResumesParams,
+    ResumesWishlistParameters,
 )
-from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 
 RESUMES_TAG = "resumes"
 
 
 class IResumesHandlers(ABC):
     @abstractmethod
-    def get_resumes(self, request: HttpRequest, filters: ResumesFilters = Query(...)) -> Iterable[ResumeOut]:
+    def get_resumes(self, request: HttpRequest, params: ResumesParams = Query(...)) -> ResumesOut:
         pass
 
 
@@ -32,7 +31,7 @@ class IResumeHandlers(ABC):
 
     @abstractmethod
     def create_resume(
-        self, request: HttpRequest, extra: ResumeFormIn = Form(...), document: UploadedFile = File(...)
+        self, request: HttpRequest, extra: NewResumeIn = Form(...), document: UploadedFile = File(...)
     ) -> SuccessResponse:
         pass
 
@@ -41,7 +40,7 @@ class IResumeHandlers(ABC):
         self,
         request: HttpRequest,
         resume_id: int = Path(...),
-        extra: ResumeFormIn = Form(...),
+        extra: NewResumeIn = Form(...),
         document: UploadedFile = File(...),
     ) -> SuccessResponse:
         pass
@@ -58,12 +57,16 @@ class IResumeHandlers(ABC):
 class IResumesWishlistHandlers(ABC):
     @abstractmethod
     def get_resumes_wishlist(
-        self, request: HttpRequest, filters: ResumesWishlistFilters = Query(...)
+        self, request: HttpRequest, filters: ResumesWishlistParameters = Query(...)
     ) -> Iterable[ResumeOut]:
         pass
 
     @abstractmethod
-    def add_resume_to_wishlist(self, request: HttpRequest, body: ResumesWishlistIn = Body(...)) -> SuccessResponse:
+    def add_resume_to_wishlist(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
+        pass
+
+    @abstractmethod
+    def delete_resume_from_wishlist(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
         pass
 
 
@@ -79,11 +82,11 @@ class ResumesRouter(Router):
         super(ResumesRouter, self).__init__(tags=[RESUMES_TAG])
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
             view_func=resumes_handlers.get_resumes,
-            response={200: List[ResumeOut]},
+            auth=[auth],
+            response={200: ResumesOut},
         )
 
         self.add_api_operation(
@@ -107,20 +110,20 @@ class ResumeRouter(Router):
             methods=["GET"],
             auth=[auth],
             view_func=resume_handlers.get_resume,
-            response={200: ResumeOut, 403: MessageResponse},
+            response={200: ResumeOut, 403: MessageResponse, 404: MessageResponse},
         )
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
-            methods=["PUT"],
+            methods=["POST"],
             auth=[auth],
             view_func=resume_handlers.update_resume,
             response={
                 200: SuccessResponse,
-                401: ErrorResponse,
-                404: ErrorResponse,
-                422: ErrorResponse,
+                401: MessageResponse,
+                403: MessageResponse,
+                404: MessageResponse,
+                422: MessageResponse,
             },
         )
 
@@ -129,7 +132,7 @@ class ResumeRouter(Router):
             methods=["PATCH"],
             auth=[auth],
             view_func=resume_handlers.publish_resume,
-            response={200: PublishingOut, 401: MessageResponse, 403: MessageResponse},
+            response={200: PublishingOut, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
         )
 
         self.add_api_operation(
@@ -137,28 +140,31 @@ class ResumeRouter(Router):
             methods=["PATCH"],
             auth=[auth],
             view_func=resume_handlers.unpublish_resume,
-            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse},
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
         )
 
 
 class ResumesWishlistRouter(Router):
-    def __init__(self, wishlist_resumes_handlers: IResumesWishlistHandlers, auth: HttpBearer):
-        super(ResumesWishlistRouter, self).__init__(tags=[RESUMES_TAG])
+    def __init__(self, resumes_wishlist_handlers: IResumesWishlistHandlers, auth: HttpBearer):
+        super(ResumesWishlistRouter, self).__init__(tags=[RESUMES_TAG], auth=[auth])
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
-            auth=[auth],
-            view_func=wishlist_resumes_handlers.get_resumes_wishlist,
-            response={200: List[ResumeOut], 401: ErrorResponse, 403: ErrorResponse},
+            view_func=resumes_wishlist_handlers.get_resumes_wishlist,
+            response={200: List[ResumeOut], 401: MessageResponse, 403: MessageResponse},
         )
 
         self.add_api_operation(
-            tags=[RESUMES_TAG, NOT_IMPLEMENTED_TAG],
-            path="",
+            path="/{int:resume_id}",
             methods=["POST"],
-            auth=[auth],
-            view_func=wishlist_resumes_handlers.add_resume_to_wishlist,
-            response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 422: ErrorResponse},
+            view_func=resumes_wishlist_handlers.add_resume_to_wishlist,
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: MessageResponse},
+        )
+
+        self.add_api_operation(
+            path="/{int:resume_id}",
+            methods=["DELETE"],
+            view_func=resumes_wishlist_handlers.delete_resume_from_wishlist,
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
         )

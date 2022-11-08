@@ -3,7 +3,7 @@ from django.test import Client
 from ninja.responses import Response
 
 from api.models import User
-from tests.v1.integrations.conftest import forbidden, patch, success
+from tests.v1.integrations.conftest import forbidden, not_found, patch, success
 from tests.v1.integrations.users.conftest import USER
 
 RENAME = USER + "/rename"
@@ -51,3 +51,14 @@ def test_rename_user__authenticated_user_try_it_with_another(
     assert user.surname == surname
     assert user.name == name
     assert user.patronymic == patronymic
+
+
+@pytest.mark.integration
+@pytest.mark.django_db
+def test_rename_unknown_user(client: Client, user: User, user_token: str) -> None:
+    response = rename(client, 0, user_token, "a", "b", "c")
+
+    assert response.status_code == 404
+    assert response.json() == not_found()
+
+    assert User.objects.get(pk=user.pk) == user

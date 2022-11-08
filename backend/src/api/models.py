@@ -1,13 +1,14 @@
+from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 
 
-class Permissions(models.TextChoices):
+class Permission(models.TextChoices):
     USER = "user"
     EMPLOYER = "employer"
     ADMIN = "admin"
 
 
-class Experiences(models.TextChoices):
+class Experience(models.TextChoices):
     NO_EXPERIENCE = "no_experience"
     FROM_ONE_TO_THREE_YEARS = "from_one_to_three_years"
     FROM_THREE_TO_SIX_YEARS = "from_three_to_six_years"
@@ -16,13 +17,13 @@ class Experiences(models.TextChoices):
 
 class User(models.Model):
     email = models.EmailField(max_length=256, unique=True)
-    permission = models.CharField(max_length=32, choices=Permissions.choices, default=Permissions.USER)
+    permission = models.CharField(max_length=32, choices=Permission.choices, default=Permission.USER)
     surname = models.CharField(max_length=128)
     name = models.CharField(max_length=128)
     patronymic = models.CharField(max_length=128)
     photo = models.ImageField(upload_to="photos/%Y/%m/%d/", null=True)
-    favorite_vacancies = models.ManyToManyField("Vacancy", through="FavoriteVacancy")
-    favorite_resumes = models.ManyToManyField("Resume", through="FavoriteResume")
+    favourite_vacancies = models.ManyToManyField("Vacancy", through="FavouriteVacancy")
+    favourite_resumes = models.ManyToManyField("Resume", through="FavouriteResume")
 
     class Meta:
         db_table = "users"
@@ -41,13 +42,14 @@ class Resume(models.Model):
     owner = models.OneToOneField("User", on_delete=models.CASCADE, related_name="resume")
     document = models.FileField(upload_to="resumes/%Y/%m/%d/")
     desired_job = models.CharField(max_length=128)
-    experience = models.CharField(max_length=32, choices=Experiences.choices, null=True)
+    experience = models.CharField(max_length=32, choices=Experience.choices, null=True)
     desired_salary = models.PositiveIntegerField(null=True)
     competencies = models.ManyToManyField("Competency", through="ResumeCompetency")
     published_at = models.DateTimeField(null=True)
 
     class Meta:
         db_table = "resumes"
+        indexes = [GinIndex(name="desired_job_idx", fields=["desired_job"], opclasses=["gin_trgm_ops"])]
 
 
 class ResumeCompetency(models.Model):
@@ -79,7 +81,7 @@ class Vacancy(models.Model):
     department = models.ForeignKey("Department", on_delete=models.CASCADE, related_name="vacancies")
     name = models.CharField(max_length=256)
     description = models.TextField(null=True)
-    expected_experience = models.CharField(max_length=32, choices=Experiences.choices, null=True)
+    expected_experience = models.CharField(max_length=32, choices=Experience.choices)
     salary_from = models.PositiveIntegerField(null=True)
     salary_to = models.PositiveIntegerField(null=True)
     published_at = models.DateTimeField(null=True)
@@ -107,19 +109,21 @@ class IssuedToken(models.Model):
         db_table = "issued_tokens"
 
 
-class FavoriteVacancy(models.Model):
+class FavouriteVacancy(models.Model):
     user = models.ForeignKey("User", on_delete=models.CASCADE)
     vacancy = models.ForeignKey("Vacancy", on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "favorite_vacancies"
+        db_table = "favourite_vacancies"
+        unique_together = ["user", "vacancy"]
 
 
-class FavoriteResume(models.Model):
+class FavouriteResume(models.Model):
     user = models.ForeignKey("User", on_delete=models.CASCADE)
     resume = models.ForeignKey("Resume", on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "favorite_resumes"
+        db_table = "favourite_resumes"
+        unique_together = ["user", "resume"]

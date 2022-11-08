@@ -20,14 +20,20 @@ class UserRepository(IUserRepository):
     def try_get_user_by_id(self, user_id: int) -> Optional[User]:
         return User.objects.filter(id=user_id).first()
 
-    def get_for_update(self, user_id: int) -> User:
+    def get_user_for_update(self, user_id: int) -> User:
         return User.objects.select_for_update().get(id=user_id)
 
-    def exists_email(self, email: str) -> bool:
+    def get_user_by_id(self, user_id: int) -> User:
+        return User.objects.get(id=user_id)
+
+    def exists_user_with_email(self, email: str) -> bool:
         return User.objects.filter(email=email).exists()
 
     def create(self, email: str, surname: str, name: str, patronymic: str) -> User:
         return User.objects.create(email=email, surname=surname, name=name, patronymic=patronymic)
+
+    def exists_user_with_id(self, user_id: int) -> bool:
+        return User.objects.filter(id=user_id).exists()
 
 
 class PasswordRepository(IPasswordRepository):

@@ -7,7 +7,7 @@ from django.http import HttpRequest
 from ninja import Body, File, Path, UploadedFile
 from ninja.responses import Response
 
-from api.internal.v1.exceptions import BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError
+from api.internal.v1.errors import BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError
 from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
@@ -23,7 +23,7 @@ from api.internal.v1.users.domain.entities import (
     TokenType,
     UserOut,
 )
-from api.internal.v1.users.presentation.exceptions import (
+from api.internal.v1.users.presentation.errors import (
     EmailIsAlreadyRegisteredError,
     FileIsNotImageError,
     PasswordDoesNotMatchError,
@@ -52,7 +52,7 @@ class IAuthenticationService(ABC):
 
 class IResettingPasswordService(ABC):
     @abstractmethod
-    def authorize_only_self(self, user: User, user_id: int) -> bool:
+    def authorize(self, user: User, user_id: int) -> bool:
         pass
 
     @abstractmethod
@@ -141,6 +141,10 @@ class IGettingUserService(ABC):
     def try_get_user(self, user_id: int) -> Optional[UserOut]:
         pass
 
+    @abstractmethod
+    def exists_user_with_id(self, user_id: int) -> bool:
+        pass
+
 
 class IPhotoService(ABC):
     @abstractmethod
@@ -167,15 +171,15 @@ class AuthHandlers(IAuthHandlers):
     TOKEN_WAS_NOT_ISSUED = "The token was not issued"
     TOKEN_IS_REVOKED = "The token is revoked"
 
-    ONLY_SELF = "Only self"
-
     def __init__(
         self,
         registration_service: IRegistrationService,
         auth_service: IAuthenticationService,
         jwt_service: IJWTService,
         resetting_password_service: IResettingPasswordService,
+        getting_user_service: IGettingUserService,
     ):
+        self.getting_user_service = getting_user_service
         self.resetting_password_service = resetting_password_service
         self.jwt_service = jwt_service
         self.auth_service = auth_service
@@ -224,8 +228,11 @@ class AuthHandlers(IAuthHandlers):
     def reset_password(
         self, request: HttpRequest, user_id: int = Path(...), body: ResetPasswordIn = Body(...)
     ) -> PasswordUpdatedAtOut:
-        if not self.resetting_password_service.authorize_only_self(request.user, user_id):
-            raise ForbiddenError(self.ONLY_SELF)
+        if not self.getting_user_service.exists_user_with_id(user_id):
+            raise NotFoundError()
+
+        if not self.resetting_password_service.authorize(request.user, user_id):
+            raise ForbiddenError()
 
         if not self.resetting_password_service.match_password(request.user, body):
             raise PasswordDoesNotMatchError()
@@ -270,6 +277,9 @@ class UserHandlers(IUserHandlers):
         return user_out
 
     def delete_user(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
+        if not self.getting_user_service.exists_user_with_id(user_id):
+            raise NotFoundError()
+
         if not self.deleting_user_service.authorize(request.user, user_id):
             raise ForbiddenError()
 
@@ -281,6 +291,9 @@ class UserHandlers(IUserHandlers):
         return SuccessResponse()
 
     def upload_photo(self, request: HttpRequest, user_id: int = Path(...), photo: UploadedFile = File(...)) -> PhotoOut:
+        if not self.getting_user_service.exists_user_with_id(user_id):
+            raise NotFoundError()
+
         if not self.photo_service.is_image(photo):
             raise FileIsNotImageError()
 
@@ -290,6 +303,9 @@ class UserHandlers(IUserHandlers):
         return self.photo_service.upload(user_id, photo)
 
     def delete_photo(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
+        if not self.getting_user_service.exists_user_with_id(user_id):
+            raise NotFoundError()
+
         if not self.photo_service.authorize(request.user, user_id):
             raise ForbiddenError()
 
@@ -300,6 +316,9 @@ class UserHandlers(IUserHandlers):
     def change_email(
         self, request: HttpRequest, user_id: int = Path(...), body: EmailIn = Body(...)
     ) -> SuccessResponse:
+        if not self.getting_user_service.exists_user_with_id(user_id):
+            raise NotFoundError()
+
         if not self.changing_email_service.authorize(request.user, user_id):
             raise ForbiddenError()
 
@@ -311,6 +330,9 @@ class UserHandlers(IUserHandlers):
         return SuccessResponse()
 
     def rename_user(self, request: HttpRequest, user_id: int = Path(...), body: NameIn = Body(...)) -> SuccessResponse:
+        if not self.getting_user_service.exists_user_with_id(user_id):
+            raise NotFoundError()
+
         if not self.renaming_user_service.authorize(request.user, user_id):
             raise ForbiddenError()
 
