@@ -13,13 +13,13 @@
 
 .jobSearchDetails-wrapper {
   margin-top: 16px;
-  padding: 2.8rem;
   height: 32rem;
   background: #C7DBFF;
   border-radius: 20px;
 
   .jobSearchDetails-item {
     &__card {
+      padding: 2.8rem;
       display: flex;
       gap: 20px;
       justify-content: space-between;
