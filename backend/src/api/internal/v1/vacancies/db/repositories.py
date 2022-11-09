@@ -7,9 +7,7 @@ from api.internal.v1.vacancies.db.sorters import IVacanciesWishlistSorter
 from api.internal.v1.vacancies.domain.services import (
     IDepartmentRepository,
     IFavouriteVacancyRepository,
-    IUserRepository,
     IVacancyRepository,
-    IVacancyRequestRepository,
 )
 from api.models import Department, Experience, FavouriteVacancy, User, Vacancy, VacancyRequest
 
@@ -99,13 +97,3 @@ class FavouriteVacancyRepository(IFavouriteVacancyRepository):
 
     def delete_vacancy_from_wishlist(self, user_id: int, vacancy_id: int) -> None:
         FavouriteVacancy.objects.filter(user_id=user_id, vacancy_id=vacancy_id).delete()
-
-
-class UserRepository(IUserRepository):
-    def get_employer_by_vacancy_id(self, vacancy_id: int) -> User:
-        return User.objects.filter(department__vacancies=vacancy_id).get()
-
-
-class VacancyRequestRepository(IVacancyRequestRepository):
-    def create(self, user_id: int, vacancy_id: int) -> VacancyRequest:
-        return VacancyRequest.objects.create(owner_id=user_id, vacancy_id=vacancy_id)

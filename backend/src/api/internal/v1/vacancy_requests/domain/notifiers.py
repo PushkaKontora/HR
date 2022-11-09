@@ -5,14 +5,19 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from ninja import UploadedFile
 
-from api.internal.v1.vacancies.domain.entities import RequestIn
+from api.internal.v1.vacancy_requests.domain.entities import RequestIn
 from api.models import User, VacancyRequest
 
 
 class IVacancyRequestNotifier(ABC):
     @abstractmethod
     def notify(
-        self, request: VacancyRequest, sender: User, employer: User, data: RequestIn, resume: Optional[UploadedFile]
+        self,
+        request: VacancyRequest,
+        sender: User,
+        employer: User,
+        data: RequestIn,
+        resume: Optional[UploadedFile],
     ) -> None:
         pass
 
@@ -22,7 +27,12 @@ class EmailNotifier(IVacancyRequestNotifier):
     RESUME_FILENAME = "resume.pdf"
 
     def notify(
-        self, request: VacancyRequest, sender: User, employer: User, data: RequestIn, resume: Optional[UploadedFile]
+        self,
+        request: VacancyRequest,
+        sender: User,
+        employer: User,
+        data: RequestIn,
+        resume: Optional[UploadedFile],
     ) -> None:
         context = {
             "desired_job": data.desired_job,

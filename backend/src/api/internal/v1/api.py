@@ -9,6 +9,7 @@ from api.internal.v1.responses import MessageResponse
 from api.internal.v1.resumes.api import register_resumes_api
 from api.internal.v1.users.api import register_users_api
 from api.internal.v1.vacancies.api import register_vacancies_api
+from api.internal.v1.vacancy_requests.api import register_vacancy_requests_api
 
 apis_registrations = [
     register_users_api,
@@ -16,6 +17,7 @@ apis_registrations = [
     register_resumes_api,
     register_vacancies_api,
     register_competencies_api,
+    register_vacancy_requests_api,
 ]
 
 

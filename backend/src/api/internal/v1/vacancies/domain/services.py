@@ -5,29 +5,23 @@ from typing import Iterable, Optional
 from django.db.models import QuerySet
 from django.db.transaction import atomic
 from django.utils.timezone import now
-from ninja import UploadedFile
 
 from api.internal.v1.vacancies.db.sorters import IVacanciesWishlistSorter
 from api.internal.v1.vacancies.domain.entities import (
     NewVacancyIn,
     PublishingOut,
-    RequestIn,
-    RequestOut,
     VacanciesWishlistParams,
     VacanciesWishlistSortBy,
     VacancyOut,
 )
-from api.internal.v1.vacancies.domain.notifiers import IVacancyRequestNotifier
 from api.internal.v1.vacancies.presentation.handlers import (
     ICreatingVacancyService,
-    IDocumentService,
     IGettingService,
     IPublishingVacancyService,
     IUpdatingVacancyService,
     IVacanciesWishlistService,
-    IVacancyRequestService,
 )
-from api.models import Experience, FavouriteVacancy, Permission, User, Vacancy, VacancyRequest
+from api.models import Experience, FavouriteVacancy, Permission, User, Vacancy
 
 
 class IVacancyRepository(ABC):
@@ -109,18 +103,6 @@ class IFavouriteVacancyRepository(ABC):
 
     @abstractmethod
     def delete_vacancy_from_wishlist(self, user_id: int, vacancy_id: int) -> None:
-        pass
-
-
-class IUserRepository(ABC):
-    @abstractmethod
-    def get_employer_by_vacancy_id(self, vacancy_id: int) -> User:
-        pass
-
-
-class IVacancyRequestRepository(ABC):
-    @abstractmethod
-    def create(self, user_id: int, vacancy_id: int) -> VacancyRequest:
         pass
 
 
@@ -245,31 +227,3 @@ class UpdatingVacancyService(IUpdatingVacancyService):
             body.salary_from,
             published_at=now() if body.published else None,
         )
-
-
-class VacancyRequestService(IVacancyRequestService):
-    def __init__(
-        self,
-        user_repo: IUserRepository,
-        vacancy_request_repo: IVacancyRequestRepository,
-        employer_notifier: IVacancyRequestNotifier,
-    ):
-        self.employer_notifier = employer_notifier
-        self.vacancy_request_repo = vacancy_request_repo
-        self.user_repo = user_repo
-
-    @atomic
-    def create_request(
-        self, auth_user: User, vacancy_id: int, extra: RequestIn, resume: Optional[UploadedFile]
-    ) -> RequestOut:
-        employer = self.user_repo.get_employer_by_vacancy_id(vacancy_id)
-
-        request = self.vacancy_request_repo.create(auth_user.id, vacancy_id)
-        self.employer_notifier.notify(request, auth_user, employer, extra, resume)
-
-        return RequestOut.from_request(request)
-
-
-class DocumentService(IDocumentService):
-    def is_pdf(self, file: UploadedFile) -> bool:
-        return file.content_type == "application/pdf"

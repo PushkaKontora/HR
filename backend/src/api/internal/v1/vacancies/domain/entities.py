@@ -5,7 +5,7 @@ from typing import Optional
 from ninja import Schema
 from pydantic import Field, validator
 
-from api.models import Experience, Vacancy, VacancyRequest
+from api.models import Experience, Vacancy
 
 
 class VacanciesSortParameters(Enum):
@@ -119,16 +119,3 @@ class PublishingOut(Schema):
     @staticmethod
     def create(time: datetime) -> "PublishingOut":
         return PublishingOut(published_at=time)
-
-
-class RequestIn(Schema):
-    desired_job: str
-
-
-class RequestOut(Schema):
-    id: int
-    created_at: datetime
-
-    @staticmethod
-    def from_request(request: VacancyRequest) -> "RequestOut":
-        return RequestOut(id=request.id, created_at=request.created_at)

@@ -16,8 +16,3 @@ class YouCannotAddUnpublishedVacancyToWishlistError(APIBaseError):
 class VacancyAlreadyAddedToWishlistError(APIBaseError):
     def __init__(self):
         super(VacancyAlreadyAddedToWishlistError, self).__init__(3, "The vacancy already added to wishlist", 422)
-
-
-class ResumeIsNotPDFError(APIBaseError):
-    def __init__(self):
-        super(ResumeIsNotPDFError, self).__init__(4, "The resume file is not pdf", 422)
