@@ -17,7 +17,7 @@ class VacancyRequestRepository(IVacancyRequestRepository):
     def create(self, user_id: int, vacancy_id: int) -> VacancyRequest:
         return VacancyRequest.objects.create(owner_id=user_id, vacancy_id=vacancy_id)
 
-    def try_get_last_with_user_id_and_vacancy_id(self, owner_id: int, vacancy_id: int) -> Optional[VacancyRequest]:
+    def try_get_last_by_owner_id_and_vacancy_id(self, owner_id: int, vacancy_id: int) -> Optional[VacancyRequest]:
         return VacancyRequest.objects.filter(owner_id=owner_id, vacancy_id=vacancy_id).last()
 
 

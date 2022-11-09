@@ -22,7 +22,7 @@ class IVacancyRequestRepository(ABC):
         pass
 
     @abstractmethod
-    def try_get_last_with_user_id_and_vacancy_id(self, owner_id: int, vacancy_id: int) -> Optional[VacancyRequest]:
+    def try_get_last_by_owner_id_and_vacancy_id(self, owner_id: int, vacancy_id: int) -> Optional[VacancyRequest]:
         pass
 
 
@@ -66,7 +66,7 @@ class GettingService(IGettingService):
         self.vacancy_request_repo = vacancy_request_repo
 
     def try_get_last_request_by_owner_and_vacancy_id(self, auth_user: User, vacancy_id: int) -> Optional[RequestOut]:
-        request = self.vacancy_request_repo.try_get_last_with_user_id_and_vacancy_id(auth_user.id, vacancy_id)
+        request = self.vacancy_request_repo.try_get_last_by_owner_id_and_vacancy_id(auth_user.id, vacancy_id)
 
         if not request:
             return None
