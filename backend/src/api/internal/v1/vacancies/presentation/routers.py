@@ -8,6 +8,7 @@ from ninja.security import HttpBearer
 from api.internal.v1.responses import ErrorResponse, MessageResponse, SuccessResponse
 from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 from api.internal.v1.vacancies.domain.entities import (
+    NewVacancyIn,
     PublishingOut,
     RequestOut,
     VacanciesFilters,
@@ -25,7 +26,7 @@ class IVacanciesHandlers(ABC):
         pass
 
     @abstractmethod
-    def create_vacancy(self, request: HttpRequest, body: VacancyIn = Body(...)) -> SuccessResponse:
+    def create_vacancy(self, request: HttpRequest, body: NewVacancyIn = Body(...)) -> SuccessResponse:
         pass
 
 
@@ -115,12 +116,11 @@ class VacancyRouter(Router):
         )
 
         self.add_api_operation(
-            tags=[VACANCIES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["PUT"],
             view_func=vacancy_handlers.update_vacancy,
             auth=[auth],
-            response={200: SuccessResponse, 401: ErrorResponse, 403: ErrorResponse, 404: ErrorResponse},
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
         )
 
         self.add_api_operation(

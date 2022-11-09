@@ -4,7 +4,7 @@ from typing import Iterable, Optional
 from django.http import HttpRequest
 from ninja import File, Form, Path, Query, UploadedFile
 
-from api.internal.v1.exceptions import ForbiddenError, NotFoundError
+from api.internal.v1.errors import ForbiddenError, NotFoundError
 from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.resumes.domain.entities import (
     NewResumeIn,

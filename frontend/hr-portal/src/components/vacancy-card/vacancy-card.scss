@@ -1,4 +1,9 @@
+@import "./src/styles/tabs-description";
+@import "./src/styles/tabs-nav-btn";
+
 .vacancyCardWrapper {
+  cursor: pointer;
+
   &:not(:last-child) {
     margin-bottom: 2.3rem;
   }
@@ -28,17 +33,6 @@
         &__tabs {
           display: flex;
           gap: 8px;
-
-          .tabsItem {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            letter-spacing: 0.05em;
-
-            padding: 6px 16px;
-            background: #FFFFFF;
-            border-radius: 30px;
-          }
         }
       }
     }
@@ -61,26 +55,6 @@
           span {
             font-weight: bold;
             font-size: 18px;
-          }
-        }
-
-        &__navTabs {
-          display: flex;
-          gap: 12px;
-
-          .navTabs-btnItem {
-            background-color: #E3EDFF;
-
-            &__respond {
-              font-weight: 400;
-              font-size: 16px;
-              line-height: 16px;
-              letter-spacing: 0.05em;
-
-              padding: 16px 24px;
-              border: 0.7px solid #000000;
-              border-radius: 26px;
-            }
           }
         }
       }

@@ -88,7 +88,6 @@ class VacancyOut(Schema):
 
 
 class VacancyIn(Schema):
-    department_id: int
     name: str
     description: Optional[str]
     expected_experience: Experience
@@ -108,6 +107,10 @@ class VacancyIn(Schema):
             raise ValueError("A salary_from parameter must be less or equal than a salary_to parameter")
 
         return field_value
+
+
+class NewVacancyIn(VacancyIn):
+    department_id: int
 
 
 class PublishingOut(Schema):

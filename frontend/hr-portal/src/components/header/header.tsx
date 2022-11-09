@@ -5,7 +5,7 @@ import exitIcon from '../../assets/img/header/button-exit.svg';
 import {useAppSelector} from '../../app/hooks';
 import {Fragment} from 'react';
 import './header.scss';
-import {User} from '../../const';
+import {UserStatus} from '../../types/user-status';
 
 function Header() {
   const statusUser = useAppSelector((state) => state.general.statusUser);
@@ -15,15 +15,19 @@ function Header() {
       <div className="header-content">
         <div className="side-header side-header__leftSide">
           <div className="logo-header-wrapper"><img src={logoHeader} alt="logo"/></div>
-          <div className="header-nav">
-            <div className="header-navItem">Вакансии</div>
-            {statusUser !== User.user ? (
-              <Fragment>
-                <div className="header-navItem">Резюме</div>
-                <div className="header-navItem">Мои вакансии</div>
-              </Fragment>
-            ) : undefined}
-          </div>
+          {
+            statusUser !== UserStatus.noAuth && (
+              <div className="header-nav">
+                <div className="header-navItem header-navItem__active">Вакансии</div>
+                {statusUser !== UserStatus.user ? (
+                  <Fragment>
+                    <div className="header-navItem">Резюме</div>
+                    <div className="header-navItem">Мои вакансии</div>
+                  </Fragment>
+                ) : undefined}
+              </div>
+            )
+          }
         </div>
         <div className="side-header">
           <div className="header-nav-personal"><img src={likeIcon} alt="like icon"/></div>

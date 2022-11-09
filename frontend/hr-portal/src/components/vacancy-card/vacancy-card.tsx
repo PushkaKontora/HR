@@ -4,6 +4,12 @@ import experienceIcon from '../../assets/img/vacancy-card/experience.svg';
 import likesIcon from '../../assets/img/vacancy-card/yes_like.svg';
 import './vacancy-card.scss';
 import {ExpectedExperienceNameString} from '../../const';
+import {useAppDispatch} from '../../app/hooks';
+import {setVacancyByID} from '../../features/vacancy/vacancy-slice';
+import {useNavigate} from 'react-router-dom';
+import {NoAuthRoutes} from '../../const/app-routes';
+import moneyRUSIcon from '../../assets/img/job-seach/₽.svg';
+
 
 type VacancyCard = {
   vacancy: Vacancy
@@ -11,10 +17,17 @@ type VacancyCard = {
 
 function VacancyCard(props: VacancyCard) {
   const {vacancy} = props;
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const vacancyExperience = ExpectedExperienceNameString[vacancy.expected_experience as keyof typeof ExpectedExperienceNameString];
+  const handleClickVacancyCard = () => {
+    dispatch(setVacancyByID(vacancy));
+    navigate(`${NoAuthRoutes.Vacancy}/${vacancy.id}`);
+  };
+
   return (
-    <div className="vacancyCardWrapper">
+    <div className="vacancyCardWrapper" onClick={handleClickVacancyCard}>
       <div className="vacancyCardItem vacancyCardItem__content">
         <div className="vacancyCardInfo vacancyCardInfo__title">
           {vacancy.name}
@@ -37,9 +50,45 @@ function VacancyCard(props: VacancyCard) {
               <div className="tabs-image">
                 <img src={moneyIcon} alt="experience icon"/>
               </div>
-              <div className="tabs-text">
-
-              </div>
+              {
+                vacancy?.salary_to !== undefined && vacancy?.salary_from === undefined &&
+                (
+                  <>
+                    <div className="tabs-text">до {vacancy?.salary_to}</div>
+                    <div className="tabs-image-rus">
+                      <img src={moneyRUSIcon} alt="money rus icon"/>
+                    </div>
+                  </>
+                )
+              }
+              {
+                vacancy?.salary_to === undefined && vacancy?.salary_from !== undefined &&
+                (
+                  <>
+                    <div className="tabs-text">от {vacancy?.salary_from}</div>
+                    <div className="tabs-image-rus">
+                      <img src={moneyRUSIcon} alt="money rus icon"/>
+                    </div>
+                  </>
+                )
+              }
+              {
+                vacancy?.salary_to !== undefined && vacancy?.salary_from !== undefined &&
+                (<div className="tabs-text">
+                  <div className='tabs-flex'>
+                    <div className="text">от {vacancy?.salary_from}</div>
+                    <div className="tabs-image-rus">
+                      <img src={moneyRUSIcon} alt="money rus icon"/>
+                    </div>
+                  </div>
+                  <div className='tabs-flex'>
+                    <div className="text">до {vacancy?.salary_to}</div>
+                    <div className="tabs-image-rus">
+                      <img src={moneyRUSIcon} alt="money rus icon"/>
+                    </div>
+                  </div>
+                </div>)
+              }
             </div>
           )
           }
@@ -49,7 +98,7 @@ function VacancyCard(props: VacancyCard) {
         <div className="actionItem actionItem__department">
           <span>{vacancy.department.name}</span> {vacancy.department.leader.name} {vacancy.department.leader.surname}
         </div>
-        <div className="actionItem actionItem__navTabs">
+        <div className="actionItem navTabs">
           <button className="navTabs-btnItem">
             <img src={likesIcon} alt="likes icon"/>
           </button>
