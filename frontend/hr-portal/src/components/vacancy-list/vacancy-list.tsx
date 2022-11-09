@@ -5,7 +5,6 @@ import VacancyCard from '../vacancy-card/vacancy-card';
 
 function VacancyList() {
   const [currentPage, setCurrentPage] = useState(1);
-
   return (
     <div className="vacancyListWrapper">
       <div className="vacancyListItem vacancyListItem__list">

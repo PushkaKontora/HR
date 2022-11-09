@@ -14,11 +14,34 @@
       align-items: center;
       gap: 1.4rem;
 
-      &__leftSide{
+      &__leftSide {
         gap: 5.7rem;
         font-size: 1.4rem;
         line-height: 20px;
         letter-spacing: 0.05em;
+
+        .header-nav {
+          display: flex;
+          gap: 12px;
+          font-weight: 300;
+          font-size: 20px;
+          line-height: 20px;
+          letter-spacing: 0.05em;
+
+          .header-navItem {
+            cursor: pointer;
+            padding: 8px 16px;
+
+            &__active {
+              background: #EDECEA;
+              border-radius: 30px;
+            }
+          }
+        }
+      }
+
+      .header-nav-personal {
+        cursor: pointer;
       }
     }
   }
