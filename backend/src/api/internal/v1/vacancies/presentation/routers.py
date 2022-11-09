@@ -10,7 +10,6 @@ from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 from api.internal.v1.vacancies.domain.entities import (
     NewVacancyIn,
     PublishingOut,
-    RequestOut,
     VacanciesFilters,
     VacanciesWishlistParams,
     VacancyIn,
@@ -42,19 +41,11 @@ class IVacancyHandlers(ABC):
         pass
 
     @abstractmethod
-    def create_vacancy_request(self, request: HttpRequest, vacancy_id: int = Path(...)) -> RequestOut:
-        pass
-
-    @abstractmethod
     def publish_vacancy(self, request: HttpRequest, vacancy_id: int = Path(...)) -> PublishingOut:
         pass
 
     @abstractmethod
     def unpublish_vacancy(self, request: HttpRequest, vacancy_id: int = Path(...)) -> SuccessResponse:
-        pass
-
-    @abstractmethod
-    def get_vacancy_request(self, request: HttpRequest, vacancy_id: int = Path(...)) -> RequestOut:
         pass
 
 
@@ -121,24 +112,6 @@ class VacancyRouter(Router):
             view_func=vacancy_handlers.update_vacancy,
             auth=[auth],
             response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
-        )
-
-        self.add_api_operation(
-            tags=[VACANCIES_TAG, NOT_IMPLEMENTED_TAG],
-            path="/request",
-            methods=["GET"],
-            view_func=vacancy_handlers.get_vacancy_request,
-            auth=[auth],
-            response={200: RequestOut, 401: ErrorResponse, 404: ErrorResponse},
-        )
-
-        self.add_api_operation(
-            tags=[VACANCIES_TAG, NOT_IMPLEMENTED_TAG],
-            path="/request",
-            methods=["POST"],
-            view_func=vacancy_handlers.create_vacancy_request,
-            auth=[auth],
-            response={200: RequestOut, 401: ErrorResponse, 404: ErrorResponse},
         )
 
         self.add_api_operation(

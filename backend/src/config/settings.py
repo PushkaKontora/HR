@@ -65,7 +65,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, "api", "internal", "v1", "vacancy_requests", "domain", "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -122,6 +122,7 @@ AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", str)
 AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", str)
 AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", str)
 AWS_S3_ENDPOINT_URL = env("AWS_S3_ENDPOINT_URL", str)
+AWS_QUERYSTRING_EXPIRE = timedelta(days=1).total_seconds()
 
 
 # Authentication
@@ -166,3 +167,13 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Pagination
 
 PAGINATION_PER_PAGE = 100
+
+
+# Emailing
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", str)
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", str)
+EMAIL_PORT = env("EMAIL_PORT", int)
+EMAIL_USE_TLS = True

@@ -1,7 +1,7 @@
 import pytest
 
 from api.internal.v1.users.domain.utils import hash_password
-from api.models import Password, Permission, User
+from api.models import Department, Experience, Password, Permission, User, Vacancy
 from tests.v1.integrations.users.conftest import access_payload, encode_payload
 
 USER_PASSWORD = "13_очень secret password_37"
@@ -49,3 +49,25 @@ def another_user_with_password(another_user: User) -> User:
     Password.objects.create(owner=another_user, value=hash_password(ANOTHER_USER_PASSWORD))
 
     return another_user
+
+
+@pytest.fixture
+def department(employer: User) -> Department:
+    return Department.objects.create(leader=employer, name="123")
+
+
+@pytest.fixture
+def another_employer(email="asadfsdfsd@gmail.com", surname="Pupkin", name="Denis", patronymic="Dykovich") -> User:
+    return User.objects.create(
+        email=email, surname=surname, name=name, patronymic=patronymic, permission=Permission.EMPLOYER
+    )
+
+
+@pytest.fixture
+def vacancy(department: Department) -> Vacancy:
+    return Vacancy.objects.create(
+        department=department,
+        name="New Vacancy",
+        description="Big description",
+        expected_experience=Experience.NO_EXPERIENCE,
+    )

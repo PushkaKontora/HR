@@ -9,7 +9,7 @@ from api.internal.v1.vacancies.domain.services import (
     IFavouriteVacancyRepository,
     IVacancyRepository,
 )
-from api.models import Department, Experience, FavouriteVacancy, Vacancy
+from api.models import Department, Experience, FavouriteVacancy, User, Vacancy, VacancyRequest
 
 
 class VacancyRepository(IVacancyRepository):

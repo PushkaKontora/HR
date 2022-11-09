@@ -10,7 +10,6 @@ from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.vacancies.domain.entities import (
     NewVacancyIn,
     PublishingOut,
-    RequestOut,
     VacanciesFilters,
     VacanciesWishlistParams,
     VacancyIn,
@@ -151,9 +150,6 @@ class VacancyHandlers(IVacancyHandlers):
 
         return SuccessResponse()
 
-    def create_vacancy_request(self, request: HttpRequest, vacancy_id: int = Path(...)) -> RequestOut:
-        raise NotImplementedError()
-
     def publish_vacancy(self, request: HttpRequest, vacancy_id: int = Path(...)) -> PublishingOut:
         if not self.getting_service.exists_vacancy_with_id(vacancy_id):
             raise NotFoundError()
@@ -173,9 +169,6 @@ class VacancyHandlers(IVacancyHandlers):
         self.publishing_vacancy_service.unpublish(vacancy_id)
 
         return SuccessResponse()
-
-    def get_vacancy_request(self, request: HttpRequest, vacancy_id: int = Path(...)) -> RequestOut:
-        raise NotImplementedError()
 
 
 class VacanciesWishlistHandlers(IVacanciesWishlistHandlers):

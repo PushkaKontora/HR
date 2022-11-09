@@ -33,8 +33,13 @@ from api.internal.v1.vacancies.presentation.handlers import (
     VacancyHandlers,
 )
 from api.internal.v1.vacancies.presentation.routers import VacanciesRouter, VacanciesWishlistRouter, VacancyRouter
+from api.internal.v1.vacancy_requests.domain.notifiers import EmailNotifier
 
-ERRORS = [UnknownDepartmentIdError, YouCannotAddUnpublishedVacancyToWishlistError, VacancyAlreadyAddedToWishlistError]
+ERRORS = [
+    UnknownDepartmentIdError,
+    YouCannotAddUnpublishedVacancyToWishlistError,
+    VacancyAlreadyAddedToWishlistError,
+]
 
 
 class VacanciesContainer(containers.DeclarativeContainer):
@@ -46,6 +51,8 @@ class VacanciesContainer(containers.DeclarativeContainer):
     vacancy_repo = providers.Singleton(VacancyRepository)
     department_repo = providers.Singleton(DepartmentRepository)
     favourite_vacancy_repo = providers.Singleton(FavouriteVacancyRepository)
+
+    employer_notifier = providers.Factory(EmailNotifier)
 
     creating_vacancy_service = providers.Singleton(
         CreatingVacancyService, vacancy_repo=vacancy_repo, department_repo=department_repo
