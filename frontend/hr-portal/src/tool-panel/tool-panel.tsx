@@ -10,6 +10,8 @@ class ToolPanelProps {
 const INLINE_STYLES_CODES = Object.values(InlineStyle);
 
 export const ToolPanel: React.FC<ToolPanelProps> = ({className}: any) => {
+
+  (window as any).global = window;
   const {
     toggleBlockType,
     currentBlockType,

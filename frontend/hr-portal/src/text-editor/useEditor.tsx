@@ -1,7 +1,9 @@
-import {DraftEditorCommand, DraftHandleValue, EditorState, getDefaultKeyBinding, RichUtils} from 'draft-js';
 import React, {useCallback, useMemo, useState} from 'react';
 import {BlockType, InlineStyle, KeyCommand} from '../tool-panel/text-editor-block-type';
 import {stateToHTML} from './convert';
+
+import {DraftEditorCommand, DraftHandleValue, EditorState, getDefaultKeyBinding, RichUtils} from 'draft-js';
+import '../../src/init';
 
 export type EditorApi = {
   state: EditorState;
@@ -20,7 +22,6 @@ export type EditorApi = {
 
 export const useEditor = (html?: string): EditorApi => {
   const [state, setState] = useState(() => EditorState.createEmpty());
-
   const toggleBlockType = useCallback((blockType: BlockType) => {
     setState((currentState) => RichUtils.toggleBlockType(currentState, blockType));
   }, []);

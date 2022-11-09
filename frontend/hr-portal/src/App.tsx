@@ -1,5 +1,5 @@
 import './App.css';
-
+import '../src/init';
 import {useAppDispatch, useAppSelector} from './app/hooks';
 import {Route, Routes} from 'react-router-dom';
 import DefaultLayout from './components/layouts/default-layout/default-layout';

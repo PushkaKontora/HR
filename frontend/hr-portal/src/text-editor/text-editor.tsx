@@ -3,7 +3,7 @@ import {Editor} from 'draft-js';
 import {useEditorApi} from './context';
 import './text-editor.scss';
 import cn from 'classnames';
-
+import '../init';
 export type TextEditorProps = {
   className?: string;
 }

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { EditorApi, useEditor } from './useEditor';
+import '../init';
 
 const TextEditorContext = React.createContext<EditorApi | undefined>(undefined);
 
