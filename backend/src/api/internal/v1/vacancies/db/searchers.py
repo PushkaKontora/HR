@@ -26,4 +26,4 @@ class VacanciesTrigramSearcher(VacanciesBaseSearcher):
             similarity=Greatest(
                 TrigramWordSimilarity(self.value, "name"), TrigramWordSimilarity(self.value, "description")
             )
-        ).filter(similarity__gte=0.3)
+        ).filter(similarity__gte=0.5)
