@@ -1,9 +1,11 @@
 from datetime import datetime
-from typing import Optional
+from typing import Iterable, Optional
 
 from django.db.models import QuerySet
 
-from api.internal.v1.vacancies.db.sorters import IVacanciesWishlistSorter
+from api.internal.v1.vacancies.db.filters import IVacanciesFilter
+from api.internal.v1.vacancies.db.searchers import VacanciesBaseSearcher
+from api.internal.v1.vacancies.db.sorters import IVacanciesWishlistSorter, VacanciesBaseSorter
 from api.internal.v1.vacancies.domain.services import (
     IDepartmentRepository,
     IFavouriteVacancyRepository,
@@ -69,6 +71,16 @@ class VacancyRepository(IVacancyRepository):
             salary_to=salary_to,
             published_at=published_at,
         )
+
+    def get_filtered_vacancies(
+        self, filters: Iterable[IVacanciesFilter], searcher: VacanciesBaseSearcher, sorter: VacanciesBaseSorter
+    ) -> QuerySet[Vacancy]:
+        vacancies = Vacancy.objects.all()
+
+        for obj in filters:
+            vacancies = obj.filter(vacancies)
+
+        return searcher.search(sorter.sort(vacancies))
 
 
 class DepartmentRepository(IDepartmentRepository):

@@ -10,7 +10,7 @@ from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 from api.internal.v1.vacancies.domain.entities import (
     NewVacancyIn,
     PublishingOut,
-    VacanciesFilters,
+    VacanciesParams,
     VacanciesWishlistParams,
     VacancyIn,
     VacancyOut,
@@ -21,7 +21,7 @@ VACANCIES_TAG = "vacancies"
 
 class IVacanciesHandlers(ABC):
     @abstractmethod
-    def get_vacancies(self, request: HttpRequest, filters: VacanciesFilters = Query(...)) -> Iterable[VacancyOut]:
+    def get_vacancies(self, request: HttpRequest, params: VacanciesParams = Query(...)) -> Iterable[VacancyOut]:
         pass
 
     @abstractmethod

@@ -1,22 +1,27 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Type
 
 from django.db.models import QuerySet
 from django.db.transaction import atomic
 from django.utils.timezone import now
 
-from api.internal.v1.vacancies.db.sorters import IVacanciesWishlistSorter
+from api.internal.v1.vacancies.db.filters import IVacanciesFilter
+from api.internal.v1.vacancies.db.searchers import VacanciesBaseSearcher
+from api.internal.v1.vacancies.db.sorters import IVacanciesWishlistSorter, VacanciesBaseSorter
+from api.internal.v1.vacancies.domain.builders import IFilterBuilder, ISearcherBuilder, ISorterBuilder
 from api.internal.v1.vacancies.domain.entities import (
     NewVacancyIn,
     PublishingOut,
+    VacanciesParams,
     VacanciesWishlistParams,
     VacanciesWishlistSortBy,
     VacancyOut,
 )
 from api.internal.v1.vacancies.presentation.handlers import (
     ICreatingVacancyService,
-    IGettingService,
+    IGettingVacanciesService,
+    IGettingVacancyService,
     IPublishingVacancyService,
     IUpdatingVacancyService,
     IVacanciesWishlistService,
@@ -73,6 +78,12 @@ class IVacancyRepository(ABC):
         salary_from: Optional[int],
         published_at: Optional[datetime],
     ) -> None:
+        pass
+
+    @abstractmethod
+    def get_filtered_vacancies(
+        self, filters: Iterable[IVacanciesFilter], searcher: VacanciesBaseSearcher, sorter: VacanciesBaseSorter
+    ) -> QuerySet[Vacancy]:
         pass
 
 
@@ -132,11 +143,11 @@ class CreatingVacancyService(ICreatingVacancyService):
         )
 
 
-class GettingService(IGettingService):
+class GettingVacancyService(IGettingVacancyService):
     def __init__(self, vacancy_repo: IVacancyRepository):
         self.vacancy_repo = vacancy_repo
 
-    def try_get_vacancy_out_by_id(self, vacancy_id: int) -> Optional[VacancyOut]:
+    def try_get_vacancy_by_id(self, vacancy_id: int) -> Optional[VacancyOut]:
         vacancy = self.vacancy_repo.try_get_vacancy_by_id(vacancy_id)
 
         if not vacancy:
@@ -227,3 +238,28 @@ class UpdatingVacancyService(IUpdatingVacancyService):
             body.salary_from,
             published_at=now() if body.published else None,
         )
+
+
+class GettingVacanciesService(IGettingVacanciesService):
+    def __init__(
+        self,
+        vacancy_repo: IVacancyRepository,
+        vacancies_filters_builder: IFilterBuilder,
+        searcher_builder: ISearcherBuilder,
+        sorter_builder: ISorterBuilder,
+    ):
+        self.sorter_builder = sorter_builder
+        self.searcher_builder = searcher_builder
+        self.vacancies_filters_builder = vacancies_filters_builder
+        self.vacancy_repo = vacancy_repo
+
+    def get_vacancies(self, params: VacanciesParams) -> Iterable[VacancyOut]:
+        limit, offset = params.limit, params.offset
+
+        filters = self.vacancies_filters_builder.build(params)
+        searcher = self.searcher_builder.build(params)
+        sorter = self.sorter_builder.build(params)
+
+        vacancies = self.vacancy_repo.get_filtered_vacancies(filters, searcher, sorter)
+
+        return [VacancyOut.from_vacancy(vacancy) for vacancy in vacancies[offset : offset + limit]]

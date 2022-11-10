@@ -2,15 +2,16 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
+from django.conf import settings
 from ninja import Schema
 from pydantic import Field, validator
 
 from api.models import Experience, Vacancy
 
 
-class VacanciesSortParameters(Enum):
-    NAME = "name"
-    PUBLISHED_AT = "published_at"
+class VacanciesSortBy(Enum):
+    NAME_ASC = "name_asc"
+    PUBLISHED_AT_DESC = "published_at_desc"
     SALARY_ASC = "salary_asc"
     SALARY_DESC = "salary_desc"
 
@@ -20,21 +21,16 @@ class VacanciesWishlistSortBy(Enum):
     ADDED_AT_DESC = "added_at_desc"
 
 
-class VacanciesStatus(Enum):
-    ALL = "all"
-    PUBLISHED = "published"
-    UNPUBLISHED = "unpublished"
-
-
-class VacanciesFilters(Schema):
+class VacanciesParams(Schema):
     search: Optional[str] = None
     department_id: Optional[int] = None
-    department_name: Optional[str] = None
     experience: Optional[Experience] = None
     salary_from: Optional[int] = Field(None, gte=0)
     salary_to: Optional[int] = Field(None, gte=0)
-    status: VacanciesStatus
-    sort_by: VacanciesSortParameters
+    published: Optional[bool] = None
+    sort_by: VacanciesSortBy
+    limit: int = Field(settings.PAGINATION_PER_PAGE, ge=1)
+    offset: int = Field(0, ge=0)
 
 
 class VacanciesWishlistParams(Schema):
