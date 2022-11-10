@@ -6,7 +6,7 @@ import moneyRUSIcon from '../../assets/img/job-seach/₽.svg';
 import {ExpectedExperienceNameString} from '../../const';
 import likesIcon from '../../assets/img/vacancy-card/yes_like.svg';
 import departmentLogoIcon from '../../assets/img/vacancy-card/departments-icon.svg';
-import UseEditor from '../../text-editor/useEditor';
+import UseEditor from '../../reused-components/text-editor/useEditor';
 
 function JobSearchDetailsScreen() {
   const vacancy = useAppSelector((state) => state.vacancy.vacancyByID);
