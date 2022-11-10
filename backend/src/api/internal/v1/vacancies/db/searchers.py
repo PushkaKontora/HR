@@ -22,10 +22,6 @@ class VacanciesTrigramSearcher(VacanciesBaseSearcher):
         if self.value is None:
             return vacancies
 
-        return (
-            vacancies.annotate(
-                similarity=TrigramWordSimilarity(self.value, "name") + TrigramWordSimilarity(self.value, "description")
-            )
-            .filter(similarity__gte=0.3)
-            .order_by("-similarity")
-        )
+        return vacancies.annotate(
+            similarity=TrigramWordSimilarity(self.value, "name") + TrigramWordSimilarity(self.value, "description")
+        ).filter(similarity__gte=0.3)

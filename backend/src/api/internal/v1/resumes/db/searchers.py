@@ -15,11 +15,7 @@ class IResumesSearcher(ABC):
 
 class DesiredJobSearcher(IResumesSearcher):
     def search(self, resumes: QuerySet[Resume], value: str) -> QuerySet[Resume]:
-        return (
-            resumes.annotate(similarity=TrigramWordSimilarity(value, "desired_job"))
-            .filter(similarity__gte=0.3)
-            .order_by("-similarity")
-        )
+        return resumes.annotate(similarity=TrigramWordSimilarity(value, "desired_job")).filter(similarity__gte=0.3)
 
 
 class ExperienceSearcher(IResumesSearcher):
