@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Set
 
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, TrigramWordSimilarity
+from django.contrib.postgres.search import TrigramWordSimilarity
 from django.db.models import Q, QuerySet
 
 from api.models import Experience, Resume
@@ -15,11 +15,7 @@ class IResumesSearcher(ABC):
 
 class DesiredJobSearcher(IResumesSearcher):
     def search(self, resumes: QuerySet[Resume], value: str) -> QuerySet[Resume]:
-        return (
-            resumes.annotate(similarity=TrigramWordSimilarity(value, "desired_job"))
-            .filter(similarity__gte=0.3)
-            .order_by("-similarity")
-        )
+        return resumes.annotate(similarity=TrigramWordSimilarity(value, "desired_job")).filter(similarity__gte=0.3)
 
 
 class ExperienceSearcher(IResumesSearcher):

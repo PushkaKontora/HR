@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import Optional
 
 import freezegun
@@ -193,3 +194,22 @@ def test_updating_vacancy_by_employer__salary_from_is_gt_than_salary_to(
 
     assert response.status_code == 422
     assert Vacancy.objects.get(pk=vacancy.pk) == vacancy
+
+
+@pytest.mark.integration
+@pytest.mark.django_db
+@freezegun.freeze_time(now())
+def test_updating_vacancy_by_employer_alter_published_state(
+    client: Client, vacancy: Vacancy, employer_token: str
+) -> None:
+    vacancy.published_at = now()
+    vacancy.save()
+
+    with freezegun.freeze_time(now() + timedelta(seconds=1)):
+        response = update_vacancy(client, vacancy.id, employer_token, "a", Experience.NO_EXPERIENCE, 10, 20, True)
+
+        assert response.status_code == 200
+        assert response.json() == success()
+
+        vacancy.refresh_from_db()
+        assert vacancy.published_at == now()
