@@ -77,6 +77,10 @@ class UsersRouter(Router):
             methods=["POST"],
             view_func=auth_handlers.register_user,
             response={200: SuccessResponse, 422: ErrorResponse},
+            description="""
+    422 error codes:
+        1 - the email has already registered
+    """,
         )
 
         self.add_api_operation(
@@ -119,6 +123,10 @@ class UserRouter(Router):
                 404: MessageResponse,
                 422: ErrorResponse,
             },
+            description="""
+    422 error codes:
+        10 - the user is a leader of a department
+    """,
         )
 
         self.add_api_operation(
@@ -127,6 +135,10 @@ class UserRouter(Router):
             view_func=user_handlers.upload_photo,
             auth=[auth],
             response={200: PhotoOut, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
+            description="""
+    422 error codes:
+        12 - the file is not image
+    """,
         )
 
         self.add_api_operation(
@@ -149,6 +161,10 @@ class UserRouter(Router):
                 404: MessageResponse,
                 422: ErrorResponse,
             },
+            description="""
+    422 error codes:
+        11 - the email is already registered
+    """,
         )
 
         self.add_api_operation(
@@ -171,4 +187,8 @@ class UserRouter(Router):
                 404: MessageResponse,
                 422: ErrorResponse,
             },
+            description="""
+    422 error codes:
+        2 - the previous password does not match with expected
+    """,
         )

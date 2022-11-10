@@ -23,17 +23,17 @@ from api.internal.v1.users.domain.services import (
 )
 from api.internal.v1.users.presentation.authentication import JWTAuth
 from api.internal.v1.users.presentation.errors import (
+    EmailHasAlreadyRegisteredError,
     EmailIsAlreadyRegisteredError,
     FileIsNotImageError,
     PasswordDoesNotMatchError,
-    PasswordHasAlreadyRegisteredError,
     UserIsLeaderOfDepartmentError,
 )
 from api.internal.v1.users.presentation.handlers import AuthHandlers, UserHandlers
 from api.internal.v1.users.presentation.routers import UserRouter, UsersRouter
 
 ERRORS = [
-    PasswordHasAlreadyRegisteredError,
+    EmailHasAlreadyRegisteredError,
     PasswordDoesNotMatchError,
     UserIsLeaderOfDepartmentError,
     EmailIsAlreadyRegisteredError,

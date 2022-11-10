@@ -24,10 +24,10 @@ from api.internal.v1.users.domain.entities import (
     UserOut,
 )
 from api.internal.v1.users.presentation.errors import (
+    EmailHasAlreadyRegisteredError,
     EmailIsAlreadyRegisteredError,
     FileIsNotImageError,
     PasswordDoesNotMatchError,
-    PasswordHasAlreadyRegisteredError,
     UserIsLeaderOfDepartmentError,
 )
 from api.internal.v1.users.presentation.routers import IAuthHandlers, IUserHandlers
@@ -187,7 +187,7 @@ class AuthHandlers(IAuthHandlers):
 
     def register_user(self, request: HttpRequest, body: RegistrationIn = Body(...)) -> SuccessResponse:
         if self.registration_service.is_email_taken(body.email):
-            raise PasswordHasAlreadyRegisteredError()
+            raise EmailHasAlreadyRegisteredError()
 
         self.registration_service.register(body)
 
@@ -294,11 +294,11 @@ class UserHandlers(IUserHandlers):
         if not self.getting_user_service.exists_user_with_id(user_id):
             raise NotFoundError()
 
-        if not self.photo_service.is_image(photo):
-            raise FileIsNotImageError()
-
         if not self.photo_service.authorize(request.user, user_id):
             raise ForbiddenError()
+
+        if not self.photo_service.is_image(photo):
+            raise FileIsNotImageError()
 
         return self.photo_service.upload(user_id, photo)
 

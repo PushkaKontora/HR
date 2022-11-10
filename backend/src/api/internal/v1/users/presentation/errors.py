@@ -1,9 +1,9 @@
 from api.internal.v1.errors import APIBaseError
 
 
-class PasswordHasAlreadyRegisteredError(APIBaseError):
+class EmailHasAlreadyRegisteredError(APIBaseError):
     def __init__(self):
-        super(PasswordHasAlreadyRegisteredError, self).__init__(1, "The email has already registered", 422)
+        super(EmailHasAlreadyRegisteredError, self).__init__(1, "The email has already registered", 422)
 
 
 class PasswordDoesNotMatchError(APIBaseError):

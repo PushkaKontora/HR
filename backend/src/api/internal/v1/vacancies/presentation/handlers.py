@@ -118,7 +118,7 @@ class VacanciesHandlers(IVacanciesHandlers):
 
     def create_vacancy(self, request: HttpRequest, body: NewVacancyIn = Body(...)) -> SuccessResponse:
         if not self.creating_vacancy_service.exists_department_with_id(body.department_id):
-            raise UnknownDepartmentIdError()
+            raise NotFoundError()
 
         if not self.creating_vacancy_service.authorize(request.user, body):
             raise ForbiddenError()

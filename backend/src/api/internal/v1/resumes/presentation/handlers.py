@@ -157,11 +157,11 @@ class ResumeHandlers(IResumeHandlers):
     def create_resume(
         self, request: HttpRequest, extra: NewResumeIn = Form(...), document: UploadedFile = File(...)
     ) -> SuccessResponse:
-        if not self.document_service.is_pdf(document):
-            raise AttachedDocumentIsNotPDFError()
-
         if not self.creating_resume_service.authorize(request.user, extra):
             raise ForbiddenError()
+
+        if not self.document_service.is_pdf(document):
+            raise AttachedDocumentIsNotPDFError()
 
         if self.creating_resume_service.is_resume_created_by_user(extra):
             raise ResumeIsCreatedByUserError()
