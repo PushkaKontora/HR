@@ -3,7 +3,7 @@ from typing import Optional
 
 import freezegun
 import pytest
-from django.db.models import Q
+from django.db.models import F, Q
 from django.test import Client
 from django.utils.timezone import now
 from ninja.responses import Response
@@ -11,7 +11,7 @@ from ninja.responses import Response
 from api.internal.v1.vacancies.domain.entities import VacanciesSortBy
 from api.models import Department, Experience, User, Vacancy
 from tests.v1.integrations.conftest import get
-from tests.v1.integrations.vacancies.conftest import VACANCIES, vacancy_out
+from tests.v1.integrations.vacancies.conftest import VACANCIES, vacancies_out
 
 
 def get_vacancies(
@@ -54,7 +54,7 @@ def test_getting_vacancies_sorting_by_name_asc(client: Client, department: Depar
     response = get_vacancies(client, VacanciesSortBy.NAME_ASC)
 
     assert response.status_code == 200
-    assert response.json() == [vacancy_out(vacancy) for vacancy in Vacancy.objects.order_by("name")]
+    assert response.json() == vacancies_out(Vacancy.objects.order_by("name"))
 
 
 @pytest.mark.integration
@@ -79,13 +79,8 @@ def test_getting_vacancies_sorting_by_published_at_desc(client: Client, departme
 
     response = get_vacancies(client, VacanciesSortBy.PUBLISHED_AT_DESC)
 
-    published = [
-        vacancy_out(vacancy) for vacancy in Vacancy.objects.filter(~Q(published_at=None)).order_by("-published_at")
-    ]
-    unpublished = [vacancy_out(vacancy) for vacancy in Vacancy.objects.filter(published_at=None)]
-
     assert response.status_code == 200
-    assert response.json() == published + unpublished
+    assert response.json() == vacancies_out(Vacancy.objects.order_by(F("published_at").desc(nulls_last=True)))
 
 
 @pytest.mark.integration
@@ -105,9 +100,7 @@ def test_getting_vacancies_filtering_by_department_id(
     response = get_vacancies(client, VacanciesSortBy.NAME_ASC, department_id=department.id)
 
     assert response.status_code == 200
-    assert response.json() == [
-        vacancy_out(vacancy) for vacancy in Vacancy.objects.filter(department=department).order_by("name")
-    ]
+    assert response.json() == vacancies_out(Vacancy.objects.filter(department=department).order_by("name"))
 
 
 @pytest.mark.integration
@@ -123,9 +116,7 @@ def test_getting_vacancies_filtering_by_experience(
     response = get_vacancies(client, VacanciesSortBy.NAME_ASC, expected_experience=experience)
 
     assert response.status_code == 200
-    assert response.json() == [
-        vacancy_out(vacancy) for vacancy in Vacancy.objects.filter(expected_experience=experience).order_by("name")
-    ]
+    assert response.json() == vacancies_out(Vacancy.objects.filter(expected_experience=experience).order_by("name"))
 
 
 @pytest.mark.integration
@@ -155,15 +146,11 @@ def _test_getting_published_vacancies(client: Client) -> None:
     response = get_vacancies(client, VacanciesSortBy.NAME_ASC, published=True)
 
     assert response.status_code == 200
-    assert response.json() == [
-        vacancy_out(vacancy) for vacancy in Vacancy.objects.filter(~Q(published_at=None)).order_by("name")
-    ]
+    assert response.json() == vacancies_out(Vacancy.objects.filter(~Q(published_at=None)).order_by("name"))
 
 
 def _test_getting_unpublished_vacancies(client: Client) -> None:
     response = get_vacancies(client, VacanciesSortBy.NAME_ASC, published=False)
 
     assert response.status_code == 200
-    assert response.json() == [
-        vacancy_out(vacancy) for vacancy in Vacancy.objects.filter(published_at=None).order_by("name")
-    ]
+    assert response.json() == vacancies_out(Vacancy.objects.filter(published_at=None).order_by("name"))

@@ -1,3 +1,5 @@
+from django.db.models import QuerySet
+
 from api.models import Vacancy
 from tests.v1.integrations.conftest import V1, datetime_to_string
 
@@ -27,4 +29,11 @@ def vacancy_out(vacancy: Vacancy) -> dict:
             },
         },
         "published_at": datetime_to_string(vacancy.published_at) if vacancy.published_at else None,
+    }
+
+
+def vacancies_out(vacancies: QuerySet[Vacancy]) -> dict:
+    return {
+        "items": [vacancy_out(vacancy) for vacancy in vacancies],
+        "count": vacancies.count(),
     }
