@@ -10,10 +10,11 @@ from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 from api.internal.v1.vacancies.domain.entities import (
     NewVacancyIn,
     PublishingOut,
+    VacanciesOut,
     VacanciesParams,
     VacanciesWishlistParams,
     VacancyIn,
-    VacancyOut, VacanciesOut,
+    VacancyOut,
 )
 
 VACANCIES_TAG = "vacancies"

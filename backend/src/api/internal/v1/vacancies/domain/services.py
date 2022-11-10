@@ -13,10 +13,11 @@ from api.internal.v1.vacancies.domain.builders import IFilterBuilder, ISearcherB
 from api.internal.v1.vacancies.domain.entities import (
     NewVacancyIn,
     PublishingOut,
+    VacanciesOut,
     VacanciesParams,
     VacanciesWishlistParams,
     VacanciesWishlistSortBy,
-    VacancyOut, VacanciesOut,
+    VacancyOut,
 )
 from api.internal.v1.vacancies.presentation.handlers import (
     ICreatingVacancyService,

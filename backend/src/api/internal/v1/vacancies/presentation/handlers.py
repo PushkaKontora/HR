@@ -10,10 +10,11 @@ from api.internal.v1.responses import SuccessResponse
 from api.internal.v1.vacancies.domain.entities import (
     NewVacancyIn,
     PublishingOut,
+    VacanciesOut,
     VacanciesParams,
     VacanciesWishlistParams,
     VacancyIn,
-    VacancyOut, VacanciesOut,
+    VacancyOut,
 )
 from api.internal.v1.vacancies.presentation.errors import (
     UnknownDepartmentIdError,

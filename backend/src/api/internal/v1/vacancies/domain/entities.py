@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional, List
+from typing import List, Optional
 
 from django.conf import settings
 from django.db.models import QuerySet
@@ -91,7 +91,7 @@ class VacanciesOut(Schema):
     @staticmethod
     def from_vacancies_with_pagination(vacancies: QuerySet[Vacancy], limit: int, offset: int) -> "VacanciesOut":
         return VacanciesOut(
-            items=[VacancyOut.from_vacancy(vacancy) for vacancy in vacancies[offset: offset + limit]],
+            items=[VacancyOut.from_vacancy(vacancy) for vacancy in vacancies[offset : offset + limit]],
             count=vacancies.count(),
         )
 
