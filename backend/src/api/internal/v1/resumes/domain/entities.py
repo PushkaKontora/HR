@@ -1,17 +1,17 @@
 from datetime import datetime
 from enum import Enum
-from typing import Iterable, List, Optional, Set
+from typing import List, Optional, Set
 
 from django.conf import settings
 from django.db.models import QuerySet
 from ninja import Schema
-from ninja.pagination import LimitOffsetPagination
 from pydantic import EmailStr, Field, HttpUrl
 
 from api.models import Experience, Resume
 
 
 class ResumesSortBy(Enum):
+    PUBLISHED_AT_DESC = "published_at_desc"
     PUBLISHED_AT_ASC = "published_at_asc"
     ADDED_AT_DESC = "added_at_desc"
 

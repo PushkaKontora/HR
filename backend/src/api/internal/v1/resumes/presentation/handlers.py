@@ -59,7 +59,7 @@ class IGettingResumeService(ABC):
         pass
 
     @abstractmethod
-    def get_resume_out(self, resume_id: int) -> ResumeOut:
+    def get_resume(self, resume_id: int) -> ResumeOut:
         pass
 
     @abstractmethod
@@ -73,7 +73,7 @@ class IGettingResumesService(ABC):
         pass
 
     @abstractmethod
-    def get_resumes_out(self, params: ResumesParams) -> ResumesOut:
+    def get_resumes(self, params: ResumesParams) -> ResumesOut:
         pass
 
 
@@ -127,7 +127,7 @@ class ResumesHandlers(IResumesHandlers):
         if not self.getting_resumes_service.authorize(request.user):
             raise ForbiddenError()
 
-        return self.getting_resumes_service.get_resumes_out(params)
+        return self.getting_resumes_service.get_resumes(params)
 
 
 class ResumeHandlers(IResumeHandlers):
@@ -152,7 +152,7 @@ class ResumeHandlers(IResumeHandlers):
         if not self.getting_resume_service.authorize(request.user, resume_id):
             raise ForbiddenError()
 
-        return self.getting_resume_service.get_resume_out(resume_id)
+        return self.getting_resume_service.get_resume(resume_id)
 
     def create_resume(
         self, request: HttpRequest, extra: NewResumeIn = Form(...), document: UploadedFile = File(...)

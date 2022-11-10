@@ -1,43 +1,24 @@
 from abc import ABC, abstractmethod
-from typing import Any, Set
+from typing import Optional
 
 from django.contrib.postgres.search import TrigramWordSimilarity
-from django.db.models import Q, QuerySet
+from django.db.models import QuerySet
 
-from api.models import Experience, Resume
+from api.models import Resume
 
 
-class IResumesSearcher(ABC):
+class ResumesSearcherBase(ABC):
+    def __init__(self, value: Optional[str]):
+        self.value = value
+
     @abstractmethod
-    def search(self, resumes: QuerySet[Resume], value: Any) -> QuerySet[Resume]:
+    def search(self, resumes: QuerySet[Resume]) -> QuerySet[Resume]:
         pass
 
 
-class DesiredJobSearcher(IResumesSearcher):
-    def search(self, resumes: QuerySet[Resume], value: str) -> QuerySet[Resume]:
-        return resumes.annotate(similarity=TrigramWordSimilarity(value, "desired_job")).filter(similarity__gte=0.3)
+class DesiredJobSearcher(ResumesSearcherBase):
+    def search(self, resumes: QuerySet[Resume]) -> QuerySet[Resume]:
+        if self.value is None:
+            return resumes
 
-
-class ExperienceSearcher(IResumesSearcher):
-    def search(self, resumes: QuerySet[Resume], value: Experience) -> QuerySet[Resume]:
-        return resumes.filter(experience=value)
-
-
-class SalaryFromSearcher(IResumesSearcher):
-    def search(self, resumes: QuerySet[Resume], value: int) -> QuerySet[Resume]:
-        return resumes.filter(desired_salary__gte=value)
-
-
-class SalaryToSearcher(IResumesSearcher):
-    def search(self, resumes: QuerySet[Resume], value: int) -> QuerySet[Resume]:
-        return resumes.filter(desired_salary__lte=value)
-
-
-class CompetenciesSearcher(IResumesSearcher):
-    def search(self, resumes: QuerySet[Resume], value: Set[str]) -> QuerySet[Resume]:
-        return resumes.filter(competencies__in=value).distinct()
-
-
-class PublishedStatusSearcher(IResumesSearcher):
-    def search(self, resumes: QuerySet[Resume], value: bool) -> QuerySet[Resume]:
-        return resumes.filter(~Q(published_at=None) if value else Q(published_at=None))
+        return resumes.annotate(similarity=TrigramWordSimilarity(self.value, "desired_job")).filter(similarity__gte=0.5)

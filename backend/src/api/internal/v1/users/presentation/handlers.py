@@ -102,7 +102,7 @@ class IChangingEmailService(ABC):
         pass
 
 
-class IJWTService(ABC, metaclass=ABCMeta):
+class IJWTService(ABC):
     @abstractmethod
     def try_get_user(self, payload: Payload) -> Optional[User]:
         pass
@@ -112,7 +112,7 @@ class IJWTService(ABC, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_tokens_out(self, tokens: Tokens) -> AuthenticationOut:
+    def get_tokens(self, tokens: Tokens) -> AuthenticationOut:
         pass
 
     @abstractmethod
@@ -242,7 +242,7 @@ class AuthHandlers(IAuthHandlers):
     def get_response_with_tokens(self, user: User) -> Response:
         tokens = self.jwt_service.create_tokens(user)
 
-        response = Response(self.jwt_service.get_tokens_out(tokens))
+        response = Response(self.jwt_service.get_tokens(tokens))
         response.set_cookie(
             key=settings.REFRESH_TOKEN_COOKIE,
             value=tokens.refresh,
