@@ -16,7 +16,7 @@ from api.internal.v1.vacancies.domain.entities import (
     VacanciesParams,
     VacanciesWishlistParams,
     VacanciesWishlistSortBy,
-    VacancyOut,
+    VacancyOut, VacanciesOut,
 )
 from api.internal.v1.vacancies.presentation.handlers import (
     ICreatingVacancyService,
@@ -253,7 +253,7 @@ class GettingVacanciesService(IGettingVacanciesService):
         self.vacancies_filters_builder = vacancies_filters_builder
         self.vacancy_repo = vacancy_repo
 
-    def get_vacancies(self, params: VacanciesParams) -> Iterable[VacancyOut]:
+    def get_vacancies(self, params: VacanciesParams) -> VacanciesOut:
         limit, offset = params.limit, params.offset
 
         filters = self.vacancies_filters_builder.build(params)
@@ -262,4 +262,4 @@ class GettingVacanciesService(IGettingVacanciesService):
 
         vacancies = self.vacancy_repo.get_filtered_vacancies(filters, searcher, sorter)
 
-        return [VacancyOut.from_vacancy(vacancy) for vacancy in vacancies[offset : offset + limit]]
+        return VacanciesOut.from_vacancies_with_pagination(vacancies, limit, offset)

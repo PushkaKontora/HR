@@ -1,8 +1,9 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 from django.conf import settings
+from django.db.models import QuerySet
 from ninja import Schema
 from pydantic import Field, validator
 
@@ -80,6 +81,18 @@ class VacancyOut(Schema):
                 ),
             ),
             published_at=vacancy.published_at,
+        )
+
+
+class VacanciesOut(Schema):
+    items: List[VacancyOut]
+    count: int
+
+    @staticmethod
+    def from_vacancies_with_pagination(vacancies: QuerySet[Vacancy], limit: int, offset: int) -> "VacanciesOut":
+        return VacanciesOut(
+            items=[VacancyOut.from_vacancy(vacancy) for vacancy in vacancies[offset: offset + limit]],
+            count=vacancies.count(),
         )
 
 

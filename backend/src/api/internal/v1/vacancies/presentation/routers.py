@@ -13,7 +13,7 @@ from api.internal.v1.vacancies.domain.entities import (
     VacanciesParams,
     VacanciesWishlistParams,
     VacancyIn,
-    VacancyOut,
+    VacancyOut, VacanciesOut,
 )
 
 VACANCIES_TAG = "vacancies"
@@ -21,7 +21,7 @@ VACANCIES_TAG = "vacancies"
 
 class IVacanciesHandlers(ABC):
     @abstractmethod
-    def get_vacancies(self, request: HttpRequest, params: VacanciesParams = Query(...)) -> Iterable[VacancyOut]:
+    def get_vacancies(self, request: HttpRequest, params: VacanciesParams = Query(...)) -> VacanciesOut:
         pass
 
     @abstractmethod
@@ -80,7 +80,7 @@ class VacanciesRouter(Router):
             path="",
             methods=["GET"],
             view_func=vacancies_handlers.get_vacancies,
-            response={200: List[VacancyOut]},
+            response={200: VacanciesOut},
         )
 
         self.add_api_operation(

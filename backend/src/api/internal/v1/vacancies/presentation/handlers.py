@@ -13,7 +13,7 @@ from api.internal.v1.vacancies.domain.entities import (
     VacanciesParams,
     VacanciesWishlistParams,
     VacancyIn,
-    VacancyOut,
+    VacancyOut, VacanciesOut,
 )
 from api.internal.v1.vacancies.presentation.errors import (
     UnknownDepartmentIdError,
@@ -58,7 +58,7 @@ class IGettingVacancyService(ABC):
 
 class IGettingVacanciesService(ABC):
     @abstractmethod
-    def get_vacancies(self, params: VacanciesParams) -> Iterable[VacancyOut]:
+    def get_vacancies(self, params: VacanciesParams) -> VacanciesOut:
         pass
 
 
@@ -126,7 +126,7 @@ class VacanciesHandlers(IVacanciesHandlers):
 
         return SuccessResponse()
 
-    def get_vacancies(self, request: HttpRequest, params: VacanciesParams = Query(...)) -> Iterable[VacancyOut]:
+    def get_vacancies(self, request: HttpRequest, params: VacanciesParams = Query(...)) -> VacanciesOut:
         return self.getting_vacancies_service.get_vacancies(params)
 
 
