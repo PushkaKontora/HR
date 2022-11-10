@@ -6,7 +6,6 @@ from ninja import Body, Path, Query, Router
 from ninja.security import HttpBearer
 
 from api.internal.v1.responses import ErrorResponse, MessageResponse, SuccessResponse
-from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 from api.internal.v1.vacancies.domain.entities import (
     NewVacancyIn,
     PublishingOut,
@@ -77,7 +76,6 @@ class VacanciesRouter(Router):
         super(VacanciesRouter, self).__init__(tags=[VACANCIES_TAG])
 
         self.add_api_operation(
-            tags=[VACANCIES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
             view_func=vacancies_handlers.get_vacancies,
