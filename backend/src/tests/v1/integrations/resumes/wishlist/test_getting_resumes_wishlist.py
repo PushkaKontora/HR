@@ -36,6 +36,7 @@ def test_get_wishlist_by_employer(
     document.url = "https://lima_dykov.gg"
     with mock.patch.object(Resume, "document", new_callable=PropertyMock, return_value=document):
         _test_sort_by_published_at_asc(client, employer, employer_token)
+        _test_sort_by_published_at_desc(client, employer, employer_token)
         _test_sort_by_added_at_desc(client, employer, employer_token)
 
 
@@ -46,6 +47,16 @@ def _test_sort_by_published_at_asc(client: Client, employer: User, employer_toke
     assert response.json() == [
         resume_out(favourite.resume)
         for favourite in FavouriteResume.objects.filter(user=employer).order_by("resume__published_at")
+    ]
+
+
+def _test_sort_by_published_at_desc(client: Client, employer: User, employer_token: str) -> None:
+    response = get_wishlist(client, employer_token, ResumesSortBy.PUBLISHED_AT_DESC)
+
+    assert response.status_code == 200
+    assert response.json() == [
+        resume_out(favourite.resume)
+        for favourite in FavouriteResume.objects.filter(user=employer).order_by("-resume__published_at")
     ]
 
 

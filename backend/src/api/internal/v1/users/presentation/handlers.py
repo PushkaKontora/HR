@@ -24,10 +24,10 @@ from api.internal.v1.users.domain.entities import (
     UserOut,
 )
 from api.internal.v1.users.presentation.errors import (
+    EmailHasAlreadyRegisteredError,
     EmailIsAlreadyRegisteredError,
     FileIsNotImageError,
     PasswordDoesNotMatchError,
-    PasswordHasAlreadyRegisteredError,
     UserIsLeaderOfDepartmentError,
 )
 from api.internal.v1.users.presentation.routers import IAuthHandlers, IUserHandlers
@@ -102,7 +102,7 @@ class IChangingEmailService(ABC):
         pass
 
 
-class IJWTService(ABC, metaclass=ABCMeta):
+class IJWTService(ABC):
     @abstractmethod
     def try_get_user(self, payload: Payload) -> Optional[User]:
         pass
@@ -112,7 +112,7 @@ class IJWTService(ABC, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_tokens_out(self, tokens: Tokens) -> AuthenticationOut:
+    def get_tokens(self, tokens: Tokens) -> AuthenticationOut:
         pass
 
     @abstractmethod
@@ -187,7 +187,7 @@ class AuthHandlers(IAuthHandlers):
 
     def register_user(self, request: HttpRequest, body: RegistrationIn = Body(...)) -> SuccessResponse:
         if self.registration_service.is_email_taken(body.email):
-            raise PasswordHasAlreadyRegisteredError()
+            raise EmailHasAlreadyRegisteredError()
 
         self.registration_service.register(body)
 
@@ -242,7 +242,7 @@ class AuthHandlers(IAuthHandlers):
     def get_response_with_tokens(self, user: User) -> Response:
         tokens = self.jwt_service.create_tokens(user)
 
-        response = Response(self.jwt_service.get_tokens_out(tokens))
+        response = Response(self.jwt_service.get_tokens(tokens))
         response.set_cookie(
             key=settings.REFRESH_TOKEN_COOKIE,
             value=tokens.refresh,
@@ -294,11 +294,11 @@ class UserHandlers(IUserHandlers):
         if not self.getting_user_service.exists_user_with_id(user_id):
             raise NotFoundError()
 
-        if not self.photo_service.is_image(photo):
-            raise FileIsNotImageError()
-
         if not self.photo_service.authorize(request.user, user_id):
             raise ForbiddenError()
+
+        if not self.photo_service.is_image(photo):
+            raise FileIsNotImageError()
 
         return self.photo_service.upload(user_id, photo)
 

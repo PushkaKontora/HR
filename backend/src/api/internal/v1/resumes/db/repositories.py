@@ -1,11 +1,11 @@
-from typing import List, Optional, Set
+from typing import Iterable, Optional, Set
 
 from django.db.models import QuerySet
 from ninja import UploadedFile
 
-from api.internal.v1.resumes.db.searchers import IResumesSearcher
-from api.internal.v1.resumes.db.sorters import IFavouriteResumeSorter
-from api.internal.v1.resumes.domain.entities import ResumesSortBy
+from api.internal.v1.resumes.db.filters import IResumesFilter
+from api.internal.v1.resumes.db.searchers import ResumesSearcherBase
+from api.internal.v1.resumes.db.sorters import IWishlistSorter
 from api.internal.v1.resumes.domain.services import (
     ICompetencyRepository,
     IFavouriteResumeRepository,
@@ -16,22 +16,6 @@ from api.models import Competency, Experience, FavouriteResume, Resume, ResumeCo
 
 
 class ResumeRepository(IResumeRepository):
-    def __init__(
-        self,
-        desired_job_searcher: IResumesSearcher,
-        experience_searcher: IResumesSearcher,
-        salary_from_searcher: IResumesSearcher,
-        salary_to_searcher: IResumesSearcher,
-        competencies_searcher: IResumesSearcher,
-        published_status_searcher: IResumesSearcher,
-    ):
-        self.desired_job_searcher = desired_job_searcher
-        self.experience_searcher = experience_searcher
-        self.salary_from_searcher = salary_from_searcher
-        self.salary_to_searcher = salary_to_searcher
-        self.competencies_searcher = competencies_searcher
-        self.published_status_searcher = published_status_searcher
-
     def exists_resume_with_id(self, resume_id: int) -> bool:
         return Resume.objects.filter(id=resume_id).exists()
 
@@ -63,30 +47,13 @@ class ResumeRepository(IResumeRepository):
     def get_one_with_user_by_id(self, resume_id: int) -> Resume:
         return Resume.objects.select_related("owner").get(id=resume_id)
 
-    def get_filtered_resumes(
-        self,
-        search: Optional[str],
-        experience: Optional[Experience],
-        salary_from: Optional[int],
-        salary_to: Optional[int],
-        competencies: Optional[Set[str]],
-        published: Optional[bool],
-    ) -> QuerySet[Resume]:
-        searchers = {
-            self.desired_job_searcher: search,
-            self.experience_searcher: experience,
-            self.salary_from_searcher: salary_from,
-            self.salary_to_searcher: salary_to,
-            self.competencies_searcher: competencies,
-            self.published_status_searcher: published,
-        }
+    def get_resumes(self, filters: Iterable[IResumesFilter], searcher: ResumesSearcherBase) -> QuerySet[Resume]:
+        resumes = Resume.objects.all()
 
-        queryset = Resume.objects.all()
+        for obj in filters:
+            resumes = obj.filter(resumes)
 
-        for searcher, value in searchers.items():
-            queryset = queryset if value is None else searcher.search(queryset, value)
-
-        return queryset
+        return searcher.search(resumes)
 
 
 class CompetencyRepository(ICompetencyRepository):
@@ -106,7 +73,7 @@ class ResumeCompetenciesRepository(IResumeCompetenciesRepository):
 
 class FavouriteResumeRepository(IFavouriteResumeRepository):
     def get_wishlist_with_resumes_and_resume_owners_and_competencies_by_user_id(
-        self, user_id: int, sorter: IFavouriteResumeSorter
+        self, user_id: int, sorter: IWishlistSorter
     ) -> QuerySet[FavouriteResume]:
         wishlist = (
             FavouriteResume.objects.select_related("resume")

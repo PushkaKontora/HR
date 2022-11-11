@@ -1,12 +1,20 @@
 from abc import ABC, abstractmethod
 from typing import Iterable, Optional, Set
 
+from django.conf import settings
 from django.db.models import QuerySet
 from django.db.transaction import atomic
 from django.utils.timezone import now
 from ninja import UploadedFile
 
-from api.internal.v1.resumes.db.sorters import IFavouriteResumeSorter
+from api.internal.v1.resumes.db.filters import IResumesFilter
+from api.internal.v1.resumes.db.searchers import ResumesSearcherBase
+from api.internal.v1.resumes.db.sorters import IWishlistSorter
+from api.internal.v1.resumes.domain.builders import (
+    IResumesFiltersBuilder,
+    IResumesSearcherBuilder,
+    IWishlistSorterBuilder,
+)
 from api.internal.v1.resumes.domain.entities import (
     NewResumeIn,
     PublishingOut,
@@ -62,15 +70,7 @@ class IResumeRepository(ABC):
         pass
 
     @abstractmethod
-    def get_filtered_resumes(
-        self,
-        search: Optional[str],
-        experience: Optional[Experience],
-        salary_from: Optional[int],
-        salary_to: Optional[int],
-        competencies: Optional[Set[str]],
-        published: Optional[bool],
-    ) -> QuerySet[Resume]:
+    def get_resumes(self, filters: Iterable[IResumesFilter], searcher: ResumesSearcherBase) -> QuerySet[Resume]:
         pass
 
 
@@ -93,7 +93,7 @@ class IResumeCompetenciesRepository(ABC):
 class IFavouriteResumeRepository(ABC):
     @abstractmethod
     def get_wishlist_with_resumes_and_resume_owners_and_competencies_by_user_id(
-        self, user_id: int, sorter: IFavouriteResumeSorter
+        self, user_id: int, sorter: IWishlistSorter
     ) -> QuerySet[FavouriteResume]:
         pass
 
@@ -117,6 +117,9 @@ class IFavouriteResumeRepository(ABC):
 class DocumentService(IDocumentService):
     def is_pdf(self, document: UploadedFile) -> bool:
         return document.content_type == "application/pdf"
+
+    def is_large_size(self, document: UploadedFile) -> bool:
+        return document.size > settings.MAX_FILE_SIZE_BYTES
 
 
 class CreatingResumeService(ICreatingResumeService):
@@ -185,7 +188,7 @@ class GettingResumeService(IGettingResumeService):
 
         return is_employer or is_owner
 
-    def get_resume_out(self, resume_id: int) -> ResumeOut:
+    def get_resume(self, resume_id: int) -> ResumeOut:
         return ResumeOut.from_resume(self.resume_repo.get_one_with_user_by_id(resume_id))
 
     def exists_resume_with_id(self, resume_id: int) -> bool:
@@ -228,22 +231,20 @@ class ResumesWishlistService(IResumesWishlistService):
         self,
         favourite_resume_repo: IFavouriteResumeRepository,
         resume_repo: IResumeRepository,
-        resumes_published_at_asc_sorter: IFavouriteResumeSorter,
-        resumes_wishlist_added_at_desc_sorter: IFavouriteResumeSorter,
+        wishlist_sorter_builder: IWishlistSorterBuilder,
     ):
+        self.wishlist_sorter_builder = wishlist_sorter_builder
         self.resume_repo = resume_repo
         self.favourite_resume_repo = favourite_resume_repo
-        self.sorters = {
-            ResumesSortBy.PUBLISHED_AT_ASC: resumes_published_at_asc_sorter,
-            ResumesSortBy.ADDED_AT_DESC: resumes_wishlist_added_at_desc_sorter,
-        }
 
     def authorize(self, auth_user: User) -> bool:
         return auth_user.permission == Permission.EMPLOYER
 
     def get_user_wishlist(self, auth_user: User, params: ResumesWishlistParameters) -> Iterable[ResumeOut]:
+        sorter = self.wishlist_sorter_builder.build(params.sort_by)
+
         favourites = self.favourite_resume_repo.get_wishlist_with_resumes_and_resume_owners_and_competencies_by_user_id(
-            auth_user.id, self.sorters[params.sort_by]
+            auth_user.id, sorter
         )
 
         return (ResumeOut.from_resume(favourite.resume) for favourite in favourites)
@@ -262,22 +263,25 @@ class ResumesWishlistService(IResumesWishlistService):
 
 
 class GettingResumesService(IGettingResumesService):
-    def __init__(self, resume_repo: IResumeRepository):
+    def __init__(
+        self,
+        resume_repo: IResumeRepository,
+        filters_builder: IResumesFiltersBuilder,
+        searcher_builder: IResumesSearcherBuilder,
+    ):
+        self.searcher_builder = searcher_builder
+        self.filters_builder = filters_builder
         self.resume_repo = resume_repo
 
     def authorize(self, auth_user: User) -> bool:
         return auth_user.permission == Permission.EMPLOYER
 
-    def get_resumes_out(self, params: ResumesParams) -> ResumesOut:
+    def get_resumes(self, params: ResumesParams) -> ResumesOut:
         offset, limit = params.offset, params.limit
 
-        resumes = self.resume_repo.get_filtered_resumes(
-            params.search,
-            params.experience,
-            params.salary_from,
-            params.salary_to,
-            params.competencies,
-            params.published,
-        )
+        filters = self.filters_builder.build(params)
+        searcher = self.searcher_builder.build(params)
+
+        resumes = self.resume_repo.get_resumes(filters, searcher)
 
         return ResumesOut.from_resumes_with_pagination(resumes, limit, offset)

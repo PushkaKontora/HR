@@ -1,6 +1,11 @@
-from api.internal.v1.errors import APIBaseError
+from api.internal.v1.errors import DomainErrorBase
 
 
-class ResumeIsNotPDFError(APIBaseError):
-    def __init__(self):
-        super(ResumeIsNotPDFError, self).__init__(1, "The resume file is not pdf", 422)
+class ResumeIsNotPDFError(DomainErrorBase):
+    @property
+    def code(self) -> int:
+        return 1
+
+    @property
+    def msg(self) -> str:
+        return "The resume file is not pdf"

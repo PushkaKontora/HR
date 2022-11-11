@@ -4,7 +4,7 @@ from dependency_injector import containers, providers
 from ninja import NinjaAPI
 from ninja.security import HttpBearer
 
-from api.internal.v1.errors import APIBaseError
+from api.internal.v1.errors import DomainErrorBase
 from api.internal.v1.users.api import UsersContainer
 from api.internal.v1.vacancy_requests.db.repositories import UserRepository, VacancyRepository, VacancyRequestRepository
 from api.internal.v1.vacancy_requests.domain.notifiers import EmailNotifier
@@ -51,5 +51,5 @@ def register_vacancy_requests_api(base: NinjaAPI) -> None:
     base.add_router("/vacancy-requests", container.vacancy_requests_router())
 
 
-def _get_handler(error: Type[APIBaseError]):
+def _get_handler(error: Type[DomainErrorBase]):
     return lambda request, exc: error.response(exc)

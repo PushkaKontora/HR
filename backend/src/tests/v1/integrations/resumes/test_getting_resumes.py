@@ -3,7 +3,6 @@ from unittest import mock
 from unittest.mock import PropertyMock
 
 import pytest
-from django.db.models import QuerySet
 from django.test import Client
 from django.utils.timezone import now
 from ninja.responses import Response

@@ -1,19 +1,24 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from ninja.responses import Response
 
 from api.internal.v1.responses import ErrorDetails, ErrorResponse
 
 
-class APIBaseError(Exception, ABC):
-    def __init__(self, code: int, msg: str, status: int):
-        self.status = status
-        self.code = code
-        self.msg = msg
+class DomainErrorBase(Exception, ABC):
+    @property
+    @abstractmethod
+    def code(self) -> int:
+        pass
+
+    @property
+    @abstractmethod
+    def msg(self) -> str:
+        pass
 
     @classmethod
-    def response(cls, exc: "APIBaseError") -> Response:
-        return Response(ErrorResponse(error=ErrorDetails(code=exc.code, msg=exc.msg)), status=exc.status)
+    def response(cls, exc: "DomainErrorBase") -> Response:
+        return Response(ErrorResponse(error=ErrorDetails(code=exc.code, msg=exc.msg)), status=422)
 
 
 class UnauthorizedError(Exception):

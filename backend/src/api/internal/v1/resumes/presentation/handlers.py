@@ -16,6 +16,7 @@ from api.internal.v1.resumes.domain.entities import (
     ResumesWishlistParameters,
 )
 from api.internal.v1.resumes.presentation.errors import (
+    AttachedDocumentIsLargeSizeError,
     AttachedDocumentIsNotPDFError,
     ResumeAlreadyAddedToWishlistError,
     ResumeIsCreatedByUserError,
@@ -59,7 +60,7 @@ class IGettingResumeService(ABC):
         pass
 
     @abstractmethod
-    def get_resume_out(self, resume_id: int) -> ResumeOut:
+    def get_resume(self, resume_id: int) -> ResumeOut:
         pass
 
     @abstractmethod
@@ -73,7 +74,7 @@ class IGettingResumesService(ABC):
         pass
 
     @abstractmethod
-    def get_resumes_out(self, params: ResumesParams) -> ResumesOut:
+    def get_resumes(self, params: ResumesParams) -> ResumesOut:
         pass
 
 
@@ -90,6 +91,10 @@ class IUpdatingResumeService(ABC):
 class IDocumentService(ABC):
     @abstractmethod
     def is_pdf(self, document: UploadedFile) -> bool:
+        pass
+
+    @abstractmethod
+    def is_large_size(self, document: UploadedFile) -> bool:
         pass
 
 
@@ -127,7 +132,7 @@ class ResumesHandlers(IResumesHandlers):
         if not self.getting_resumes_service.authorize(request.user):
             raise ForbiddenError()
 
-        return self.getting_resumes_service.get_resumes_out(params)
+        return self.getting_resumes_service.get_resumes(params)
 
 
 class ResumeHandlers(IResumeHandlers):
@@ -152,16 +157,15 @@ class ResumeHandlers(IResumeHandlers):
         if not self.getting_resume_service.authorize(request.user, resume_id):
             raise ForbiddenError()
 
-        return self.getting_resume_service.get_resume_out(resume_id)
+        return self.getting_resume_service.get_resume(resume_id)
 
     def create_resume(
         self, request: HttpRequest, extra: NewResumeIn = Form(...), document: UploadedFile = File(...)
     ) -> SuccessResponse:
-        if not self.document_service.is_pdf(document):
-            raise AttachedDocumentIsNotPDFError()
-
         if not self.creating_resume_service.authorize(request.user, extra):
             raise ForbiddenError()
+
+        self._validate_document(document)
 
         if self.creating_resume_service.is_resume_created_by_user(extra):
             raise ResumeIsCreatedByUserError()
@@ -180,8 +184,8 @@ class ResumeHandlers(IResumeHandlers):
         if not self.getting_resume_service.exists_resume_with_id(resume_id):
             raise NotFoundError()
 
-        if document is not None and not self.document_service.is_pdf(document):
-            raise AttachedDocumentIsNotPDFError()
+        if document is not None:
+            self._validate_document(document)
 
         if not self.updating_resume_service.authorize(request.user, resume_id):
             raise ForbiddenError()
@@ -209,6 +213,13 @@ class ResumeHandlers(IResumeHandlers):
         self.publishing_resume_service.unpublish(resume_id)
 
         return SuccessResponse()
+
+    def _validate_document(self, resume: UploadedFile) -> None:
+        if not self.document_service.is_pdf(resume):
+            raise AttachedDocumentIsNotPDFError()
+
+        if self.document_service.is_large_size(resume):
+            raise AttachedDocumentIsLargeSizeError()
 
 
 class ResumesWishlistHandlers(IResumesWishlistHandlers):

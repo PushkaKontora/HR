@@ -1,23 +1,53 @@
-from api.internal.v1.errors import APIBaseError
+from django.conf import settings
+
+from api.internal.v1.errors import DomainErrorBase
 
 
-class ResumeIsCreatedByUserError(APIBaseError):
-    def __init__(self):
-        super(ResumeIsCreatedByUserError, self).__init__(1, "The user has already created a resume", 422)
+class ResumeIsCreatedByUserError(DomainErrorBase):
+    @property
+    def code(self) -> int:
+        return 1
+
+    @property
+    def msg(self) -> str:
+        return "The user has already created a resume"
 
 
-class AttachedDocumentIsNotPDFError(APIBaseError):
-    def __init__(self):
-        super(AttachedDocumentIsNotPDFError, self).__init__(2, "The attached document is not a pdf file", 422)
+class AttachedDocumentIsNotPDFError(DomainErrorBase):
+    @property
+    def code(self) -> int:
+        return 2
+
+    @property
+    def msg(self) -> str:
+        return "The attached document is not a pdf file"
 
 
-class ResumeAlreadyAddedToWishlistError(APIBaseError):
-    def __init__(self):
-        super(ResumeAlreadyAddedToWishlistError, self).__init__(3, "The resume already added to wishlist", 422)
+class ResumeAlreadyAddedToWishlistError(DomainErrorBase):
+    @property
+    def code(self) -> int:
+        return 3
+
+    @property
+    def msg(self) -> str:
+        return "The resume already added to wishlist"
 
 
-class UnpublishedResumeCannotBeAddedToWishlistError(APIBaseError):
-    def __init__(self):
-        super(UnpublishedResumeCannotBeAddedToWishlistError, self).__init__(
-            4, "You cannot add an unpublished resume to wishlist", 422
-        )
+class UnpublishedResumeCannotBeAddedToWishlistError(DomainErrorBase):
+    @property
+    def code(self) -> int:
+        return 4
+
+    @property
+    def msg(self) -> str:
+        return "You cannot add an unpublished resume to wishlist"
+
+
+class AttachedDocumentIsLargeSizeError(DomainErrorBase):
+    @property
+    def code(self) -> int:
+        return 5
+
+    @property
+    def msg(self) -> str:
+        return f"The attached document size must be lte than {settings.MAX_FILE_SIZE_BYTES} bytes"

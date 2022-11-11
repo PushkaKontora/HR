@@ -87,7 +87,7 @@ class VacanciesRouter(Router):
             methods=["POST"],
             view_func=vacancies_handlers.create_vacancy,
             auth=[auth],
-            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: ErrorResponse},
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
         )
 
         self.add_router("/{int:vacancy_id}", vacancy_router)
@@ -146,6 +146,11 @@ class VacanciesWishlistRouter(Router):
             methods=["POST"],
             view_func=vacancies_wishlist_handlers.add_vacancy_to_wishlist,
             response={200: SuccessResponse, 401: MessageResponse, 404: MessageResponse, 422: ErrorResponse},
+            description="""
+    422 error codes:
+        2 - you cannot add an unpublished vacancy to wishlist
+        3 - the vacancy already added to wishlist
+    """,
         )
 
         self.add_api_operation(
