@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Iterable, Optional, Set
 
+from django.conf import settings
 from django.db.models import QuerySet
 from django.db.transaction import atomic
 from django.utils.timezone import now
@@ -116,6 +117,9 @@ class IFavouriteResumeRepository(ABC):
 class DocumentService(IDocumentService):
     def is_pdf(self, document: UploadedFile) -> bool:
         return document.content_type == "application/pdf"
+
+    def is_large_size(self, document: UploadedFile) -> bool:
+        return document.size > settings.MAX_FILE_SIZE_BYTES
 
 
 class CreatingResumeService(ICreatingResumeService):

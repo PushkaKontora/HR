@@ -4,7 +4,7 @@ from dependency_injector import containers, providers
 from ninja import NinjaAPI
 from ninja.security import HttpBearer
 
-from api.internal.v1.errors import APIBaseError
+from api.internal.v1.errors import DomainErrorBase
 from api.internal.v1.users.api import UsersContainer
 from api.internal.v1.vacancies.db.filters import DepartmentFilter, ExperienceFilter, PublishedFilter, SalaryFilter
 from api.internal.v1.vacancies.db.repositories import (
@@ -37,7 +37,6 @@ from api.internal.v1.vacancies.domain.services import (
     VacanciesWishlistService,
 )
 from api.internal.v1.vacancies.presentation.errors import (
-    UnknownDepartmentIdError,
     VacancyAlreadyAddedToWishlistError,
     YouCannotAddUnpublishedVacancyToWishlistError,
 )
@@ -50,7 +49,6 @@ from api.internal.v1.vacancies.presentation.routers import VacanciesRouter, Vaca
 from api.internal.v1.vacancy_requests.domain.notifiers import EmailNotifier
 
 ERRORS = [
-    UnknownDepartmentIdError,
     YouCannotAddUnpublishedVacancyToWishlistError,
     VacancyAlreadyAddedToWishlistError,
 ]
@@ -146,5 +144,5 @@ def register_vacancies_api(base: NinjaAPI) -> None:
     base.add_router("/vacancies", container.vacancies_router())
 
 
-def _get_handler(error: Type[APIBaseError]):
+def _get_handler(error: Type[DomainErrorBase]):
     return lambda request, exc: error.response(exc)

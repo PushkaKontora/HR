@@ -17,7 +17,6 @@ from api.internal.v1.vacancies.domain.entities import (
     VacancyOut,
 )
 from api.internal.v1.vacancies.presentation.errors import (
-    UnknownDepartmentIdError,
     VacancyAlreadyAddedToWishlistError,
     YouCannotAddUnpublishedVacancyToWishlistError,
 )

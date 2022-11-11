@@ -4,7 +4,7 @@ from dependency_injector import containers, providers
 from ninja import NinjaAPI
 from ninja.security import HttpBearer
 
-from api.internal.v1.errors import APIBaseError
+from api.internal.v1.errors import DomainErrorBase
 from api.internal.v1.resumes.db.filters import CompetenciesFilter, ExperienceFilter, PublishedFilter, SalaryFilter
 from api.internal.v1.resumes.db.repositories import (
     CompetencyRepository,
@@ -29,6 +29,7 @@ from api.internal.v1.resumes.domain.services import (
     UpdatingResumeService,
 )
 from api.internal.v1.resumes.presentation.errors import (
+    AttachedDocumentIsLargeSizeError,
     AttachedDocumentIsNotPDFError,
     ResumeAlreadyAddedToWishlistError,
     ResumeIsCreatedByUserError,
@@ -43,6 +44,7 @@ ERRORS = [
     AttachedDocumentIsNotPDFError,
     ResumeAlreadyAddedToWishlistError,
     UnpublishedResumeCannotBeAddedToWishlistError,
+    AttachedDocumentIsLargeSizeError,
 ]
 
 
@@ -139,5 +141,5 @@ def register_resumes_api(base: NinjaAPI) -> None:
     base.add_router("/resumes", container.resumes_router())
 
 
-def _get_handler(error: Type[APIBaseError]):
+def _get_handler(error: Type[DomainErrorBase]):
     return lambda request, exc: error.response(exc)
