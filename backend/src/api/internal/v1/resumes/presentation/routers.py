@@ -96,10 +96,11 @@ class ResumesRouter(Router):
             view_func=resume_handlers.create_resume,
             auth=[auth],
             response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: ErrorResponse},
-            description="""
+            description=f"""
     422 error codes:
         1 - the user already created a resume
         2 - the attached document is not a pdf file
+        5 - the attached document size must be lte than {settings.MAX_FILE_SIZE_BYTES} bytes
     """,
         )
 
