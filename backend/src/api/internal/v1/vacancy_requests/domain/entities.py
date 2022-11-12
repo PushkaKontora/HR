@@ -7,7 +7,6 @@ from api.models import VacancyRequest
 
 class RequestIn(Schema):
     vacancy_id: int
-    desired_job: str
 
 
 class RequestOut(Schema):

@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
+from django.conf import settings
 from django.http import HttpRequest
 from ninja import File, Form, Query, Router, UploadedFile
 from ninja.security import HttpBearer
@@ -33,6 +34,11 @@ class VacancyRequestsRouter(Router):
             view_func=vacancy_requests_handlers.create_vacancy_request,
             auth=[auth],
             response={200: RequestOut, 401: MessageResponse, 404: MessageResponse, 422: ErrorResponse},
+            description=f"""
+    422 error codes:
+        1 - the resume file is not pdf
+        2 - size of a resume file must be lte than {settings.MAX_FILE_SIZE_BYTES} bytes"
+    """,
         )
 
         self.add_api_operation(

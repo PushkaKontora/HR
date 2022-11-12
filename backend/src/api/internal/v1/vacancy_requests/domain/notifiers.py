@@ -35,7 +35,6 @@ class EmailNotifier(IVacancyRequestNotifier):
         resume: Optional[UploadedFile],
     ) -> None:
         context = {
-            "desired_job": data.desired_job,
             "request_id": request.id,
             "sender": {
                 "id": sender.id,
@@ -57,6 +56,7 @@ class EmailNotifier(IVacancyRequestNotifier):
         email.attach_alternative(html, "text/html")
 
         if resume:
+            resume.seek(0)
             email.attach(self.RESUME_FILENAME, resume.read(), "application/pdf")
 
         email.send()
