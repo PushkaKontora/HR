@@ -3,9 +3,15 @@
 
 .vacancyCardWrapper {
   cursor: pointer;
+  transition: 0.3s;
 
   &:not(:last-child) {
     margin-bottom: 2.3rem;
+  }
+
+  &:hover{
+    transform: scale(1.03);
+    transition: 0.3s;
   }
 
   .vacancyCardItem {

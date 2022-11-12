@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 
 import './card-sorting.scss';
 import arrowIcon from '../../assets/img/job-seach/Arrow-select.svg';
@@ -15,22 +15,40 @@ const selectFilterCardVariants = [SelectFilterCard.DEFAULT, SelectFilterCard.ON_
 
 function CardSorting() {
   const [selectFilterCard, setSelectFilterCard] = useState(SelectFilterCard.DEFAULT);
-
   const [isOpenFilterCard, setIsOpenFilterCard] = useState(false);
+  const refModal = useRef(null);
 
   useEffect(() => {
     const child = document.getElementById('child');
-    if (child) {
-      child.style.width = 280 + 'px';
-      //(cWidth + 25) > pWidth ? child.style.width = (cWidth) + 'px' : child.style.width = pWidth + 'px';
+    const parent = document.getElementById('parent');
+    if (child && parent) {
+      const cWidth = child.offsetWidth;
+      const pWidth = parent.offsetWidth;
+      (cWidth) > pWidth ? child.style.width = (cWidth) + 'px' : child.style.width = (pWidth) + 'px';
     }
   },);
+
+  useEffect(() => {
+    setIsOpenFilterCard(false);
+  }, [selectFilterCard]);
+
+  // useEffect(() => {
+  //   const handleClickOutside = (e: any) => {
+  //     if (!refModal.current) return;
+  //     if (refModal && !refModal.current.contains(e.target)) {
+  //       setIsOpenFilterCard(false);
+  //     }
+  //   };
+  //   document.addEventListener('onmousedown', (e) => handleClickOutside(e));
+  //   return () => document.removeEventListener('onmousedown', (e) => handleClickOutside(e));
+  // }, []);
+
 
   const onToggleSelect = () => {
     setIsOpenFilterCard(!isOpenFilterCard);
   };
   return (
-    <div className="variantsSorted">
+    <div className="variantsSorted" ref={refModal}>
       <button
         id="parent"
         onClick={onToggleSelect}

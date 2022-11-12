@@ -1,5 +1,16 @@
+.variantSorted-wrapper{
+  height: 100vh;
+  width: 100vw;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+
+}
+
 .variantsSorted {
   position: relative;
+  z-index: 11;
   .variantSorted-select-btn {
     display: flex;
     gap: 4px;
