@@ -14,3 +14,6 @@ testdev:
 
 checkdev:
 	docker-compose -f docker-compose.dev.yml run api make check
+
+initvacancies:
+	docker-compose -f docker-compose.dev.yml run api make initvacancies
