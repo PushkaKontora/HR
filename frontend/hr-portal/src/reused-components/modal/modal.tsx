@@ -18,7 +18,7 @@ function Modal(props: ModalProps) {
     <div className={active ? 'modal modal__active' : 'modal'} onClick={() => setActive(false)}>
       <ModalContent width={width && width} padding={padding && padding} className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="imgCloseCross">
-          <img src={CloseCrossImg} alt="Close Cross Img"/>
+          <img src={CloseCrossImg} alt="Close Cross Img" onClick={() => setActive(false)}/>
         </div>
         {children}
       </ModalContent>
