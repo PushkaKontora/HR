@@ -22,7 +22,7 @@ class GettingService(IGettingService):
     def __init__(self, department_repo: IDepartmentRepository):
         self.department_repo = department_repo
 
-    def try_get_one_department_out(self, department_id: int) -> Optional[DepartmentOut]:
+    def try_get_department(self, department_id: int) -> Optional[DepartmentOut]:
         department = self.department_repo.try_get_one_with_leader(department_id)
 
         if not department:
@@ -30,5 +30,5 @@ class GettingService(IGettingService):
 
         return DepartmentOut.from_department(department)
 
-    def get_many_department_out(self) -> List[DepartmentOut]:
+    def get_departments(self) -> List[DepartmentOut]:
         return [DepartmentOut.from_department(department) for department in self.department_repo.get_all()]

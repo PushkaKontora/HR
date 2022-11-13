@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Iterable, List
 
+from django.conf import settings
 from django.http import HttpRequest
 from ninja import Body, File, Form, Path, Query, Router, UploadedFile
 from ninja.security import HttpBearer
@@ -95,6 +96,12 @@ class ResumesRouter(Router):
             view_func=resume_handlers.create_resume,
             auth=[auth],
             response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: ErrorResponse},
+            description=f"""
+    422 error codes:
+        1 - the user already created a resume
+        2 - the attached document is not a pdf file
+        5 - the attached document size must be lte than {settings.MAX_FILE_SIZE_BYTES} bytes
+    """,
         )
 
         self.add_router("/wishlist", resumes_wishlist_router)
@@ -125,6 +132,11 @@ class ResumeRouter(Router):
                 404: MessageResponse,
                 422: MessageResponse,
             },
+            description=f"""
+    422 error codes:
+        2 - the attached document is not a pdf file
+        5 - the attached document size must be lte than {settings.MAX_FILE_SIZE_BYTES} bytes"
+    """,
         )
 
         self.add_api_operation(
@@ -160,6 +172,11 @@ class ResumesWishlistRouter(Router):
             methods=["POST"],
             view_func=resumes_wishlist_handlers.add_resume_to_wishlist,
             response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: MessageResponse},
+            description="""
+    422 error codes:
+        3 - the resume already added to wishlist
+        4 - you cannot add an unpublished resume to wishlist
+    """,
         )
 
         self.add_api_operation(

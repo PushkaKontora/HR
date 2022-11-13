@@ -7,7 +7,7 @@ from django.utils.timezone import now
 from ninja.responses import Response
 
 from api.models import Department, Experience, User, Vacancy
-from tests.v1.integrations.conftest import error_422, forbidden, post, success
+from tests.v1.integrations.conftest import error_422, forbidden, not_found, post, success
 from tests.v1.integrations.vacancies.conftest import VACANCIES
 
 
@@ -86,8 +86,8 @@ def test_creating_vacancy_by_employer_but_he_is_not_leader_of_department(
 def test_creating_vacancy_with_unknown_department_id(client: Client, employer_token: str) -> None:
     response = create(client, employer_token, 0, "a", "b", Experience.NO_EXPERIENCE, True)
 
-    assert response.status_code == 422
-    assert response.json() == error_422(1, "Unknown department_id")
+    assert response.status_code == 404
+    assert response.json() == not_found()
 
 
 @pytest.mark.integration

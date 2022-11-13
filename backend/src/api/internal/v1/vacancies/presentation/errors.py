@@ -1,18 +1,21 @@
-from api.internal.v1.errors import APIBaseError
+from api.internal.v1.errors import DomainErrorBase
 
 
-class UnknownDepartmentIdError(APIBaseError):
-    def __init__(self):
-        super(UnknownDepartmentIdError, self).__init__(1, "Unknown department_id", 422)
+class YouCannotAddUnpublishedVacancyToWishlistError(DomainErrorBase):
+    @property
+    def code(self) -> int:
+        return 2
+
+    @property
+    def msg(self) -> str:
+        return "You cannot add an unpublished vacancy to wishlist"
 
 
-class YouCannotAddUnpublishedVacancyToWishlistError(APIBaseError):
-    def __init__(self):
-        super(YouCannotAddUnpublishedVacancyToWishlistError, self).__init__(
-            2, "You cannot add an unpublished vacancy to wishlist", 422
-        )
+class VacancyAlreadyAddedToWishlistError(DomainErrorBase):
+    @property
+    def code(self) -> int:
+        return 3
 
-
-class VacancyAlreadyAddedToWishlistError(APIBaseError):
-    def __init__(self):
-        super(VacancyAlreadyAddedToWishlistError, self).__init__(3, "The vacancy already added to wishlist", 422)
+    @property
+    def msg(self) -> str:
+        return "The vacancy already added to wishlist"

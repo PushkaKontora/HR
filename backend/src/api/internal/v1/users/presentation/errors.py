@@ -1,26 +1,51 @@
-from api.internal.v1.errors import APIBaseError
+from api.internal.v1.errors import DomainErrorBase
 
 
-class PasswordHasAlreadyRegisteredError(APIBaseError):
-    def __init__(self):
-        super(PasswordHasAlreadyRegisteredError, self).__init__(1, "The email has already registered", 422)
+class EmailHasAlreadyRegisteredError(DomainErrorBase):
+    @property
+    def code(self) -> int:
+        return 1
+
+    @property
+    def msg(self) -> str:
+        return "The email has already registered"
 
 
-class PasswordDoesNotMatchError(APIBaseError):
-    def __init__(self):
-        super(PasswordDoesNotMatchError, self).__init__(2, "The previous password does not match with expected", 422)
+class PasswordDoesNotMatchError(DomainErrorBase):
+    @property
+    def code(self) -> int:
+        return 2
+
+    @property
+    def msg(self) -> str:
+        return "The previous password does not match with expected"
 
 
-class UserIsLeaderOfDepartmentError(APIBaseError):
-    def __init__(self):
-        super(UserIsLeaderOfDepartmentError, self).__init__(10, "The user is a leader of a department", 422)
+class UserIsLeaderOfDepartmentError(DomainErrorBase):
+    @property
+    def code(self) -> int:
+        return 10
+
+    @property
+    def msg(self) -> str:
+        return "The user is a leader of a department"
 
 
-class EmailIsAlreadyRegisteredError(APIBaseError):
-    def __init__(self):
-        super(EmailIsAlreadyRegisteredError, self).__init__(11, "The email is already registered", 422)
+class EmailIsAlreadyRegisteredError(DomainErrorBase):
+    @property
+    def code(self) -> int:
+        return 11
+
+    @property
+    def msg(self) -> str:
+        return "The email is already registered"
 
 
-class FileIsNotImageError(APIBaseError):
-    def __init__(self):
-        super(FileIsNotImageError, self).__init__(12, "The file is not image", 422)
+class FileIsNotImageError(DomainErrorBase):
+    @property
+    def code(self) -> int:
+        return 12
+
+    @property
+    def msg(self) -> str:
+        return "The file is not image"

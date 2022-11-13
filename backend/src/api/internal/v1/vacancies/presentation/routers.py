@@ -6,11 +6,11 @@ from ninja import Body, Path, Query, Router
 from ninja.security import HttpBearer
 
 from api.internal.v1.responses import ErrorResponse, MessageResponse, SuccessResponse
-from api.internal.v1.tags import NOT_IMPLEMENTED_TAG
 from api.internal.v1.vacancies.domain.entities import (
     NewVacancyIn,
     PublishingOut,
-    VacanciesFilters,
+    VacanciesOut,
+    VacanciesParams,
     VacanciesWishlistParams,
     VacancyIn,
     VacancyOut,
@@ -21,7 +21,7 @@ VACANCIES_TAG = "vacancies"
 
 class IVacanciesHandlers(ABC):
     @abstractmethod
-    def get_vacancies(self, request: HttpRequest, filters: VacanciesFilters = Query(...)) -> Iterable[VacancyOut]:
+    def get_vacancies(self, request: HttpRequest, params: VacanciesParams = Query(...)) -> VacanciesOut:
         pass
 
     @abstractmethod
@@ -76,11 +76,10 @@ class VacanciesRouter(Router):
         super(VacanciesRouter, self).__init__(tags=[VACANCIES_TAG])
 
         self.add_api_operation(
-            tags=[VACANCIES_TAG, NOT_IMPLEMENTED_TAG],
             path="",
             methods=["GET"],
             view_func=vacancies_handlers.get_vacancies,
-            response={200: List[VacancyOut]},
+            response={200: VacanciesOut},
         )
 
         self.add_api_operation(
@@ -88,7 +87,7 @@ class VacanciesRouter(Router):
             methods=["POST"],
             view_func=vacancies_handlers.create_vacancy,
             auth=[auth],
-            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: ErrorResponse},
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
         )
 
         self.add_router("/{int:vacancy_id}", vacancy_router)
@@ -147,6 +146,11 @@ class VacanciesWishlistRouter(Router):
             methods=["POST"],
             view_func=vacancies_wishlist_handlers.add_vacancy_to_wishlist,
             response={200: SuccessResponse, 401: MessageResponse, 404: MessageResponse, 422: ErrorResponse},
+            description="""
+    422 error codes:
+        2 - you cannot add an unpublished vacancy to wishlist
+        3 - the vacancy already added to wishlist
+    """,
         )
 
         self.add_api_operation(

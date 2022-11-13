@@ -11,11 +11,11 @@ from api.internal.v1.errors import NotFoundError
 
 class IGettingService(ABC):
     @abstractmethod
-    def try_get_one_department_out(self, department_id: int) -> Optional[DepartmentOut]:
+    def try_get_department(self, department_id: int) -> Optional[DepartmentOut]:
         pass
 
     @abstractmethod
-    def get_many_department_out(self) -> Iterable[DepartmentOut]:
+    def get_departments(self) -> Iterable[DepartmentOut]:
         pass
 
 
@@ -24,7 +24,7 @@ class DepartmentsHandlers(IDepartmentsHandlers):
         self.getting_service = getting_service
 
     def get_departments(self, request: HttpRequest) -> Iterable[DepartmentOut]:
-        return self.getting_service.get_many_department_out()
+        return self.getting_service.get_departments()
 
 
 class DepartmentHandlers(IDepartmentHandlers):
@@ -32,7 +32,7 @@ class DepartmentHandlers(IDepartmentHandlers):
         self.getting_service = getting_service
 
     def get_department(self, request: HttpRequest, department_id: int = Path(...)) -> DepartmentOut:
-        department_out = self.getting_service.try_get_one_department_out(department_id)
+        department_out = self.getting_service.try_get_department(department_id)
 
         if not department_out:
             raise NotFoundError()

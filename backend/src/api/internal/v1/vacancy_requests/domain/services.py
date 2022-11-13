@@ -1,12 +1,17 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
+from django.conf import settings
 from django.db.transaction import atomic
 from ninja import UploadedFile
 
 from api.internal.v1.vacancy_requests.domain.entities import RequestIn, RequestOut
 from api.internal.v1.vacancy_requests.domain.notifiers import IVacancyRequestNotifier
-from api.internal.v1.vacancy_requests.presentation.handlers import ICreatingRequestService, IGettingService
+from api.internal.v1.vacancy_requests.presentation.handlers import (
+    ICreatingRequestService,
+    IDocumentService,
+    IGettingService,
+)
 from api.models import User, VacancyRequest
 
 
@@ -48,9 +53,6 @@ class CreatingRequestService(ICreatingRequestService):
     def exists_vacancy(self, extra: RequestIn) -> bool:
         return self.vacancy_repo.exists_vacancy_with_id(extra.vacancy_id)
 
-    def is_resume_pdf(self, resume: UploadedFile) -> bool:
-        return resume.content_type == "application/pdf"
-
     @atomic
     def create_request(self, auth_user: User, extra: RequestIn, resume: Optional[UploadedFile]) -> RequestOut:
         employer = self.user_repo.get_employer_by_vacancy_id(extra.vacancy_id)
@@ -59,6 +61,14 @@ class CreatingRequestService(ICreatingRequestService):
         self.employer_notifier.notify(request, auth_user, employer, extra, resume)
 
         return RequestOut.from_request(request)
+
+
+class DocumentService(IDocumentService):
+    def is_pdf(self, document: UploadedFile) -> bool:
+        return document.content_type == "application/pdf"
+
+    def is_large(self, document: UploadedFile) -> bool:
+        return document.size > settings.MAX_FILE_SIZE_BYTES
 
 
 class GettingService(IGettingService):

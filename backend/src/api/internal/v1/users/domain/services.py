@@ -165,7 +165,7 @@ class JWTService(IJWTService):
 
         return tokens
 
-    def get_tokens_out(self, tokens: Tokens) -> AuthenticationOut:
+    def get_tokens(self, tokens: Tokens) -> AuthenticationOut:
         return AuthenticationOut.from_tokens(tokens)
 
     def generate_token(self, user: User, token_type: TokenType, ttl: timedelta) -> str:

@@ -1,8 +1,11 @@
 from typing import List, Optional, Tuple
+from unittest import mock
+from unittest.mock import PropertyMock
 
 import pytest
+from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.files.uploadedfile import SimpleUploadedFile, UploadedFile
 from django.test import Client
 
 from api.models import Competency, Experience, Resume, User
@@ -91,6 +94,29 @@ def test_create_resume__document_is_not_pdf(
 
     assert response.status_code == 422
     assert response.json() == error_422(2, "The attached document is not a pdf file")
+
+
+@pytest.mark.integration
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "size",
+    [
+        settings.MAX_FILE_SIZE_BYTES + 1,
+        settings.MAX_FILE_SIZE_BYTES + 3,
+        settings.MAX_FILE_SIZE_BYTES * 2,
+    ],
+)
+def test_create_resume__document_size_is_large(
+    client: Client, user: User, user_token: str, pdf_document: SimpleUploadedFile, size: int
+) -> None:
+
+    with mock.patch.object(UploadedFile, "size", new_callable=PropertyMock, return_value=size):
+        response = create(client, user_token, user.id, "123", pdf_document)
+
+    assert response.status_code == 422
+    assert response.json() == error_422(
+        5, f"The attached document size must be lte than {settings.MAX_FILE_SIZE_BYTES} bytes"
+    )
 
 
 @pytest.mark.integration

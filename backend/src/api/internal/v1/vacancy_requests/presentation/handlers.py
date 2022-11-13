@@ -6,7 +6,7 @@ from ninja import File, Form, Query, UploadedFile
 
 from api.internal.v1.errors import NotFoundError
 from api.internal.v1.vacancy_requests.domain.entities import RequestIn, RequestOut
-from api.internal.v1.vacancy_requests.presentation.errors import ResumeIsNotPDFError
+from api.internal.v1.vacancy_requests.presentation.errors import ResumeIsLargeError, ResumeIsNotPDFError
 from api.internal.v1.vacancy_requests.presentation.routers import IVacancyRequestsHandlers
 from api.models import User
 
@@ -14,10 +14,6 @@ from api.models import User
 class ICreatingRequestService(ABC):
     @abstractmethod
     def exists_vacancy(self, extra: RequestIn) -> bool:
-        pass
-
-    @abstractmethod
-    def is_resume_pdf(self, resume: UploadedFile) -> bool:
         pass
 
     @abstractmethod
@@ -31,8 +27,24 @@ class IGettingService(ABC):
         pass
 
 
+class IDocumentService(ABC):
+    @abstractmethod
+    def is_pdf(self, document: UploadedFile) -> bool:
+        pass
+
+    @abstractmethod
+    def is_large(self, document: UploadedFile) -> bool:
+        pass
+
+
 class VacancyRequestsHandlers(IVacancyRequestsHandlers):
-    def __init__(self, creating_request_service: ICreatingRequestService, getting_service: IGettingService):
+    def __init__(
+        self,
+        creating_request_service: ICreatingRequestService,
+        getting_service: IGettingService,
+        document_service: IDocumentService,
+    ):
+        self.document_service = document_service
         self.getting_service = getting_service
         self.creating_request_service = creating_request_service
 
@@ -42,8 +54,12 @@ class VacancyRequestsHandlers(IVacancyRequestsHandlers):
         if not self.creating_request_service.exists_vacancy(extra):
             raise NotFoundError()
 
-        if resume is not None and not self.creating_request_service.is_resume_pdf(resume):
-            raise ResumeIsNotPDFError()
+        if resume is not None:
+            if not self.document_service.is_pdf(resume):
+                raise ResumeIsNotPDFError()
+
+            if self.document_service.is_large(resume):
+                raise ResumeIsLargeError()
 
         return self.creating_request_service.create_request(request.user, extra, resume)
 
