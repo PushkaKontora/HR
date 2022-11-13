@@ -48,4 +48,4 @@ class FileIsNotImageError(DomainErrorBase):
 
     @property
     def msg(self) -> str:
-        return "The file is not image"
+        return "The file is not an image"

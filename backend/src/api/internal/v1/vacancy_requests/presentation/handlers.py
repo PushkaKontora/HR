@@ -20,6 +20,10 @@ class ICreatingRequestService(ABC):
     def create_request(self, auth_user: User, extra: RequestIn, resume: Optional[UploadedFile]) -> RequestOut:
         pass
 
+    @abstractmethod
+    def exists_published_vacancy(self, extra: RequestIn) -> bool:
+        pass
+
 
 class IGettingService(ABC):
     @abstractmethod
@@ -51,7 +55,7 @@ class VacancyRequestsHandlers(IVacancyRequestsHandlers):
     def create_vacancy_request(
         self, request: HttpRequest, extra: RequestIn = Form(...), resume: Optional[UploadedFile] = File(None)
     ) -> RequestOut:
-        if not self.creating_request_service.exists_vacancy(extra):
+        if not self.creating_request_service.exists_published_vacancy(extra):
             raise NotFoundError()
 
         if resume is not None:

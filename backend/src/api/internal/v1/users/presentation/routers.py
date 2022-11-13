@@ -137,7 +137,7 @@ class UserRouter(Router):
             response={200: PhotoOut, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
             description="""
     422 error codes:
-        12 - the file is not image
+        12 - the file is not an image
     """,
         )
 

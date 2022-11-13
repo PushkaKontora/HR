@@ -2,7 +2,6 @@ from unittest import mock
 from unittest.mock import PropertyMock
 
 import pytest
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client
 from ninja.responses import Response
 
