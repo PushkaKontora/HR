@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from ninja import Body, Path, Query, Router
 from ninja.security import HttpBearer
 
-from api.internal.v1.responses import ErrorResponse, MessageResponse, SuccessResponse
+from api.internal.responses import ErrorResponse, MessageResponse, SuccessResponse
 from api.internal.v1.vacancies.domain.entities import (
     NewVacancyIn,
     PublishingOut,

@@ -4,7 +4,7 @@ from dependency_injector import containers, providers
 from ninja import NinjaAPI
 from ninja.security import HttpBearer
 
-from api.internal.v1.errors import DomainErrorBase
+from api.internal.errors import DomainErrorBase
 from api.internal.v1.resumes.db.filters import CompetenciesFilter, ExperienceFilter, PublishedFilter, SalaryFilter
 from api.internal.v1.resumes.db.repositories import (
     CompetencyRepository,

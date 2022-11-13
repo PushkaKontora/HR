@@ -3,17 +3,17 @@ from typing import Iterable, List
 
 from django.conf import settings
 from django.http import HttpRequest
-from ninja import Body, File, Form, Path, Query, Router, UploadedFile
+from ninja import File, Form, Path, Query, Router, UploadedFile
 from ninja.security import HttpBearer
 
-from api.internal.v1.responses import ErrorResponse, MessageResponse, SuccessResponse
+from api.internal.responses import ErrorResponse, MessageResponse, SuccessResponse
 from api.internal.v1.resumes.domain.entities import (
     NewResumeIn,
     PublishingOut,
     ResumeOut,
     ResumesOut,
-    ResumesParams,
-    ResumesWishlistParameters,
+    ResumesQueryParams,
+    ResumesWishlistQueryParams,
 )
 
 RESUMES_TAG = "resumes"
@@ -21,7 +21,7 @@ RESUMES_TAG = "resumes"
 
 class IResumesHandlers(ABC):
     @abstractmethod
-    def get_resumes(self, request: HttpRequest, params: ResumesParams = Query(...)) -> ResumesOut:
+    def get_resumes(self, request: HttpRequest, params: ResumesQueryParams = Query(...)) -> ResumesOut:
         pass
 
 
@@ -58,7 +58,7 @@ class IResumeHandlers(ABC):
 class IResumesWishlistHandlers(ABC):
     @abstractmethod
     def get_resumes_wishlist(
-        self, request: HttpRequest, filters: ResumesWishlistParameters = Query(...)
+        self, request: HttpRequest, filters: ResumesWishlistQueryParams = Query(...)
     ) -> Iterable[ResumeOut]:
         pass
 

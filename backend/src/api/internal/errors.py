@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from ninja.responses import Response
 
-from api.internal.v1.responses import ErrorDetails, ErrorResponse
+from api.internal.responses import ErrorDetails, ErrorResponse
 
 
 class DomainErrorBase(Exception, ABC):

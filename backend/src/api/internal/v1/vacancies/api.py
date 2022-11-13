@@ -4,7 +4,7 @@ from dependency_injector import containers, providers
 from ninja import NinjaAPI
 from ninja.security import HttpBearer
 
-from api.internal.v1.errors import DomainErrorBase
+from api.internal.errors import DomainErrorBase
 from api.internal.v1.users.api import UsersContainer
 from api.internal.v1.vacancies.db.filters import DepartmentFilter, ExperienceFilter, PublishedFilter, SalaryFilter
 from api.internal.v1.vacancies.db.repositories import (
@@ -18,8 +18,6 @@ from api.internal.v1.vacancies.db.sorters import (
     VacanciesSortByAverageSalaryDESC,
     VacanciesSortByNameASC,
     VacanciesSortByPublishedAtDESC,
-    VacanciesSortBySalaryAtEndsASC,
-    VacanciesSortBySalaryAtEndsDESC,
     VacanciesWishlistSortByAddedAtDESC,
     VacanciesWishlistSortByPublishedAtASC,
 )

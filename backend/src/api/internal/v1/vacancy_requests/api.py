@@ -4,7 +4,7 @@ from dependency_injector import containers, providers
 from ninja import NinjaAPI
 from ninja.security import HttpBearer
 
-from api.internal.v1.errors import DomainErrorBase
+from api.internal.errors import DomainErrorBase
 from api.internal.v1.users.api import UsersContainer
 from api.internal.v1.vacancy_requests.db.repositories import UserRepository, VacancyRepository, VacancyRequestRepository
 from api.internal.v1.vacancy_requests.domain.notifiers import EmailNotifier

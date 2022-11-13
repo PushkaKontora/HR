@@ -1,26 +1,26 @@
-from abc import ABC, ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Optional, Type
+from typing import Optional
 
 from django.conf import settings
 from django.http import HttpRequest
 from ninja import Body, File, Path, UploadedFile
 from ninja.responses import Response
 
-from api.internal.v1.errors import BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError
-from api.internal.v1.responses import SuccessResponse
+from api.internal.errors import BadRequestError, ForbiddenError, NotFoundError, UnauthorizedError
+from api.internal.responses import SuccessResponse
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
     AuthenticationOut,
     EmailIn,
+    JWTTokens,
     NameIn,
-    PasswordUpdatedAtOut,
     Payload,
     PhotoOut,
     RegistrationIn,
-    ResetPasswordIn,
-    Tokens,
+    ResettingPasswordIn,
     TokenType,
+    UpdatingPasswordOut,
     UserOut,
 )
 from api.internal.v1.users.presentation.errors import (
@@ -56,11 +56,11 @@ class IResettingPasswordService(ABC):
         pass
 
     @abstractmethod
-    def match_password(self, user: User, body: ResetPasswordIn) -> bool:
+    def match_password(self, user: User, body: ResettingPasswordIn) -> bool:
         pass
 
     @abstractmethod
-    def reset(self, user: User, body: ResetPasswordIn) -> PasswordUpdatedAtOut:
+    def reset(self, user: User, body: ResettingPasswordIn) -> UpdatingPasswordOut:
         pass
 
 
@@ -108,11 +108,11 @@ class IJWTService(ABC):
         pass
 
     @abstractmethod
-    def create_tokens(self, user: User) -> Tokens:
+    def create_tokens(self, user: User) -> JWTTokens:
         pass
 
     @abstractmethod
-    def get_tokens(self, tokens: Tokens) -> AuthenticationOut:
+    def get_tokens(self, tokens: JWTTokens) -> AuthenticationOut:
         pass
 
     @abstractmethod
@@ -226,8 +226,8 @@ class AuthHandlers(IAuthHandlers):
         return self.get_response_with_tokens(issued_token.owner)
 
     def reset_password(
-        self, request: HttpRequest, user_id: int = Path(...), body: ResetPasswordIn = Body(...)
-    ) -> PasswordUpdatedAtOut:
+        self, request: HttpRequest, user_id: int = Path(...), body: ResettingPasswordIn = Body(...)
+    ) -> UpdatingPasswordOut:
         if not self.getting_user_service.exists_user_with_id(user_id):
             raise NotFoundError()
 

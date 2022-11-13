@@ -16,7 +16,7 @@ class ResumesSortBy(Enum):
     ADDED_AT_DESC = "added_at_desc"
 
 
-class ResumesParams(Schema):
+class ResumesQueryParams(Schema):
     published: Optional[bool] = None
     search: Optional[str] = None
     experience: Optional[Experience] = None
@@ -88,7 +88,7 @@ class NewResumeIn(ResumeIn):
     user_id: int
 
 
-class ResumesWishlistParameters(Schema):
+class ResumesWishlistQueryParams(Schema):
     sort_by: ResumesSortBy
 
 

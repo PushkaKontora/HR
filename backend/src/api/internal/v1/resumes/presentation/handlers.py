@@ -4,16 +4,16 @@ from typing import Iterable, Optional
 from django.http import HttpRequest
 from ninja import File, Form, Path, Query, UploadedFile
 
-from api.internal.v1.errors import ForbiddenError, NotFoundError
-from api.internal.v1.responses import SuccessResponse
+from api.internal.errors import ForbiddenError, NotFoundError
+from api.internal.responses import SuccessResponse
 from api.internal.v1.resumes.domain.entities import (
     NewResumeIn,
     PublishingOut,
     ResumeIn,
     ResumeOut,
     ResumesOut,
-    ResumesParams,
-    ResumesWishlistParameters,
+    ResumesQueryParams,
+    ResumesWishlistQueryParams,
 )
 from api.internal.v1.resumes.presentation.errors import (
     AttachedDocumentIsLargeSizeError,
@@ -74,7 +74,7 @@ class IGettingResumesService(ABC):
         pass
 
     @abstractmethod
-    def get_resumes(self, params: ResumesParams) -> ResumesOut:
+    def get_resumes(self, params: ResumesQueryParams) -> ResumesOut:
         pass
 
 
@@ -104,7 +104,7 @@ class IResumesWishlistService(ABC):
         pass
 
     @abstractmethod
-    def get_user_wishlist(self, auth_user: User, params: ResumesWishlistParameters) -> Iterable[ResumeOut]:
+    def get_user_wishlist(self, auth_user: User, params: ResumesWishlistQueryParams) -> Iterable[ResumeOut]:
         pass
 
     @abstractmethod
@@ -128,7 +128,7 @@ class ResumesHandlers(IResumesHandlers):
     def __init__(self, getting_resumes_service: IGettingResumesService):
         self.getting_resumes_service = getting_resumes_service
 
-    def get_resumes(self, request: HttpRequest, params: ResumesParams = Query(...)) -> ResumesOut:
+    def get_resumes(self, request: HttpRequest, params: ResumesQueryParams = Query(...)) -> ResumesOut:
         if not self.getting_resumes_service.authorize(request.user):
             raise ForbiddenError()
 
@@ -230,7 +230,7 @@ class ResumesWishlistHandlers(IResumesWishlistHandlers):
         self.resumes_wishlist_service = resumes_wishlist_service
 
     def get_resumes_wishlist(
-        self, request: HttpRequest, params: ResumesWishlistParameters = Query(...)
+        self, request: HttpRequest, params: ResumesWishlistQueryParams = Query(...)
     ) -> Iterable[ResumeOut]:
         if not self.resumes_wishlist_service.authorize(request.user):
             raise ForbiddenError()

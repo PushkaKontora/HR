@@ -3,7 +3,7 @@ from typing import Type
 from dependency_injector import containers, providers
 from ninja import NinjaAPI
 
-from api.internal.v1.errors import DomainErrorBase
+from api.internal.errors import DomainErrorBase
 from api.internal.v1.users.db.repositories import (
     DepartmentRepository,
     IssuedTokenRepository,

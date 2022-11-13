@@ -4,8 +4,8 @@ from typing import Iterable, List
 from django.http import HttpRequest
 from ninja import Path, Router
 
+from api.internal.responses import MessageResponse
 from api.internal.v1.departments.domain.entities import DepartmentOut
-from api.internal.v1.responses import MessageResponse
 
 DEPARTMENTS_TAG = "departments"
 

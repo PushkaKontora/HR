@@ -1,4 +1,4 @@
-from api.internal.v1.errors import DomainErrorBase
+from api.internal.errors import DomainErrorBase
 
 
 class EmailHasAlreadyRegisteredError(DomainErrorBase):
