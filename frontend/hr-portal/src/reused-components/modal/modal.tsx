@@ -3,6 +3,7 @@ import './styles/modal.styles';
 import './styles/modal-wrapper.styles.scss';
 import {ModalContent} from './styles/modal.styles';
 import CloseCrossImg from '../../../src/assets/img/modal/close-cross.svg';
+import cl from 'classnames';
 
 type ModalProps = {
   active: boolean,
@@ -15,7 +16,7 @@ type ModalProps = {
 function Modal(props: ModalProps) {
   const {active, setActive, children, width, padding} = props;
   return (
-    <div className={active ? 'modal modal__active' : 'modal'} onClick={() => setActive(false)}>
+    <div className={cl('modal', {'modal__active': active})} onClick={() => setActive(false)}>
       <ModalContent width={width && width} padding={padding && padding} className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="imgCloseCross">
           <img src={CloseCrossImg} alt="Close Cross Img" onClick={() => setActive(false)}/>
@@ -27,3 +28,5 @@ function Modal(props: ModalProps) {
 }
 
 export default Modal;
+
+//todo: заблокировать скроллпри прокрутке

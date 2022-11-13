@@ -1,3 +1,47 @@
 .vacancyListWrapper {
   margin-top: 2rem;
 }
+
+.respondModalWrapper {
+  display: flex;
+  gap: 60px;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  .respondModalItem {
+    &__img {
+      width: 393px;
+      height: 393px;
+      background: #CCDEFF;
+      border-radius: 20px;
+      isolation: isolate;
+    }
+
+    &__content {
+      height: 100%;
+
+      .title {
+        font-weight: 600;
+        font-size: 40px;
+        color: #000000;
+      }
+
+      .btn-wrapper {
+        margin-top: auto;
+        height: 100%;
+
+        .btn-sendRespond {
+          width: 100%;
+          background: #C7DBFF;
+          border-radius: 10px;
+          padding: 20px 32px;
+
+          font-weight: 500;
+          font-size: 16px;
+          line-height: 16px;
+          letter-spacing: 0.05em;
+        }
+      }
+    }
+  }
+}
