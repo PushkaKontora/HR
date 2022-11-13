@@ -3,7 +3,7 @@ import {indicateStatus, reset, setError, setLoading, setUser} from '../features/
 import {AppDispatch, RootState, store} from '../app/store';
 import {AxiosInstance} from 'axios';
 import {decodeToken, dropToken, getToken, saveToken} from './token-manager';
-import {UsersRoutes} from '../const/api-users-routes';
+import {UsersRoutes} from '../const/api-routes/api-users-routes';
 import {useSelector} from 'react-redux';
 import {useAppSelector} from '../app/hooks';
 import {User} from '../types/user';
