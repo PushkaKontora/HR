@@ -1,7 +1,7 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {indicateStatus, reset, setError, setLoading, setUser} from '../features/general/general-slice';
 import {AppDispatch, RootState, store} from '../app/store';
-import {AxiosInstance} from 'axios';
+import {AxiosInstance, AxiosResponse} from 'axios';
 import {decodeToken, dropToken, getToken, saveToken} from './token-manager';
 import {UsersRoutes} from '../const/api-users-routes';
 import {useSelector} from 'react-redux';
@@ -58,6 +58,19 @@ export const login = createAsyncThunk<void, {email: string, password: string}, G
 
     dispatch(setLoading(false));
   });
+
+export const resetPassword = createAsyncThunk<
+  Promise<AxiosResponse>, {id: number, previous_password: string, new_password: string}, Generics>(
+    'users/resetPassword',
+    async (arg, {dispatch, extra: api}) => {
+      dispatch(setLoading(true));
+
+      const res = api.patch(UsersRoutes.resetPassword(arg.id));
+      dispatch(setLoading(false));
+
+      return res;
+    }
+  );
 
 export const logout = createAsyncThunk<void, undefined, Generics>(
   'users/logout',

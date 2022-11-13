@@ -1,48 +1,15 @@
 import { FormInputProps } from '../types/form-input-props';
-import styled from 'styled-components';
-import {InputField} from '../styled/input-field';
-
-const Parent = styled.div`
-  margin-bottom: 32px;
-`;
-
-const ErrorField = styled.div`
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
-  
-  margin-top: 0.5rem;
-  margin-left: 0.5rem;
-  
-  color: #C52B1A;
-  
-  display: block;
-`;
-
-const LabelField = styled.label`
-  font-size: 16px;
-  letter-spacing: 0.05em;
-  
-  margin-bottom: 8px;
-  
-  display: block;
-`;
+import AbstractFormInput from './abstract-form-input';
+import {XLargeRegular} from '../../styled/fonts/x-large';
 
 function AuthFormInput(props: FormInputProps) {
-  const fieldName = props.name;
-
   return (
-    <Parent>
-      <LabelField>{props.label}</LabelField>
-      <InputField
-        normalBorderColor={'#9C9C9C'}
-        padding={'20px'}
-        type={props.type}
-        {...props.register(props.name, props.options)}
-        aria-invalid={props.errors[fieldName] ? 'true' : 'false'}/>
-      <ErrorField>
-        {[props.errors[fieldName]] && [props.errors[fieldName]?.message]}
-      </ErrorField>
-    </Parent>
+    <AbstractFormInput
+      normalBorderColor={'#9C9C9C'}
+      padding={'20px'}
+      inputMarginBottom={'32px'}
+      fontComponent={XLargeRegular}
+      {...props}/>
   );
 }
 

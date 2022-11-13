@@ -11,7 +11,11 @@ type PrivateRouteProps = {
 function PrivateRoute(props: PrivateRouteProps): JSX.Element {
   const statusUser = useAppSelector((state) => state.general.statusUser);
 
-  return statusUser === props.requiredUserStatus
+  const condition =
+    (statusUser === props.requiredUserStatus) ||
+    (props.requiredUserStatus === 'anyLoggedIn' && statusUser !== UserStatus.noAuth);
+
+  return condition
     ? props.children
     : <Navigate to={NoAuthRoutes.Login}/>;
 }

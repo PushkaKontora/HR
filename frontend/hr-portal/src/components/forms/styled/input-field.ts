@@ -13,7 +13,6 @@ export const InputField = styled.input<InputFieldProps>`
   background-color: white;
 
   padding: ${props => props.padding};
-  font-size: 18px;
 
   &:focus {
     border: 1px solid #4AC1FF;
@@ -21,5 +20,9 @@ export const InputField = styled.input<InputFieldProps>`
 
   &:invalid, &[aria-invalid='true'] {
     border: 1px solid #C52B1A;
+  }
+  
+  &::placeholder {
+    color: #9C9C9C;
   }
 `;
