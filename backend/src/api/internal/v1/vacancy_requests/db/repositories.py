@@ -1,5 +1,7 @@
 from typing import Optional
 
+from django.db.models import Q
+
 from api.internal.v1.vacancy_requests.domain.services import (
     IUserRepository,
     IVacancyRepository,
@@ -24,3 +26,6 @@ class VacancyRequestRepository(IVacancyRequestRepository):
 class VacancyRepository(IVacancyRepository):
     def exists_vacancy_with_id(self, vacancy_id: int) -> bool:
         return Vacancy.objects.filter(id=vacancy_id).exists()
+
+    def exists_published_vacancy_with_id(self, vacancy_id: int) -> bool:
+        return Vacancy.objects.filter(id=vacancy_id).filter(~Q(published_at=None)).exists()

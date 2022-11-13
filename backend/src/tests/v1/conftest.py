@@ -1,4 +1,5 @@
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from api.internal.v1.users.domain.utils import hash_password
 from api.models import Department, Experience, Password, Permission, User, Vacancy
@@ -71,3 +72,8 @@ def vacancy(department: Department) -> Vacancy:
         description="Big description",
         expected_experience=Experience.NO_EXPERIENCE,
     )
+
+
+@pytest.fixture
+def pdf_document() -> SimpleUploadedFile:
+    return SimpleUploadedFile("test_document.pdf", b"123", content_type="application/pdf")

@@ -4,16 +4,16 @@ from django.http import HttpRequest
 from ninja import Body, File, Path, Router, UploadedFile
 from ninja.security import HttpBearer
 
-from api.internal.v1.responses import ErrorResponse, MessageResponse, SuccessResponse
+from api.internal.responses import ErrorResponse, MessageResponse, SuccessResponse
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
     AuthenticationOut,
     EmailIn,
     NameIn,
-    PasswordUpdatedAtOut,
     PhotoOut,
     RegistrationIn,
-    ResetPasswordIn,
+    ResettingPasswordIn,
+    UpdatingPasswordOut,
     UserOut,
 )
 
@@ -35,8 +35,8 @@ class IAuthHandlers(ABC):
 
     @abstractmethod
     def reset_password(
-        self, request: HttpRequest, user_id: int = Path(...), body: ResetPasswordIn = Body(...)
-    ) -> PasswordUpdatedAtOut:
+        self, request: HttpRequest, user_id: int = Path(...), body: ResettingPasswordIn = Body(...)
+    ) -> UpdatingPasswordOut:
         pass
 
 
@@ -137,7 +137,7 @@ class UserRouter(Router):
             response={200: PhotoOut, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
             description="""
     422 error codes:
-        12 - the file is not image
+        12 - the file is not an image
     """,
         )
 
@@ -181,7 +181,7 @@ class UserRouter(Router):
             view_func=auth_handlers.reset_password,
             auth=[auth],
             response={
-                200: PasswordUpdatedAtOut,
+                200: UpdatingPasswordOut,
                 401: MessageResponse,
                 403: MessageResponse,
                 404: MessageResponse,

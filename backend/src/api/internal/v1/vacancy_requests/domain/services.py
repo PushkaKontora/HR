@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db.transaction import atomic
 from ninja import UploadedFile
 
-from api.internal.v1.vacancy_requests.domain.entities import RequestIn, RequestOut
+from api.internal.v1.vacancy_requests.domain.entities import RequestIn, VacancyRequestOut
 from api.internal.v1.vacancy_requests.domain.notifiers import IVacancyRequestNotifier
 from api.internal.v1.vacancy_requests.presentation.handlers import (
     ICreatingRequestService,
@@ -36,6 +36,10 @@ class IVacancyRepository(ABC):
     def exists_vacancy_with_id(self, vacancy_id: int) -> bool:
         pass
 
+    @abstractmethod
+    def exists_published_vacancy_with_id(self, vacancy_id: int) -> bool:
+        pass
+
 
 class CreatingRequestService(ICreatingRequestService):
     def __init__(
@@ -53,14 +57,17 @@ class CreatingRequestService(ICreatingRequestService):
     def exists_vacancy(self, extra: RequestIn) -> bool:
         return self.vacancy_repo.exists_vacancy_with_id(extra.vacancy_id)
 
+    def exists_published_vacancy(self, extra: RequestIn) -> bool:
+        return self.vacancy_repo.exists_published_vacancy_with_id(extra.vacancy_id)
+
     @atomic
-    def create_request(self, auth_user: User, extra: RequestIn, resume: Optional[UploadedFile]) -> RequestOut:
+    def create_request(self, auth_user: User, extra: RequestIn, resume: Optional[UploadedFile]) -> VacancyRequestOut:
         employer = self.user_repo.get_employer_by_vacancy_id(extra.vacancy_id)
 
         request = self.vacancy_request_repo.create(auth_user.id, extra.vacancy_id)
         self.employer_notifier.notify(request, auth_user, employer, extra, resume)
 
-        return RequestOut.from_request(request)
+        return VacancyRequestOut.from_request(request)
 
 
 class DocumentService(IDocumentService):
@@ -75,10 +82,12 @@ class GettingService(IGettingService):
     def __init__(self, vacancy_request_repo: IVacancyRequestRepository):
         self.vacancy_request_repo = vacancy_request_repo
 
-    def try_get_last_request_by_owner_and_vacancy_id(self, auth_user: User, vacancy_id: int) -> Optional[RequestOut]:
+    def try_get_last_request_by_owner_and_vacancy_id(
+        self, auth_user: User, vacancy_id: int
+    ) -> Optional[VacancyRequestOut]:
         request = self.vacancy_request_repo.try_get_last_by_owner_id_and_vacancy_id(auth_user.id, vacancy_id)
 
         if not request:
             return None
 
-        return RequestOut.from_request(request)
+        return VacancyRequestOut.from_request(request)

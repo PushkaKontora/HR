@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional
 
 from ninja import Schema
-from pydantic import EmailStr, Field, FilePath, HttpUrl, validator
+from pydantic import EmailStr, HttpUrl, validator
 
 from api.models import Password, Permission, User
 
@@ -32,7 +32,7 @@ class AuthenticationOut(Schema):
     access_token: str
 
     @staticmethod
-    def from_tokens(tokens: "Tokens") -> "AuthenticationOut":
+    def from_tokens(tokens: "JWTTokens") -> "AuthenticationOut":
         return AuthenticationOut(access_token=tokens.access)
 
 
@@ -86,7 +86,7 @@ class NameIn(Schema):
     patronymic: str
 
 
-class ResetPasswordIn(Schema):
+class ResettingPasswordIn(Schema):
     previous_password: str
     new_password: str
 
@@ -99,12 +99,12 @@ class ResetPasswordIn(Schema):
         return field_value
 
 
-class PasswordUpdatedAtOut(Schema):
+class UpdatingPasswordOut(Schema):
     updated_at: datetime
 
     @staticmethod
-    def from_password(password: Password) -> "PasswordUpdatedAtOut":
-        return PasswordUpdatedAtOut(updated_at=password.updated_at)
+    def from_password(password: Password) -> "UpdatingPasswordOut":
+        return UpdatingPasswordOut(updated_at=password.updated_at)
 
 
 class PhotoOut(Schema):
@@ -115,13 +115,13 @@ class PhotoOut(Schema):
         return PhotoOut(photo=user.photo.url)
 
 
-class Tokens(Schema):
+class JWTTokens(Schema):
     access: str
     refresh: str
 
     @staticmethod
-    def create(access: str, refresh: str) -> "Tokens":
-        return Tokens(access=access, refresh=refresh)
+    def create(access: str, refresh: str) -> "JWTTokens":
+        return JWTTokens(access=access, refresh=refresh)
 
 
 class Payload(Schema):

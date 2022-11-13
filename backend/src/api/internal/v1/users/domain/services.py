@@ -14,15 +14,15 @@ from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
     AuthenticationOut,
     EmailIn,
+    JWTTokens,
     NameIn,
     PasswordOut,
-    PasswordUpdatedAtOut,
     Payload,
     PhotoOut,
     RegistrationIn,
-    ResetPasswordIn,
-    Tokens,
+    ResettingPasswordIn,
     TokenType,
+    UpdatingPasswordOut,
     UserDepartmentOut,
     UserOut,
     UserResumeOut,
@@ -153,8 +153,8 @@ class JWTService(IJWTService):
     def revoke_all_issued_tokens_for_user(self, owner: User) -> None:
         self.issued_token_repo.revoke_all_tokens_for_user(owner.id)
 
-    def create_tokens(self, user: User) -> Tokens:
-        tokens = Tokens.create(
+    def create_tokens(self, user: User) -> JWTTokens:
+        tokens = JWTTokens.create(
             self.generate_token(user, TokenType.ACCESS, settings.ACCESS_TOKEN_TTL),
             self.generate_token(user, TokenType.REFRESH, settings.REFRESH_TOKEN_TTL),
         )
@@ -165,7 +165,7 @@ class JWTService(IJWTService):
 
         return tokens
 
-    def get_tokens(self, tokens: Tokens) -> AuthenticationOut:
+    def get_tokens(self, tokens: JWTTokens) -> AuthenticationOut:
         return AuthenticationOut.from_tokens(tokens)
 
     def generate_token(self, user: User, token_type: TokenType, ttl: timedelta) -> str:
@@ -199,15 +199,15 @@ class ResettingPasswordService(IResettingPasswordService):
     def authorize(self, user: User, user_id: int) -> bool:
         return user.id == user_id
 
-    def match_password(self, user: User, body: ResetPasswordIn) -> bool:
+    def match_password(self, user: User, body: ResettingPasswordIn) -> bool:
         return checkpw(body.previous_password.encode(), user.password.value.encode())
 
-    def reset(self, user: User, body: ResetPasswordIn) -> PasswordUpdatedAtOut:
+    def reset(self, user: User, body: ResettingPasswordIn) -> UpdatingPasswordOut:
         password = user.password
         password.value = hash_password(body.new_password)
         password.save(update_fields=["value", "updated_at"])
 
-        return PasswordUpdatedAtOut.from_password(password)
+        return UpdatingPasswordOut.from_password(password)
 
 
 class DeletingUserService(IDeletingUserService):

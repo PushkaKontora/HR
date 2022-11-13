@@ -1,4 +1,4 @@
-from api.internal.v1.errors import DomainErrorBase
+from api.internal.errors import DomainErrorBase
 
 
 class EmailHasAlreadyRegisteredError(DomainErrorBase):
@@ -48,4 +48,4 @@ class FileIsNotImageError(DomainErrorBase):
 
     @property
     def msg(self) -> str:
-        return "The file is not image"
+        return "The file is not an image"

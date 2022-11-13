@@ -4,8 +4,8 @@ from typing import Optional
 from django.http import HttpRequest
 from ninja import File, Form, Query, UploadedFile
 
-from api.internal.v1.errors import NotFoundError
-from api.internal.v1.vacancy_requests.domain.entities import RequestIn, RequestOut
+from api.internal.errors import NotFoundError
+from api.internal.v1.vacancy_requests.domain.entities import RequestIn, VacancyRequestOut
 from api.internal.v1.vacancy_requests.presentation.errors import ResumeIsLargeError, ResumeIsNotPDFError
 from api.internal.v1.vacancy_requests.presentation.routers import IVacancyRequestsHandlers
 from api.models import User
@@ -17,13 +17,19 @@ class ICreatingRequestService(ABC):
         pass
 
     @abstractmethod
-    def create_request(self, auth_user: User, extra: RequestIn, resume: Optional[UploadedFile]) -> RequestOut:
+    def create_request(self, auth_user: User, extra: RequestIn, resume: Optional[UploadedFile]) -> VacancyRequestOut:
+        pass
+
+    @abstractmethod
+    def exists_published_vacancy(self, extra: RequestIn) -> bool:
         pass
 
 
 class IGettingService(ABC):
     @abstractmethod
-    def try_get_last_request_by_owner_and_vacancy_id(self, auth_user: User, vacancy_id: int) -> Optional[RequestOut]:
+    def try_get_last_request_by_owner_and_vacancy_id(
+        self, auth_user: User, vacancy_id: int
+    ) -> Optional[VacancyRequestOut]:
         pass
 
 
@@ -50,8 +56,8 @@ class VacancyRequestsHandlers(IVacancyRequestsHandlers):
 
     def create_vacancy_request(
         self, request: HttpRequest, extra: RequestIn = Form(...), resume: Optional[UploadedFile] = File(None)
-    ) -> RequestOut:
-        if not self.creating_request_service.exists_vacancy(extra):
+    ) -> VacancyRequestOut:
+        if not self.creating_request_service.exists_published_vacancy(extra):
             raise NotFoundError()
 
         if resume is not None:
@@ -63,7 +69,7 @@ class VacancyRequestsHandlers(IVacancyRequestsHandlers):
 
         return self.creating_request_service.create_request(request.user, extra, resume)
 
-    def get_last_vacancy_request(self, request: HttpRequest, vacancy_id: int = Query(...)) -> RequestOut:
+    def get_last_vacancy_request(self, request: HttpRequest, vacancy_id: int = Query(...)) -> VacancyRequestOut:
         request_out = self.getting_service.try_get_last_request_by_owner_and_vacancy_id(request.user, vacancy_id)
 
         if not request_out:

@@ -4,9 +4,9 @@ from typing import Iterable, Optional
 from django.http import HttpRequest
 from ninja import Path
 
+from api.internal.errors import NotFoundError
 from api.internal.v1.departments.domain.entities import DepartmentOut
 from api.internal.v1.departments.presentation.routers import IDepartmentHandlers, IDepartmentsHandlers
-from api.internal.v1.errors import NotFoundError
 
 
 class IGettingService(ABC):

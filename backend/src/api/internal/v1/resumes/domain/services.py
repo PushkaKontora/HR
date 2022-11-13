@@ -21,9 +21,9 @@ from api.internal.v1.resumes.domain.entities import (
     ResumeIn,
     ResumeOut,
     ResumesOut,
-    ResumesParams,
+    ResumesQueryParams,
     ResumesSortBy,
-    ResumesWishlistParameters,
+    ResumesWishlistQueryParams,
 )
 from api.internal.v1.resumes.presentation.handlers import (
     ICreatingResumeService,
@@ -240,7 +240,7 @@ class ResumesWishlistService(IResumesWishlistService):
     def authorize(self, auth_user: User) -> bool:
         return auth_user.permission == Permission.EMPLOYER
 
-    def get_user_wishlist(self, auth_user: User, params: ResumesWishlistParameters) -> Iterable[ResumeOut]:
+    def get_user_wishlist(self, auth_user: User, params: ResumesWishlistQueryParams) -> Iterable[ResumeOut]:
         sorter = self.wishlist_sorter_builder.build(params.sort_by)
 
         favourites = self.favourite_resume_repo.get_wishlist_with_resumes_and_resume_owners_and_competencies_by_user_id(
@@ -276,7 +276,7 @@ class GettingResumesService(IGettingResumesService):
     def authorize(self, auth_user: User) -> bool:
         return auth_user.permission == Permission.EMPLOYER
 
-    def get_resumes(self, params: ResumesParams) -> ResumesOut:
+    def get_resumes(self, params: ResumesQueryParams) -> ResumesOut:
         offset, limit = params.offset, params.limit
 
         filters = self.filters_builder.build(params)

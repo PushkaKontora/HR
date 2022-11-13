@@ -9,10 +9,10 @@ class RequestIn(Schema):
     vacancy_id: int
 
 
-class RequestOut(Schema):
+class VacancyRequestOut(Schema):
     id: int
     created_at: datetime
 
     @staticmethod
-    def from_request(request: VacancyRequest) -> "RequestOut":
-        return RequestOut(id=request.id, created_at=request.created_at)
+    def from_request(request: VacancyRequest) -> "VacancyRequestOut":
+        return VacancyRequestOut(id=request.id, created_at=request.created_at)

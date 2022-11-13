@@ -6,8 +6,8 @@ from django.http import HttpRequest
 from ninja import File, Form, Query, Router, UploadedFile
 from ninja.security import HttpBearer
 
-from api.internal.v1.responses import ErrorResponse, MessageResponse
-from api.internal.v1.vacancy_requests.domain.entities import RequestIn, RequestOut
+from api.internal.responses import ErrorResponse, MessageResponse
+from api.internal.v1.vacancy_requests.domain.entities import RequestIn, VacancyRequestOut
 
 VACANCY_REQUEST_TAG = "vacancy requests"
 
@@ -16,11 +16,11 @@ class IVacancyRequestsHandlers(ABC):
     @abstractmethod
     def create_vacancy_request(
         self, request: HttpRequest, extra: RequestIn = Form(...), resume: Optional[UploadedFile] = File(None)
-    ) -> RequestOut:
+    ) -> VacancyRequestOut:
         pass
 
     @abstractmethod
-    def get_last_vacancy_request(self, request: HttpRequest, vacancy_id: int = Query(...)) -> RequestOut:
+    def get_last_vacancy_request(self, request: HttpRequest, vacancy_id: int = Query(...)) -> VacancyRequestOut:
         pass
 
 
@@ -33,7 +33,7 @@ class VacancyRequestsRouter(Router):
             methods=["POST"],
             view_func=vacancy_requests_handlers.create_vacancy_request,
             auth=[auth],
-            response={200: RequestOut, 401: MessageResponse, 404: MessageResponse, 422: ErrorResponse},
+            response={200: VacancyRequestOut, 401: MessageResponse, 404: MessageResponse, 422: ErrorResponse},
             description=f"""
     422 error codes:
         1 - the resume file is not pdf
@@ -46,5 +46,5 @@ class VacancyRequestsRouter(Router):
             methods=["GET"],
             view_func=vacancy_requests_handlers.get_last_vacancy_request,
             auth=[auth],
-            response={200: RequestOut, 401: MessageResponse, 404: MessageResponse},
+            response={200: VacancyRequestOut, 401: MessageResponse, 404: MessageResponse},
         )

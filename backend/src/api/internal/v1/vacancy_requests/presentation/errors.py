@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from api.internal.v1.errors import DomainErrorBase
+from api.internal.errors import DomainErrorBase
 
 
 class ResumeIsNotPDFError(DomainErrorBase):

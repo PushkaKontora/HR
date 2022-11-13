@@ -10,18 +10,18 @@ from api.internal.v1.resumes.db.filters import (
 )
 from api.internal.v1.resumes.db.searchers import ResumesSearcherBase
 from api.internal.v1.resumes.db.sorters import IWishlistSorter
-from api.internal.v1.resumes.domain.entities import ResumesParams, ResumesSortBy
+from api.internal.v1.resumes.domain.entities import ResumesQueryParams, ResumesSortBy
 
 
 class IResumesFiltersBuilder(ABC):
     @abstractmethod
-    def build(self, params: ResumesParams) -> List[IResumesFilter]:
+    def build(self, params: ResumesQueryParams) -> List[IResumesFilter]:
         pass
 
 
 class IResumesSearcherBuilder(ABC):
     @abstractmethod
-    def build(self, params: ResumesParams) -> ResumesSearcherBase:
+    def build(self, params: ResumesQueryParams) -> ResumesSearcherBase:
         pass
 
 
@@ -44,10 +44,10 @@ class ResumesFiltersBuilder(IResumesFiltersBuilder):
         self.salary_filter_cls = salary_filter_cls
         self.experience_filter_cls = experience_filter_cls
 
-    def build(self, params: ResumesParams) -> List[IResumesFilter]:
+    def build(self, params: ResumesQueryParams) -> List[IResumesFilter]:
         return list(self._build(params))
 
-    def _build(self, params: ResumesParams) -> Iterable[IResumesFilter]:
+    def _build(self, params: ResumesQueryParams) -> Iterable[IResumesFilter]:
         yield self.experience_filter_cls(params.experience)
         yield self.salary_filter_cls(params.salary_from, params.salary_to)
         yield self.competencies_filter_cls(params.competencies)
@@ -58,7 +58,7 @@ class ResumesSearcherBuilder(IResumesSearcherBuilder):
     def __init__(self, searcher_cls: Type[ResumesSearcherBase]):
         self.searcher_cls = searcher_cls
 
-    def build(self, params: ResumesParams) -> ResumesSearcherBase:
+    def build(self, params: ResumesQueryParams) -> ResumesSearcherBase:
         return self.searcher_cls(params.search)
 
 
