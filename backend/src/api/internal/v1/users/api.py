@@ -3,7 +3,7 @@ from typing import Type
 from dependency_injector import containers, providers
 from ninja import NinjaAPI
 
-from api.internal.errors import DomainErrorBase
+from api.internal.errors import DomainErrorBase, add_domain_errors_to_api
 from api.internal.v1.users.db.repositories import (
     DepartmentRepository,
     IssuedTokenRepository,
@@ -84,11 +84,6 @@ class UsersContainer(containers.DeclarativeContainer):
 def register_users_api(base: NinjaAPI) -> None:
     container = UsersContainer()
 
-    for exception_cls in ERRORS:
-        base.add_exception_handler(exception_cls, _get_handler(exception_cls))
+    add_domain_errors_to_api(base, ERRORS)
 
     base.add_router("/users", container.users_router())
-
-
-def _get_handler(exception_cls: Type[DomainErrorBase]):
-    return lambda request, exc: exception_cls.response(exc)

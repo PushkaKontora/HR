@@ -4,7 +4,7 @@ from dependency_injector import containers, providers
 from ninja import NinjaAPI
 from ninja.security import HttpBearer
 
-from api.internal.errors import DomainErrorBase
+from api.internal.errors import DomainErrorBase, add_domain_errors_to_api
 from api.internal.v1.resumes.db.filters import CompetenciesFilter, ExperienceFilter, PublishedFilter, SalaryFilter
 from api.internal.v1.resumes.db.repositories import (
     CompetencyRepository,
@@ -135,11 +135,6 @@ class ResumesContainer(containers.DeclarativeContainer):
 def register_resumes_api(base: NinjaAPI) -> None:
     container = ResumesContainer(auth=UsersContainer().auth())
 
-    for error in ERRORS:
-        base.add_exception_handler(error, _get_handler(error))
+    add_domain_errors_to_api(base, ERRORS)
 
     base.add_router("/resumes", container.resumes_router())
-
-
-def _get_handler(error: Type[DomainErrorBase]):
-    return lambda request, exc: error.response(exc)

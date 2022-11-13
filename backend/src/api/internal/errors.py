@@ -1,8 +1,11 @@
 from abc import ABC, abstractmethod
+from typing import Iterable, Type
 
+from ninja import NinjaAPI
+from ninja.errors import AuthenticationError
 from ninja.responses import Response
 
-from api.internal.responses import ErrorDetails, ErrorResponse
+from api.internal.responses import ErrorDetails, ErrorResponse, MessageResponse
 
 
 class DomainErrorBase(Exception, ABC):
@@ -39,3 +42,22 @@ class BadRequestError(Exception):
 class ForbiddenError(Exception):
     def __init__(self, msg: str = "Forbidden"):
         self.msg = msg
+
+
+def add_common_errors_to_api(base: NinjaAPI) -> None:
+    base.add_exception_handler(BadRequestError, lambda r, exc: Response(MessageResponse(msg=exc.msg), status=400))
+    base.add_exception_handler(
+        AuthenticationError, lambda r, exc: Response(MessageResponse(msg="Unauthorized"), status=401)
+    )
+    base.add_exception_handler(UnauthorizedError, lambda r, exc: Response(MessageResponse(msg=exc.msg), status=401))
+    base.add_exception_handler(ForbiddenError, lambda r, exc: Response(MessageResponse(msg=exc.msg), status=403))
+    base.add_exception_handler(NotFoundError, lambda r, exc: Response(MessageResponse(msg=exc.msg), status=404))
+
+
+def add_domain_errors_to_api(api: NinjaAPI, errors: Iterable[Type[DomainErrorBase]]) -> None:
+    for exception_cls in errors:
+        api.add_exception_handler(exception_cls, _get_handler(exception_cls))
+
+
+def _get_handler(exception_cls: Type[DomainErrorBase]):
+    return lambda request, exc: exception_cls.response(exc)
