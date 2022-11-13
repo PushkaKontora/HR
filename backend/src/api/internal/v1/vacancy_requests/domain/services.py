@@ -36,6 +36,10 @@ class IVacancyRepository(ABC):
     def exists_vacancy_with_id(self, vacancy_id: int) -> bool:
         pass
 
+    @abstractmethod
+    def exists_published_vacancy_with_id(self, vacancy_id: int) -> bool:
+        pass
+
 
 class CreatingRequestService(ICreatingRequestService):
     def __init__(
@@ -52,6 +56,9 @@ class CreatingRequestService(ICreatingRequestService):
 
     def exists_vacancy(self, extra: RequestIn) -> bool:
         return self.vacancy_repo.exists_vacancy_with_id(extra.vacancy_id)
+
+    def exists_published_vacancy(self, extra: RequestIn) -> bool:
+        return self.vacancy_repo.exists_published_vacancy_with_id(extra.vacancy_id)
 
     @atomic
     def create_request(self, auth_user: User, extra: RequestIn, resume: Optional[UploadedFile]) -> RequestOut:
