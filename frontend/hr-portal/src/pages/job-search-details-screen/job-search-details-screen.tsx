@@ -26,10 +26,6 @@ function JobSearchDetailsScreen() {
         <div className="cardSide-item cardSide-item__criteria">
           <div className="name-vacancy">{vacancy?.name}</div>
           <div className="tabsInfo">
-            {/*<div className="tabsItem">*/}
-            {/*  <img src={publishedAtIcon} alt="publishedAtIcon"/>*/}
-            {/*  <div className="tabs-text">{vacancy.published_at}</div>*/}
-            {/*</div>*/}
             {(vacancy?.salary_to || vacancy?.salary_from) &&
             (
               <div className="tabsItem">

@@ -3,10 +3,12 @@ import {Vacancy} from '../../types/vacancy';
 
 interface VacancyState {
   vacancyByID: Vacancy | null;
+  isOpenRespondModal: boolean;
 }
 
 const initialState: VacancyState = {
-  vacancyByID: null
+  vacancyByID: null,
+  isOpenRespondModal: false
 };
 
 const vacancySlice = createSlice({
@@ -16,9 +18,12 @@ const vacancySlice = createSlice({
     setVacancyByID(state, action) {
       state.vacancyByID = action.payload;
     },
+    setStateRespondModal(state, action) {
+      state.isOpenRespondModal = action.payload;
+    }
   }
 });
 
-export const {setVacancyByID} = vacancySlice.actions;
+export const {setVacancyByID, setStateRespondModal} = vacancySlice.actions;
 
 export default vacancySlice.reducer;

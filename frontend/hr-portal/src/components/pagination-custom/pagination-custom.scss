@@ -1,0 +1,40 @@
+.vacancyListPagination {
+  margin-top: 4.6rem;
+
+  .MuiPagination-ul {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+
+    button {
+      width: 40px;
+      height: 40px;
+
+      background: #EDECEA;
+      border-radius: 10px;
+      border: none;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-weight: 400;
+      font-size: 16px;
+      color: #9C9C9C;
+
+      &.Mui-selected {
+        background: #C7DBFF;
+        color: #000000;
+      }
+
+      &:hover {
+        background: #E3EDFF;
+        color: #9C9C9C;
+      }
+
+      .arrow-right {
+        transform: rotate(180deg);
+      }
+    }
+  }
+}
