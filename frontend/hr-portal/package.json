@@ -19,6 +19,7 @@
     "dompurify": "^2.4.0",
     "draft-convert": "^2.1.13",
     "draft-js": "^0.11.7",
+    "history": "^5.3.0",
     "http-status-codes": "^2.2.0",
     "jwt-decode": "^3.1.2",
     "react": "^18.2.0",

@@ -1,13 +1,15 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {indicateStatus, reset, setError, setLoading, setUser} from '../features/general/general-slice';
 import {AppDispatch, RootState, store} from '../app/store';
-import {AxiosInstance} from 'axios';
+import {AxiosInstance, AxiosResponse} from 'axios';
 import {decodeToken, dropToken, getToken, saveToken} from './token-manager';
 import {UsersRoutes} from '../const/api-routes/api-users-routes';
 import {useSelector} from 'react-redux';
 import {useAppSelector} from '../app/hooks';
 import {User} from '../types/user';
 import {TIMEOUT_SHOW_ERROR} from '../const/errors';
+import {SignInData} from '../types/sign-in-data';
+import {StatusCodes} from 'http-status-codes';
 
 type Generics = {
   dispatch: AppDispatch,
@@ -30,7 +32,19 @@ export const getAuthUser = createAsyncThunk<void, number, Generics>(
   }
 );
 
-// register function here
+export const signIn = createAsyncThunk<void, SignInData, Generics>(
+  'users/signin',
+  async (arg, {dispatch, extra: api}) => {
+    dispatch(setLoading(true));
+    const res = await api.post(UsersRoutes.register, arg);
+
+    if (res.status === StatusCodes.OK){
+      dispatch(login({email: arg.email, password: arg.password}));
+    } else {
+      dispatch(setLoading(false));
+    }
+  }
+);
 
 export const login = createAsyncThunk<void, {email: string, password: string}, Generics>(
   'users/login',
@@ -44,6 +58,19 @@ export const login = createAsyncThunk<void, {email: string, password: string}, G
 
     dispatch(setLoading(false));
   });
+
+export const resetPassword = createAsyncThunk<
+  Promise<AxiosResponse>, {id: number, previous_password: string, new_password: string}, Generics>(
+    'users/resetPassword',
+    async (arg, {dispatch, extra: api}) => {
+      dispatch(setLoading(true));
+
+      const res = api.patch(UsersRoutes.resetPassword(arg.id));
+      dispatch(setLoading(false));
+
+      return res;
+    }
+  );
 
 export const logout = createAsyncThunk<void, undefined, Generics>(
   'users/logout',

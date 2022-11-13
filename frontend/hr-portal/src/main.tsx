@@ -11,7 +11,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <ErrorMessage/>
         <App/>
       </BrowserRouter>
     </Provider>
