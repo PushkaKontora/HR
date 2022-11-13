@@ -5,7 +5,7 @@ import {useForm} from 'react-hook-form';
 import {FormSubmit} from '../../styled/forms/form-submit';
 import {EmailRegex} from '../../../const/email-regex';
 import {useAppDispatch} from '../../../app/hooks';
-import {signIn} from '../../../service/async-actions';
+import {signIn} from '../../../service/async-actions/async-actions-user';
 import {SignInData} from '../../../types/sign-in-data';
 
 function SignUpForm() {

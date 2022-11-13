@@ -1,14 +1,14 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-import {indicateStatus, reset, setError, setLoading, setUser} from '../features/general/general-slice';
-import {AppDispatch, RootState, store} from '../app/store';
+import {indicateStatus, reset, setError, setLoading, setUser} from '../../features/general/general-slice';
+import {AppDispatch, RootState, store} from '../../app/store';
 import {AxiosInstance, AxiosResponse} from 'axios';
-import {decodeToken, dropToken, getToken, saveToken} from './token-manager';
-import {UsersRoutes} from '../const/api-routes/api-users-routes';
+import {decodeToken, dropToken, getToken, saveToken} from '../token-manager';
+import {UsersRoutes} from '../../const/api-routes/api-users-routes';
 import {useSelector} from 'react-redux';
-import {useAppSelector} from '../app/hooks';
-import {User} from '../types/user';
-import {TIMEOUT_SHOW_ERROR} from '../const/errors';
-import {SignInData} from '../types/sign-in-data';
+import {useAppSelector} from '../../app/hooks';
+import {User} from '../../types/user';
+import {TIMEOUT_SHOW_ERROR} from '../../const/errors';
+import {SignInData} from '../../types/sign-in-data';
 import {StatusCodes} from 'http-status-codes';
 
 type Generics = {

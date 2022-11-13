@@ -6,7 +6,7 @@ import {FormSubmit} from '../../styled/forms/form-submit';
 import {EmailRegex} from '../../../const/email-regex';
 import {LargeRegular} from '../../styled/fonts/large';
 import {useAppDispatch, useAppSelector} from '../../../app/hooks';
-import {getAuthUser, login} from '../../../service/async-actions';
+import {getAuthUser, login} from '../../../service/async-actions/async-actions-user';
 import {UserStatus} from '../../../types/user-status';
 import {Navigate, redirect, useNavigate} from 'react-router-dom';
 import {decodeToken} from '../../../service/token-manager';

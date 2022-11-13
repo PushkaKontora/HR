@@ -5,7 +5,7 @@ import {useEffect, useRef, useState} from 'react';
 import {User} from '../../../../../types/user';
 import {ResetPasswordForm, ResetPasswordFormData} from '../../../reset-password-form/reset-password-form';
 import {useAppDispatch} from '../../../../../app/hooks';
-import {resetPassword} from '../../../../../service/async-actions';
+import {resetPassword} from '../../../../../service/async-actions/async-actions-user';
 
 type ProfilePasswordProps = {
   user: User | null
