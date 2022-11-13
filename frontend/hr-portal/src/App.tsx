@@ -4,16 +4,18 @@ import {useAppDispatch, useAppSelector} from './app/hooks';
 import {Route, Routes} from 'react-router-dom';
 import DefaultLayout from './components/layouts/default-layout/default-layout';
 
-import {NoAuthRoutes} from './const/app-routes';
+import {NoAuthRoutes, AuthRoutes} from './const/app-routes';
 import LoginPage from './pages/login-page/login-page';
 import SignUpPage from './pages/sign-up-page/sign-up-page';
 import PrivateRoute from './components/private-route/private-route';
 import {UserStatus} from './types/user-status';
-import {useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {checkToken} from './service/token-manager';
 import JobSearchScreen from './pages/job-search-screen/job-search-screen';
 import JobSearchDetailsScreen from './pages/job-search-details-screen/job-search-details-screen';
 import EmployerCreatingNewVacancy from './components/employer-creating-new-vacancy/employer-creating-new-vacancy';
+import ProfilePage from './pages/profile-page/profile-page';
+import {ToastWrapper} from './components/toast-wrapper/toast-wrapper';
 
 function App() {
   const status = useAppSelector((state) => state.general.statusUser);
@@ -45,13 +47,19 @@ function App() {
               <JobSearchDetailsScreen/>
             </PrivateRoute>
           }/>
+          <Route path={AuthRoutes.Profile} element={
+            <PrivateRoute requiredUserStatus={'anyLoggedIn'}>
+              <ProfilePage/>
+            </PrivateRoute>
+          }/>
           <Route path={NoAuthRoutes.Login} element={<LoginPage/>}/>
           <Route path={NoAuthRoutes.SignUp} element={<SignUpPage/>}/>
-          <Route path={NoAuthRoutes.Vacancy} element={<JobSearchScreen/>}/>
-          <Route path={'/empl'} element={<EmployerCreatingNewVacancy/>}/>
-          <Route path={`${NoAuthRoutes.Vacancy}/:id`} element={<JobSearchDetailsScreen/>}/>
+          {/*<Route path={NoAuthRoutes.Vacancy} element={<JobSearchScreen/>}/>*/}
+          {/*<Route path={'/empl'} element={<EmployerCreatingNewVacancy/>}/>*/}
+          {/*<Route path={`${NoAuthRoutes.Vacancy}/:id`} element={<JobSearchDetailsScreen/>}/>*/}
         </Route>
       </Routes>
+      <ToastWrapper/>
     </div>
   );
 }

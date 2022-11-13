@@ -1,7 +1,6 @@
-import './login-form.scss';
 import {useForm} from 'react-hook-form';
-import {useState} from 'react';
-import FormInput from '../form-input/form-input';
+import {useEffect, useState} from 'react';
+import AuthFormInput from '../form-inputs/auth-form-input';
 import {InputData} from '../types/form-input-props';
 import {FormSubmit} from '../../styled/forms/form-submit';
 import {EmailRegex} from '../../../const/email-regex';
@@ -9,7 +8,7 @@ import {LargeRegular} from '../../styled/fonts/large';
 import {useAppDispatch, useAppSelector} from '../../../app/hooks';
 import {getAuthUser, login} from '../../../service/async-actions';
 import {UserStatus} from '../../../types/user-status';
-import {Navigate} from 'react-router-dom';
+import {Navigate, redirect, useNavigate} from 'react-router-dom';
 import {decodeToken} from '../../../service/token-manager';
 
 type LoginFormData = {
@@ -29,6 +28,22 @@ function LoginForm() {
   const loading = useAppSelector((state) => state.general.loading);
   const userStatus = useAppSelector((state) => state.general.statusUser);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (mounted) {
+      if (userStatus !== UserStatus.noAuth) {
+        navigate(-1);
+      }
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [userStatus]);
+
 
   const inputs: InputData[] = [
     {
@@ -54,18 +69,15 @@ function LoginForm() {
   ];
 
   const onSubmit = (data: LoginFormData) => {
-    dispatch(login(data));
+    dispatch(login(data))
+      .then(() => {window.location.reload();});
     console.log('Login submitted, awaiting...');
   };
-
-  if (userStatus !== UserStatus.noAuth) {
-    return <Navigate to={'/'}/>;
-  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {inputs.map((item, idx) => (
-        <FormInput key={idx} {...item} errors={errors} register={register}/>
+        <AuthFormInput key={idx} {...item} errors={errors} register={register}/>
       ))}
 
       <FormSubmit type='submit' value='Далее' disabled={loading}/>

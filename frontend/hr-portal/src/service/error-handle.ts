@@ -1,8 +1,9 @@
-import {resetError, setError} from '../features/general/general-slice';
-import {useAppDispatch} from '../app/hooks';
+import {store} from '../app/store';
+import {setError} from '../features/general/general-slice';
+import {toast} from 'react-toastify';
 
 export const processErrorHandle = (message: string): void => {
-  const dispatch = useAppDispatch();
-  dispatch(setError(message));
-  dispatch(resetError());
+  store.dispatch(setError(message));
+  toast.error(message);
+  //dispatch(resetError());
 };

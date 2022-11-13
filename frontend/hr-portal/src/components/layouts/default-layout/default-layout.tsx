@@ -12,8 +12,8 @@ import {UserStatus} from '../../../types/user-status';
 import Header from '../../header/header';
 
 const Main = styled.main`
-  min-width: ${CONTENT_WIDTH};
-  width: ${CONTENT_WIDTH};
+  position: relative;
+  width: 100%;
   margin: 0 auto;
 
   flex-grow: 1;

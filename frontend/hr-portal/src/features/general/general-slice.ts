@@ -2,8 +2,7 @@ import {createSlice, isPending} from '@reduxjs/toolkit';
 import {UserStatus} from '../../types/user-status';
 import {User} from '../../types/user';
 import {login} from '../../service/async-actions';
-import {redirect} from 'react-router-dom';
-
+import history from '../../service/browser-history';
 
 interface GeneralState {
   statusUser: UserStatus;
