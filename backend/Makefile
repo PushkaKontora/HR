@@ -33,3 +33,9 @@ smoke:
 
 integration:
 	cd src && pipenv run pytest -m integration --disable-warnings
+
+
+# Only dev management commands
+
+initvacancies:
+	pipenv run python src/manage.py initvacancies
