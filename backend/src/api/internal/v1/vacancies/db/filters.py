@@ -65,7 +65,7 @@ class SalaryFilter(SalaryBaseFilter):
             vacancies = vacancies.filter(salary_from__gte=self.salary_from)
 
         if self.salary_to is not None:
-            vacancies = vacancies.filter(salary_to_lte=self.salary_to)
+            vacancies = vacancies.filter(salary_to__lte=self.salary_to)
 
         return vacancies
 
