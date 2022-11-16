@@ -11,16 +11,16 @@ interface VacancyState {
   vacancies: VacanciesApi;
   vacancyByID: Vacancy | null;
   isOpenRespondModal: boolean;
-  salaryMin: string | null,
-  salaryMax: string | null,
+  salaryMin: string,
+  salaryMax: string,
 }
 
 const initialState: VacancyState = {
   vacancies: {items: [], count: 0},
   vacancyByID: null,
   isOpenRespondModal: false,
-  salaryMin: null,
-  salaryMax: null,
+  salaryMin: '',
+  salaryMax: '',
 };
 
 const vacancySlice = createSlice({

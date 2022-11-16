@@ -1,0 +1,43 @@
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type=radio],
+input[type=checkbox] {
+  /* Hide original inputs */
+  visibility: hidden;
+  position: absolute;
+}
+
+.radioInput + label:before,
+input[type=checkbox] + label:before {
+  height: 16px;
+  width: 16px;
+  margin-right: 0.85rem;
+  content: "";
+  display: inline-block;
+  vertical-align: bottom;
+  border: 0.7px solid #000000;
+}
+
+.radioInput:checked + label:before {
+  background: radial-gradient(circle closest-side, #000000 5px, white 4.6px);
+}
+
+input[type=checkbox]:checked + label:before {
+  background: #000000;
+}
+
+/* CUSTOM RADIO AND CHECKBOX STYLES */
+.radioInput + label:before {
+  border-radius: 50%;
+
+
+}
+
+input[type=checkbox] + label:before {
+  border-radius: 2px;
+}

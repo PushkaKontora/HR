@@ -61,8 +61,8 @@ const departments = [
 
 const initialStateJobScreen = {
   radioChecked: radioInput[0],
-  salaryMin: null,
-  salaryMax: null,
+  salaryMin: '',
+  salaryMax: '',
   selectDepartment: null
 };
 
@@ -85,7 +85,7 @@ function JobSearchScreen() {
   };
 
   const handleChangeMinSalary = (e: ChangeEvent<HTMLInputElement>) => {
-    setSalaryMin(e.target.value);
+    dispatch(setSalaryMin(e.target.value));
     getVacancyWithNewParams();
   };
 
@@ -99,7 +99,7 @@ function JobSearchScreen() {
     setPageSearch('');
   };
 
-  const onHandleClickRadio = (e: ChangeEvent<HTMLInputElement>) => {
+  const onHandlerClickRadio = (e: ChangeEvent<HTMLInputElement>) => {
     setRadioChecked(e.target.value);
   };
 
@@ -109,14 +109,14 @@ function JobSearchScreen() {
 
   const getVacancyWithNewParams = () => {
     let lineWithNewParameters = '';
-    if (salaryMin !== null) {
+    if (salaryMin !== '') {
       lineWithNewParameters += `&salary_from=${salaryMin.toString()}`;
     }
-    if (salaryMax !== null) {
+    if (salaryMax !== '') {
       lineWithNewParameters += `&salary_to=${salaryMax.toString()}`;
     }
 
-    dispatch(getVacancies({sortBy: SortingVacancyTypes.BY_NAME, offset: 0, query: lineWithNewParameters}));
+    dispatch(getVacancies({sortBy: SortingVacancyTypes.BY_NAME, offset: 1, query: lineWithNewParameters}));
     console.log(lineWithNewParameters);
   };
 
@@ -170,7 +170,7 @@ function JobSearchScreen() {
                     id={index.toString()}
                     value={value}
                     checked={radioChecked === value}
-                    onChange={onHandleClickRadio}
+                    onChange={onHandlerClickRadio}
                   />
                   <label htmlFor={index.toString()}>{value}</label>
                 </div>

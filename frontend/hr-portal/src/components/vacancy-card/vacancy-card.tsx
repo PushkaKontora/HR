@@ -26,6 +26,7 @@ function VacancyCard(props: VacancyCard) {
   };
 
   const handlerClickRespond = (e: any) => {
+    dispatch(setVacancyByID(vacancy));
     e.stopPropagation();
     dispatch(setStateRespondModal(true));
   };

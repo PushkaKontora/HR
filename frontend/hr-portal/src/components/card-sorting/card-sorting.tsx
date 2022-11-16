@@ -2,21 +2,22 @@ import {useEffect, useRef, useState} from 'react';
 
 import './card-sorting.scss';
 import arrowIcon from '../../assets/img/job-seach/Arrow-select.svg';
+import {ExpectedExperience, SortingVacancyTypes} from '../../const';
+import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
+import {useAppDispatch} from '../../app/hooks';
 
-enum SelectFilterCard {
-  DEFAULT = 'По умолчанию',
-  ON_DATE = 'По дате',
-  DECREASE_SALARY = 'По убыванию зарплаты',
-  INCREASE_SALARY = 'По возрастанию зарплаты'
-}
-
-const selectFilterCardVariants = [SelectFilterCard.DEFAULT, SelectFilterCard.ON_DATE, SelectFilterCard.DECREASE_SALARY, SelectFilterCard.INCREASE_SALARY];
-
+const SelectFilterCard = {
+  [SortingVacancyTypes.BY_NAME]: 'По умолчанию',
+  [SortingVacancyTypes.PUBLISHED_DATE]: 'По дате',
+  [SortingVacancyTypes.SALARY_DESC]: 'По убыванию зарплаты',
+  [SortingVacancyTypes.SALARY_ASC]: 'По возрастанию зарплаты'
+};
 
 function CardSorting() {
-  const [selectFilterCard, setSelectFilterCard] = useState(SelectFilterCard.DEFAULT);
+  const [selectFilterCard, setSelectFilterCard] = useState('По умолчанию');
   const [isOpenFilterCard, setIsOpenFilterCard] = useState(false);
   const refModal = useRef(null);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const child = document.getElementById('child');
@@ -43,10 +44,16 @@ function CardSorting() {
   //   return () => document.removeEventListener('onmousedown', (e) => handleClickOutside(e));
   // }, []);
 
-
   const onToggleSelect = () => {
     setIsOpenFilterCard(!isOpenFilterCard);
   };
+
+  function onHandlerSelectAnotherTypeSort(element: string) {
+    setSelectFilterCard(element);
+    const experienceData = Object.entries(SelectFilterCard).filter(e => e[1] === element);
+    dispatch(getVacancies({sortBy: experienceData[0][0] as SortingVacancyTypes, offset: 1}));
+  }
+
   return (
     <div className="variantsSorted" ref={refModal}>
       <button
@@ -65,10 +72,10 @@ function CardSorting() {
         <div className="variantSorted-option-wrapper">
           <ul id="child">
             {
-              selectFilterCardVariants.map((element, index) => {
+              Object.values(SelectFilterCard).map((element, index) => {
                 return (
                   selectFilterCard !== element &&
-                  <li key={index} onClick={() => setSelectFilterCard(element)} className="variantSorted-element">
+                  <li key={index} onClick={() => onHandlerSelectAnotherTypeSort(element)} className="variantSorted-element">
                     {element}
                   </li>
                 );

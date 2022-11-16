@@ -1,3 +1,5 @@
+@import "../../styles/radio-btn";
+
 .vacancyListWrapper {
   margin-top: 2rem;
 }
@@ -10,8 +12,8 @@
 
   .respondModalItem {
     &__img {
-      width: 393px;
-      height: 393px;
+      width: 335px;
+      height: 335px;
       background: #CCDEFF;
       border-radius: 20px;
       isolation: isolate;

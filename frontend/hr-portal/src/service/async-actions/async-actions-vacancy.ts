@@ -3,7 +3,7 @@ import {AxiosInstance} from 'axios';
 import {RootState} from '../../app/store';
 import {Vacancy} from '../../types/vacancy';
 import {VacancyRoutes} from '../../const/api-routes/api-vacancy-routes';
-import {ExpectedExperience, LIMIT_ELEMENTS_ON_PAGE, SortingVacancyTypes} from '../../const';
+import {LIMIT_ELEMENTS_ON_PAGE, SortingVacancyTypes} from '../../const';
 
 type GetVacancyParams = {
   sortBy: SortingVacancyTypes,

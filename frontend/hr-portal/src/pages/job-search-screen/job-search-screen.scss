@@ -1,45 +1,8 @@
+@import "src/styles/radio-btn";
+
 img {
   width: 100%;
   height: 100%;
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  /* display: none; <- Crashes Chrome on hover */
-  -webkit-appearance: none;
-  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
-}
-
-input[type=radio],
-input[type=checkbox] {
-  /* Hide original inputs */
-  visibility: hidden;
-  position: absolute;
-}
-
-input[type=radio] + label:before,
-input[type=checkbox] + label:before {
-  height: 16px;
-  width: 16px;
-  margin-right: 0.85rem;
-  content: "";
-  display: inline-block;
-  vertical-align: bottom;
-  border: 0.7px solid #000000;
-}
-
-input[type=radio]:checked + label:before,
-input[type=checkbox]:checked + label:before {
-  background: radial-gradient(circle closest-side, #000000 5px, white 4.6px);
-}
-
-/* CUSTOM RADIO AND CHECKBOX STYLES */
-input[type=radio] + label:before {
-  border-radius: 50%;
-}
-
-input[type=checkbox] + label:before {
-  border-radius: 2px;
 }
 
 .jobSearchScreen-wrapper {
@@ -318,7 +281,8 @@ input[type=checkbox] + label:before {
                 }
               }
             }
-            .filterItem-title__clearForm{
+
+            .filterItem-title__clearForm {
               color: #9C9C9C;
               font-weight: 600;
               font-size: 16px;
