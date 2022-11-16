@@ -1,3 +1,5 @@
+from typing import List, Union
+
 from django.db.models import QuerySet
 
 from api.models import Vacancy
@@ -15,7 +17,7 @@ def vacancy_out(vacancy: Vacancy) -> dict:
         "id": vacancy.id,
         "name": vacancy.name,
         "description": vacancy.description,
-        "expected_experience": vacancy.expected_experience,
+        "expected_experience": str(vacancy.expected_experience),
         "salary_from": vacancy.salary_from,
         "salary_to": vacancy.salary_to,
         "department": {
@@ -32,8 +34,8 @@ def vacancy_out(vacancy: Vacancy) -> dict:
     }
 
 
-def vacancies_out(vacancies: QuerySet[Vacancy]) -> dict:
+def vacancies_out(vacancies: Union[QuerySet[Vacancy], List[Vacancy]]) -> dict:
     return {
         "items": [vacancy_out(vacancy) for vacancy in vacancies],
-        "count": vacancies.count(),
+        "count": vacancies.count() if vacancies is QuerySet else len(vacancies),
     }

@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import Optional
+from typing import Optional, Set
 
 import freezegun
 import pytest
@@ -154,3 +154,42 @@ def _test_getting_unpublished_vacancies(client: Client) -> None:
 
     assert response.status_code == 200
     assert response.json() == vacancies_out(Vacancy.objects.filter(published_at=None).order_by("name"))
+
+
+@pytest.mark.integration
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    ["salary_from", "salary_to", "expected_vacancies"],
+    [
+        [10, None, {1, 2, 3}],
+        [None, 20, {0, 2, 3}],
+        [10, 20, {2, 3}],
+        [None, None, {0, 1, 2, 3}],
+        [11, None, {3}],
+        [None, 19, {3}],
+        [0, 10**5, {2, 3}],
+        [-(10**5), 10**5, {2, 3}],
+    ],
+)
+def test_getting_vacancies_filtering_by_salary(
+    client: Client,
+    department: Department,
+    salary_from: Optional[int],
+    salary_to: Optional[int],
+    expected_vacancies: Set[int],
+    salaries=((None, 20), (10, None), (10, 20), (11, 19)),
+) -> None:
+    vacancies = Vacancy.objects.bulk_create(
+        Vacancy(
+            department=department,
+            salary_from=salary[0],
+            salary_to=salary[1],
+            expected_experience=Experience.NO_EXPERIENCE,
+        )
+        for salary in salaries
+    )
+
+    response = get_vacancies(client, VacanciesSortBy.NAME_ASC, salary_from=salary_from, salary_to=salary_to)
+
+    assert response.status_code == 200
+    assert response.json() == vacancies_out([vacancies[expected] for expected in expected_vacancies])
