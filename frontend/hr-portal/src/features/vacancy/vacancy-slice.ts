@@ -1,14 +1,26 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {Vacancy} from '../../types/vacancy';
+import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
+
+type VacanciesApi = {
+  items: Vacancy[],
+  count: number
+}
 
 interface VacancyState {
+  vacancies: VacanciesApi;
   vacancyByID: Vacancy | null;
   isOpenRespondModal: boolean;
+  salaryMin: string | null,
+  salaryMax: string | null,
 }
 
 const initialState: VacancyState = {
+  vacancies: {items: [], count: 0},
   vacancyByID: null,
-  isOpenRespondModal: false
+  isOpenRespondModal: false,
+  salaryMin: null,
+  salaryMax: null,
 };
 
 const vacancySlice = createSlice({
@@ -20,10 +32,22 @@ const vacancySlice = createSlice({
     },
     setStateRespondModal(state, action) {
       state.isOpenRespondModal = action.payload;
+    },
+    setSalaryMin(state, action) {
+      state.salaryMin = action.payload;
+    },
+    setSalaryMax(state, action) {
+      state.salaryMax = action.payload;
     }
+  },
+  extraReducers(builder) {
+    builder
+      .addCase(getVacancies.fulfilled, (state, action) => {
+        state.vacancies = action.payload;
+      });
   }
 });
 
-export const {setVacancyByID, setStateRespondModal} = vacancySlice.actions;
+export const {setVacancyByID, setStateRespondModal, setSalaryMin, setSalaryMax} = vacancySlice.actions;
 
 export default vacancySlice.reducer;

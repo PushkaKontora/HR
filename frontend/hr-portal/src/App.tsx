@@ -54,9 +54,9 @@ function App() {
           }/>
           <Route path={NoAuthRoutes.Login} element={<LoginPage/>}/>
           <Route path={NoAuthRoutes.SignUp} element={<SignUpPage/>}/>
-          {/*<Route path={NoAuthRoutes.Vacancy} element={<JobSearchScreen/>}/>*/}
-          {/*<Route path={'/empl'} element={<EmployerCreatingNewVacancy/>}/>*/}
-          {/*<Route path={`${NoAuthRoutes.Vacancy}/:id`} element={<JobSearchDetailsScreen/>}/>*/}
+          <Route path={NoAuthRoutes.Vacancy} element={<JobSearchScreen/>}/>
+          <Route path={'/empl'} element={<EmployerCreatingNewVacancy/>}/>
+          <Route path={`${NoAuthRoutes.Vacancy}/:id`} element={<JobSearchDetailsScreen/>}/>
         </Route>
       </Routes>
       <ToastWrapper/>

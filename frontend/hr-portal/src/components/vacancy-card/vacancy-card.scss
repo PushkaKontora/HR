@@ -21,6 +21,11 @@
       background-color: #C7DBFF;
       padding: 40px 40px 23px 40px;
 
+      height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
       .vacancyCardInfo {
         line-height: 18px;
 

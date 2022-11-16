@@ -1,3 +1,5 @@
+export const LIMIT_ELEMENTS_ON_PAGE = 5;
+
 export enum User {
   user = 'user',
   employer = 'employer',
@@ -17,3 +19,10 @@ export const ExpectedExperienceNameString = {
   [ExpectedExperience.FROM_THREE_TO_SIX_YEARS]: 'От 3 до 6 лет',
   [ExpectedExperience.MORE_THAN_SIX_YEARS]: 'Больше 6 лет'
 };
+
+export enum SortingVacancyTypes {
+  BY_NAME = 'name_asc',
+  PUBLISHED_DATE = 'published_at_desc',
+  SALARY_ASC = 'salary_asc',
+  SALARY_DESC = 'salary_desc'
+}

@@ -12,10 +12,8 @@
 }
 
 .jobSearchDetails-wrapper {
-  margin-top: 16px;
-  height: 32rem;
-  background: #C7DBFF;
-  border-radius: 20px;
+  width: 1412px;
+  margin: 16px auto 0 auto;
 
   .jobSearchDetails-item {
     &__card {
@@ -25,7 +23,9 @@
       justify-content: space-between;
       align-items: flex-start;
 
-      height: 100%;
+      background: #C7DBFF;
+      border-radius: 20px;
+      height: 32rem;
 
       .cardSide-item {
         &__criteria {
@@ -92,6 +92,7 @@
     &__description {
       margin: 66px 0;
       width: 63rem;
+      z-index: 50;
     }
   }
 }

@@ -5,6 +5,10 @@ import './job-search-screen.scss';
 import VacancyList from '../../components/vacancy-list/vacancy-list';
 import CardSorting from '../../components/card-sorting/card-sorting';
 import Select from 'react-select';
+import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import {setSalaryMax, setSalaryMin} from '../../features/vacancy/vacancy-slice';
+import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
+import {SortingVacancyTypes} from '../../const';
 
 const radioInput = ['Любой', 'Более года', 'Более 3 лет', 'Более 6 лет', 'Без опыта'];
 const departments = [
@@ -57,8 +61,8 @@ const departments = [
 
 const initialStateJobScreen = {
   radioChecked: radioInput[0],
-  salaryMin: '',
-  salaryMax: '',
+  salaryMin: null,
+  salaryMax: null,
   selectDepartment: null
 };
 
@@ -66,8 +70,11 @@ function JobSearchScreen() {
   const [pageSearch, setPageSearch] = useState('');
   const [radioChecked, setRadioChecked] = useState(initialStateJobScreen.radioChecked);
   const [selectDepartment, setSelectDepartment] = useState<null | string | undefined>(initialStateJobScreen.selectDepartment);
-  const [salaryMin, setSalaryMin] = useState(initialStateJobScreen.salaryMin);
-  const [salaryMax, setSalaryMax] = useState(initialStateJobScreen.salaryMax);
+  const salaryMin = useAppSelector((state) => state.vacancy.salaryMin);
+  const salaryMax = useAppSelector((state) => state.vacancy.salaryMax);
+  const vacancies = useAppSelector((state) => state.vacancy.vacancies);
+  const dispatch = useAppDispatch();
+
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -79,10 +86,13 @@ function JobSearchScreen() {
 
   const handleChangeMinSalary = (e: ChangeEvent<HTMLInputElement>) => {
     setSalaryMin(e.target.value);
+    getVacancyWithNewParams();
   };
 
   const handleChangeMaxSalary = (e: ChangeEvent<HTMLInputElement>) => {
-    setSalaryMax(e.target.value);
+    dispatch(setSalaryMax(e.target.value));
+    console.log('max');
+    getVacancyWithNewParams();
   };
 
   const handleEraseSearch = () => {
@@ -95,6 +105,19 @@ function JobSearchScreen() {
 
   const onHandleFilterDepartment = (e: any) => {
     setSelectDepartment(e.target.value);
+  };
+
+  const getVacancyWithNewParams = () => {
+    let lineWithNewParameters = '';
+    if (salaryMin !== null) {
+      lineWithNewParameters += `&salary_from=${salaryMin.toString()}`;
+    }
+    if (salaryMax !== null) {
+      lineWithNewParameters += `&salary_to=${salaryMax.toString()}`;
+    }
+
+    dispatch(getVacancies({sortBy: SortingVacancyTypes.BY_NAME, offset: 0, query: lineWithNewParameters}));
+    console.log(lineWithNewParameters);
   };
 
   const handlerClearFilters = () => {
@@ -171,7 +194,7 @@ function JobSearchScreen() {
         </div>
         <div className="contentItem contentItem__vacancies">
           <div className="cardVacancy-title">
-            <div className="title">Найдена 131 вакансия</div>
+            <div className="title">Найдена {vacancies.items.length} вакансия</div>
             <CardSorting/>
           </div>
           <VacancyList/>

@@ -1,4 +1,4 @@
-const Vacancy = '/v1/vacancy';
+const Vacancy = '/v1/vacancies';
 
 export const VacancyRoutes = {
   getVacancy: Vacancy,

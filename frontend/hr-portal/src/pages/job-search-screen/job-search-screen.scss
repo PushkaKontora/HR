@@ -45,7 +45,8 @@ input[type=checkbox] + label:before {
 .jobSearchScreen-wrapper {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 1412px;
+  margin: 0 auto;
 
   .jobSearchScreen-item {
     width: 100%;
