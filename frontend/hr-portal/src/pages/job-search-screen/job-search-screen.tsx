@@ -26,10 +26,13 @@ const initialStateJobScreen = {
   selectDepartment: null
 };
 
+const defaultElement = {label: 'Выбрать элемент', value: 0};
+
 function JobSearchScreen() {
   const [pageSearch, setPageSearch] = useState('');
   const [radioChecked, setRadioChecked] = useState(initialStateJobScreen.radioChecked);
   const [selectDepartment, setSelectDepartment] = useState<null | string | undefined>(initialStateJobScreen.selectDepartment);
+  const [departmentList, setDepartmentList] = useState<DepartmentsShortVersions[]>([]);
   const salaryMin = useAppSelector((state) => state.vacancy.salaryMin);
   const salaryMax = useAppSelector((state) => state.vacancy.salaryMax);
   const vacancies = useAppSelector((state) => state.vacancy.vacancies);
@@ -39,6 +42,9 @@ function JobSearchScreen() {
   useEffect(() => {
     dispatch(getDepartment());
   }, []);
+  useEffect(() => {
+    setDepartmentList([defaultElement, ...departments]);
+  }, [departments]);
 
   useEffect(() => {
     timeoutCollection.removeAll();
@@ -47,7 +53,8 @@ function JobSearchScreen() {
 
   useEffect(() => {
     getVacancyWithNewParams();
-  }, [radioChecked]);
+    console.log(selectDepartment);
+  }, [radioChecked, selectDepartment]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -75,7 +82,6 @@ function JobSearchScreen() {
 
   const onHandlerFilterDepartment = (e: SingleValue<DepartmentsShortVersions>) => {
     setSelectDepartment(e?.label);
-
   };
 
   const getVacancyWithNewParams = () => {
@@ -89,6 +95,12 @@ function JobSearchScreen() {
     if (radioChecked !== radioInput[0]) {
       const experienceData = Object.entries(ExpectedExperienceNameString).filter(e => e[1] === radioChecked);
       lineWithNewParameters += `&experience=${experienceData[0][0]}`;
+    }
+    if (selectDepartment !== defaultElement.label) {
+      const elementWithLabel = departmentList.find((el) => el.label === selectDepartment);
+      if (elementWithLabel) {
+        lineWithNewParameters += `&department_id=${elementWithLabel.value}`;
+      }
     }
 
     dispatch(getVacancies({sortBy: SortingVacancyTypes.BY_NAME, offset: 1, query: lineWithNewParameters}));
@@ -128,7 +140,7 @@ function JobSearchScreen() {
               className="basic-single"
               classNamePrefix="select"
               name=""
-              options={departments}
+              options={departmentList}
               onChange={onHandlerFilterDepartment}
               placeholder="Выбрать департамент"
             />

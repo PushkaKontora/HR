@@ -1,6 +1,7 @@
 import {createSlice} from '@reduxjs/toolkit';
+
 import {Vacancy} from '../../types/vacancy';
-import {getDepartment, getVacancies} from '../../service/async-actions/async-actions-vacancy';
+import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 import {Department} from '../../types/department';
 import {createDepartmentShortVision} from './vacancy.actions';
 

@@ -1,6 +1,5 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-import {AxiosInstance} from 'axios';
-import {RootState} from '../../app/store';
+
 import {Vacancy} from '../../types/vacancy';
 import {VacancyRoutes} from '../../const/api-routes/api-vacancy-routes';
 import {LIMIT_ELEMENTS_ON_PAGE, SortingVacancyTypes} from '../../const';
