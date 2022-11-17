@@ -1,10 +1,10 @@
 from typing import Callable
 
 from django.http import HttpRequest, HttpResponse
-from loguru import logger
 from ninja.responses import Response
 
 from api.internal.responses import MessageResponse
+from api.logging import get_logger
 
 
 class Process500:
@@ -15,6 +15,6 @@ class Process500:
         return self.get_response(request)
 
     def process_exception(self, request: HttpRequest, exception: Exception) -> Response:
-        logger.exception(exception)
+        get_logger(request).exception(exception)
 
         return Response(MessageResponse.create("Internal Server Error"), status=500)

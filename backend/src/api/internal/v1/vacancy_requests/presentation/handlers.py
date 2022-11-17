@@ -2,13 +2,13 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 from django.http import HttpRequest
-from loguru import logger
 from ninja import File, Form, Query, UploadedFile
 
 from api.internal.errors import NotFoundError
 from api.internal.v1.vacancy_requests.domain.entities import RequestIn, VacancyRequestOut
 from api.internal.v1.vacancy_requests.presentation.errors import ResumeIsLargeError, ResumeIsNotPDFError
 from api.internal.v1.vacancy_requests.presentation.routers import IVacancyRequestsHandlers
+from api.logging import get_logger
 from api.models import User
 
 
@@ -59,6 +59,7 @@ class VacancyRequestsHandlers(IVacancyRequestsHandlers):
         self, request: HttpRequest, extra: RequestIn = Form(...), resume: Optional[UploadedFile] = File(None)
     ) -> VacancyRequestOut:
         auth_user: User = request.user
+        logger = get_logger(request)
 
         logger.info(
             "Creating a vacancy request auth_user={auth_user} extra={extra} resume={resume}",

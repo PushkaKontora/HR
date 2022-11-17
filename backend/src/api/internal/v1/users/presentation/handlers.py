@@ -4,7 +4,6 @@ from typing import Optional
 
 from django.conf import settings
 from django.http import HttpRequest
-from loguru import logger
 from ninja import Body, File, Path, UploadedFile
 from ninja.responses import Response
 
@@ -32,6 +31,7 @@ from api.internal.v1.users.presentation.errors import (
     UserIsLeaderOfDepartmentError,
 )
 from api.internal.v1.users.presentation.routers import IAuthHandlers, IUserHandlers
+from api.logging import get_logger
 from api.models import IssuedToken, User
 
 
@@ -279,6 +279,7 @@ class UserHandlers(IUserHandlers):
 
     def delete_user(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
         auth_user: User = request.user
+        logger = get_logger(request)
 
         logger.info(
             "Deleting a user id={user_id} auth_user={auth_user}",
@@ -309,6 +310,7 @@ class UserHandlers(IUserHandlers):
 
     def upload_photo(self, request: HttpRequest, user_id: int = Path(...), photo: UploadedFile = File(...)) -> PhotoOut:
         auth_user: User = request.user
+        logger = get_logger(request)
 
         logger.info(
             "Uploading a photo user_id={user_id} auth_user={auth_user} photo={photo}",
@@ -340,6 +342,7 @@ class UserHandlers(IUserHandlers):
 
     def delete_photo(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
         auth_user: User = request.user
+        logger = get_logger(request)
 
         logger.info(
             "Deleting a photo user_id={user_id} auth_user={auth_user}",

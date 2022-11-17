@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Iterable, Optional
 
 from django.http import HttpRequest
-from loguru import logger
 from ninja import File, Form, Path, Query, UploadedFile
 
 from api.internal.errors import ForbiddenError, NotFoundError
@@ -24,6 +23,7 @@ from api.internal.v1.resumes.presentation.errors import (
     UnpublishedResumeCannotBeAddedToWishlistError,
 )
 from api.internal.v1.resumes.presentation.routers import IResumeHandlers, IResumesHandlers, IResumesWishlistHandlers
+from api.logging import get_logger
 from api.models import User
 
 
@@ -164,6 +164,7 @@ class ResumeHandlers(IResumeHandlers):
         self, request: HttpRequest, extra: NewResumeIn = Form(...), document: UploadedFile = File(...)
     ) -> SuccessResponse:
         auth_user: User = request.user
+        logger = get_logger(request)
 
         logger.info(
             "Creating a resume auth_user={auth_user} extra={extra} document={document}",
@@ -180,7 +181,7 @@ class ResumeHandlers(IResumeHandlers):
             logger.success("Permission denied")
             raise ForbiddenError()
 
-        self._validate_document(document)
+        self._validate_document(request, document)
 
         logger.info("Checking an existence of the user resume...")
         if self.creating_resume_service.is_resume_created_by_user(extra):
@@ -201,6 +202,7 @@ class ResumeHandlers(IResumeHandlers):
         document: UploadedFile = File(None),
     ) -> SuccessResponse:
         auth_user: User = request.user
+        logger = get_logger(request)
 
         logger.info(
             "Updating a resume id={resume_id} auth_user={auth_user} extra={extra} document={document}",
@@ -221,7 +223,7 @@ class ResumeHandlers(IResumeHandlers):
             raise NotFoundError()
 
         if document is not None:
-            self._validate_document(document)
+            self._validate_document(request, document)
 
         logger.info("Authorization...")
         if not self.updating_resume_service.authorize(auth_user, resume_id):
@@ -254,7 +256,8 @@ class ResumeHandlers(IResumeHandlers):
 
         return SuccessResponse()
 
-    def _validate_document(self, resume: UploadedFile) -> None:
+    def _validate_document(self, request: HttpRequest, resume: UploadedFile) -> None:
+        logger = get_logger(request)
         logger.info("Checking the resume file...")
 
         if not self.document_service.is_pdf(resume):

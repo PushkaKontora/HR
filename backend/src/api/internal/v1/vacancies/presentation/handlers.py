@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Iterable, Optional
 
 from django.http import HttpRequest
-from loguru import logger
 from ninja import Body, Path, Query
 
 from api.internal.errors import ForbiddenError, NotFoundError
@@ -25,6 +24,7 @@ from api.internal.v1.vacancies.presentation.routers import (
     IVacanciesWishlistHandlers,
     IVacancyHandlers,
 )
+from api.logging import get_logger
 from api.models import User
 
 
@@ -117,6 +117,7 @@ class VacanciesHandlers(IVacanciesHandlers):
 
     def create_vacancy(self, request: HttpRequest, body: NewVacancyIn = Body(...)) -> SuccessResponse:
         auth_user: User = request.user
+        logger = get_logger(request)
 
         logger.info(
             "Creating a vacancy auth_user={auth_user} body={body}",
@@ -167,6 +168,7 @@ class VacancyHandlers(IVacancyHandlers):
         self, request: HttpRequest, vacancy_id: int = Path(...), body: VacancyIn = Body(...)
     ) -> SuccessResponse:
         auth_user: User = request.user
+        logger = get_logger(request)
 
         logger.info(
             "Updating a vacancy id={vacancy_id} body={body}",
