@@ -10,12 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import base64
+import logging
 import os.path
 from base64 import b64encode
 from datetime import timedelta
 from pathlib import Path
 
+import loguru
 from environ import Env
+from loguru import logger
+
+from api.logging import TelegramNotifier
 
 env = Env()
 env.read_env()
@@ -58,6 +63,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "api.logging.RequestIdMiddleware",
+    "api.middleware.Process500",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -131,7 +138,7 @@ SALT = b"$2b$12$" + env("SALT_POSTFIX", str).encode()
 
 REFRESH_TOKEN_COOKIE = "rf_tk"
 
-ACCESS_TOKEN_TTL = timedelta(minutes=30) if not DEBUG else timedelta(days=1)
+ACCESS_TOKEN_TTL = timedelta(minutes=30)
 REFRESH_TOKEN_TTL = timedelta(days=10)
 
 
@@ -178,3 +185,33 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", str)
 EMAIL_PORT = env("EMAIL_PORT", int)
 EMAIL_USE_TLS = True
 MAX_FILE_SIZE_BYTES = 5 * 1024**2
+
+
+# Logging
+
+LOGS_PATH = os.path.join(BASE_DIR.parent.parent, "logs")
+LOG_ROTATION = "00:00"
+LOG_COMPRESSION = "zip"
+LOG_FORMAT = "[{extra[request_id]}][{time:YYYY-MM-DD HH:mm:ss}][{name}:{function}] {message}"
+
+if not DEBUG:
+    logger.remove()
+
+    logger.add(
+        TelegramNotifier(env("LOGGING_TELEGRAM_BOT_TOKEN", str), env("LOGGING_TELEGRAM_CHAT_ID", int)),
+        level=logging.ERROR,
+        format=LOG_FORMAT,
+        diagnose=False,
+        enqueue=True,
+    )
+
+
+logger.add(
+    os.path.join(LOGS_PATH, "api.log"),
+    level=logging.INFO if not DEBUG else logging.DEBUG,
+    format=LOG_FORMAT,
+    rotation=LOG_ROTATION,
+    compression=LOG_COMPRESSION,
+    diagnose=False,
+    enqueue=True,
+)

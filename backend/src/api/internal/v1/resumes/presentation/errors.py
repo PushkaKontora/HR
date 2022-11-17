@@ -43,7 +43,7 @@ class UnpublishedResumeCannotBeAddedToWishlistError(DomainErrorBase):
         return "You cannot add an unpublished resume to wishlist"
 
 
-class AttachedDocumentIsLargeSizeError(DomainErrorBase):
+class AttachedDocumentIsLargeError(DomainErrorBase):
     @property
     def code(self) -> int:
         return 5

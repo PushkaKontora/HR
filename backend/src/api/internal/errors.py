@@ -5,10 +5,14 @@ from ninja import NinjaAPI
 from ninja.errors import AuthenticationError
 from ninja.responses import Response
 
-from api.internal.responses import ErrorDetails, ErrorResponse, MessageResponse
+from api.internal.responses import DomainErrorDetails, DomainErrorResponse, MessageResponse
 
 
-class DomainErrorBase(Exception, ABC):
+class APIErrorBase(Exception, ABC):
+    pass
+
+
+class DomainErrorBase(APIErrorBase, ABC):
     @property
     @abstractmethod
     def code(self) -> int:
@@ -21,25 +25,25 @@ class DomainErrorBase(Exception, ABC):
 
     @classmethod
     def response(cls, exc: "DomainErrorBase") -> Response:
-        return Response(ErrorResponse(error=ErrorDetails(code=exc.code, msg=exc.msg)), status=422)
+        return Response(DomainErrorResponse(error=DomainErrorDetails(code=exc.code, msg=exc.msg)), status=422)
 
 
-class UnauthorizedError(Exception):
+class UnauthorizedError(APIErrorBase):
     def __init__(self, msg: str = "Unauthorized"):
         self.msg = msg
 
 
-class NotFoundError(Exception):
+class NotFoundError(APIErrorBase):
     def __init__(self, resource: str = None):
         self.msg = "Not found" + (f" {resource}" if resource else "")
 
 
-class BadRequestError(Exception):
+class BadRequestError(APIErrorBase):
     def __init__(self, msg: str = None):
         self.msg = msg or "Bad request"
 
 
-class ForbiddenError(Exception):
+class ForbiddenError(APIErrorBase):
     def __init__(self, msg: str = "Forbidden"):
         self.msg = msg
 

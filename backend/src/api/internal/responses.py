@@ -4,15 +4,19 @@ from ninja import Schema
 class MessageResponse(Schema):
     msg: str
 
+    @staticmethod
+    def create(msg: str) -> "MessageResponse":
+        return MessageResponse(msg=msg)
+
 
 class SuccessResponse(MessageResponse):
     msg = "Success"
 
 
-class ErrorDetails(Schema):
+class DomainErrorDetails(Schema):
     code: int
     msg: str
 
 
-class ErrorResponse(Schema):
-    error: ErrorDetails
+class DomainErrorResponse(Schema):
+    error: DomainErrorDetails
