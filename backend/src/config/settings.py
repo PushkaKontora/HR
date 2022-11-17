@@ -189,7 +189,7 @@ MAX_FILE_SIZE_BYTES = 5 * 1024**2
 
 # Logging
 
-LOGS_PATH = os.path.join(BASE_DIR.parent.parent, "logs")
+LOGS_PATH = os.path.join(BASE_DIR.parent, "logs")
 LOG_ROTATION = "00:00"
 LOG_COMPRESSION = "zip"
 LOG_FORMAT = "[{extra[request_id]}][{time:YYYY-MM-DD HH:mm:ss}][{name}:{function}] {message}"

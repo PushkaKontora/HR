@@ -8,6 +8,8 @@ services:
     restart: always
     env_file:
       - backend/src/config/.env
+    volumes:
+      - ./backend/logs:/app/logs
     environment:
       POSTGRES_HOST: db
     ports:
