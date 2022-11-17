@@ -16,13 +16,14 @@ from api.internal.v1.resumes.domain.entities import (
     ResumesWishlistQueryParams,
 )
 from api.internal.v1.resumes.presentation.errors import (
-    AttachedDocumentIsLargeSizeError,
+    AttachedDocumentIsLargeError,
     AttachedDocumentIsNotPDFError,
     ResumeAlreadyAddedToWishlistError,
     ResumeIsCreatedByUserError,
     UnpublishedResumeCannotBeAddedToWishlistError,
 )
 from api.internal.v1.resumes.presentation.routers import IResumeHandlers, IResumesHandlers, IResumesWishlistHandlers
+from api.logging import get_logger
 from api.models import User
 
 
@@ -162,15 +163,34 @@ class ResumeHandlers(IResumeHandlers):
     def create_resume(
         self, request: HttpRequest, extra: NewResumeIn = Form(...), document: UploadedFile = File(...)
     ) -> SuccessResponse:
-        if not self.creating_resume_service.authorize(request.user, extra):
+        auth_user: User = request.user
+        logger = get_logger(request)
+
+        logger.info(
+            "Creating a resume auth_user={auth_user} extra={extra} document={document}",
+            user={
+                "id": auth_user.id,
+                "has_resume": hasattr(auth_user, "resume"),
+            },
+            extra=extra.dict(),
+            document={"name": document.name, "content_type": document.content_type, "size": document.size},
+        )
+
+        logger.info("Authorization...")
+        if not self.creating_resume_service.authorize(auth_user, extra):
+            logger.success("Permission denied")
             raise ForbiddenError()
 
-        self._validate_document(document)
+        self._validate_document(request, document)
 
+        logger.info("Checking an existence of the user resume...")
         if self.creating_resume_service.is_resume_created_by_user(extra):
+            logger.success("The user already created a resume")
             raise ResumeIsCreatedByUserError()
 
+        logger.info("Creating a resume...")
         self.creating_resume_service.create(extra, document)
+        logger.success("Resume was created")
 
         return SuccessResponse()
 
@@ -181,16 +201,38 @@ class ResumeHandlers(IResumeHandlers):
         extra: ResumeIn = Form(...),
         document: UploadedFile = File(None),
     ) -> SuccessResponse:
+        auth_user: User = request.user
+        logger = get_logger(request)
+
+        logger.info(
+            "Updating a resume id={resume_id} auth_user={auth_user} extra={extra} document={document}",
+            resume_id=resume_id,
+            auth_user={
+                "id": auth_user.id,
+                "resume": {"id": auth_user.resume.id} if hasattr(auth_user, "resume") else None,
+            },
+            extra=extra.dict(),
+            document={"name": document.name, "content_type": document.content_type, "size": document.size}
+            if document
+            else None,
+        )
+
+        logger.info("Checking an existence of the resume...")
         if not self.getting_resume_service.exists_resume_with_id(resume_id):
+            logger.success("Not found the resume")
             raise NotFoundError()
 
         if document is not None:
-            self._validate_document(document)
+            self._validate_document(request, document)
 
-        if not self.updating_resume_service.authorize(request.user, resume_id):
+        logger.info("Authorization...")
+        if not self.updating_resume_service.authorize(auth_user, resume_id):
+            logger.success("Permission denied")
             raise ForbiddenError()
 
+        logger.info("Updating the resume...")
         self.updating_resume_service.update(resume_id, extra, document)
+        logger.success("The resume was updated")
 
         return SuccessResponse()
 
@@ -214,12 +256,17 @@ class ResumeHandlers(IResumeHandlers):
 
         return SuccessResponse()
 
-    def _validate_document(self, resume: UploadedFile) -> None:
+    def _validate_document(self, request: HttpRequest, resume: UploadedFile) -> None:
+        logger = get_logger(request)
+        logger.info("Checking the resume file...")
+
         if not self.document_service.is_pdf(resume):
+            logger.success("The attached document is not pdf")
             raise AttachedDocumentIsNotPDFError()
 
         if self.document_service.is_large_size(resume):
-            raise AttachedDocumentIsLargeSizeError()
+            logger.success("Size of the attached file is large")
+            raise AttachedDocumentIsLargeError()
 
 
 class ResumesWishlistHandlers(IResumesWishlistHandlers):

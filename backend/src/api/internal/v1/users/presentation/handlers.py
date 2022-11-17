@@ -31,6 +31,7 @@ from api.internal.v1.users.presentation.errors import (
     UserIsLeaderOfDepartmentError,
 )
 from api.internal.v1.users.presentation.routers import IAuthHandlers, IUserHandlers
+from api.logging import get_logger
 from api.models import IssuedToken, User
 
 
@@ -277,39 +278,91 @@ class UserHandlers(IUserHandlers):
         return user_out
 
     def delete_user(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
+        auth_user: User = request.user
+        logger = get_logger(request)
+
+        logger.info(
+            "Deleting a user id={user_id} auth_user={auth_user}",
+            user_id=user_id,
+            auth_user={"id": auth_user.id, "is_department_leader": hasattr(auth_user, "department")},
+        )
+
+        logger.info("Checking the existence of the user...")
         if not self.getting_user_service.exists_user_with_id(user_id):
+            logger.success("Not found the user")
             raise NotFoundError()
 
-        if not self.deleting_user_service.authorize(request.user, user_id):
+        logger.info("Authorization...")
+        if not self.deleting_user_service.authorize(auth_user, user_id):
+            logger.success("Permission denied")
             raise ForbiddenError()
 
+        logger.info("Checking an existence of leadership of the user...")
         if self.deleting_user_service.is_user_leader_of_department(user_id):
+            logger.success("The user is leader of department")
             raise UserIsLeaderOfDepartmentError()
 
+        logger.info("Deleting the user...")
         self.deleting_user_service.delete(user_id)
+        logger.success("The user was deleted")
 
         return SuccessResponse()
 
     def upload_photo(self, request: HttpRequest, user_id: int = Path(...), photo: UploadedFile = File(...)) -> PhotoOut:
+        auth_user: User = request.user
+        logger = get_logger(request)
+
+        logger.info(
+            "Uploading a photo user_id={user_id} auth_user={auth_user} photo={photo}",
+            user_id=user_id,
+            auth_user={"id": auth_user.id, "has_photo": bool(auth_user.photo)},
+            photo={"name": photo.name, "content_type": photo.content_type, "size": photo.size},
+        )
+
+        logger.info("Checking the existence of the user...")
         if not self.getting_user_service.exists_user_with_id(user_id):
+            logger.success("Not found the user")
             raise NotFoundError()
 
-        if not self.photo_service.authorize(request.user, user_id):
+        logger.info("Authorization...")
+        if not self.photo_service.authorize(auth_user, user_id):
+            logger.success("Permission denied")
             raise ForbiddenError()
 
+        logger.info("Checking the file...")
         if not self.photo_service.is_image(photo):
+            logger.success("The file is not image")
             raise FileIsNotImageError()
 
-        return self.photo_service.upload(user_id, photo)
+        logger.info("Uploading the photo...")
+        photo_out = self.photo_service.upload(user_id, photo)
+        logger.success("The photo was uploaded")
+
+        return photo_out
 
     def delete_photo(self, request: HttpRequest, user_id: int = Path(...)) -> SuccessResponse:
+        auth_user: User = request.user
+        logger = get_logger(request)
+
+        logger.info(
+            "Deleting a photo user_id={user_id} auth_user={auth_user}",
+            user_id=user_id,
+            auth_user={"id": auth_user.id, "has_photo": bool(auth_user.photo)},
+        )
+
+        logger.info("Checking the existence of the user...")
         if not self.getting_user_service.exists_user_with_id(user_id):
+            logger.success("Not found the user")
             raise NotFoundError()
 
-        if not self.photo_service.authorize(request.user, user_id):
+        logger.info("Authorization...")
+        if not self.photo_service.authorize(auth_user, user_id):
+            logger.success("Permission denied")
             raise ForbiddenError()
 
+        logger.info("Deleting the photo...")
         self.photo_service.delete(user_id)
+        logger.success("The user photo was deleted")
 
         return SuccessResponse()
 

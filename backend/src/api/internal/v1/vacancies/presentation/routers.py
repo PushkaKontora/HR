@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from ninja import Body, Path, Query, Router
 from ninja.security import HttpBearer
 
-from api.internal.responses import ErrorResponse, MessageResponse, SuccessResponse
+from api.internal.responses import DomainErrorResponse, MessageResponse, SuccessResponse
 from api.internal.v1.vacancies.domain.entities import (
     NewVacancyIn,
     PublishingOut,
@@ -145,7 +145,7 @@ class VacanciesWishlistRouter(Router):
             path="/{int:vacancy_id}",
             methods=["POST"],
             view_func=vacancies_wishlist_handlers.add_vacancy_to_wishlist,
-            response={200: SuccessResponse, 401: MessageResponse, 404: MessageResponse, 422: ErrorResponse},
+            response={200: SuccessResponse, 401: MessageResponse, 404: MessageResponse, 422: DomainErrorResponse},
             description="""
     422 error codes:
         2 - you cannot add an unpublished vacancy to wishlist

@@ -6,7 +6,7 @@ from django.http import HttpRequest
 from ninja import File, Form, Path, Query, Router, UploadedFile
 from ninja.security import HttpBearer
 
-from api.internal.responses import ErrorResponse, MessageResponse, SuccessResponse
+from api.internal.responses import DomainErrorResponse, MessageResponse, SuccessResponse
 from api.internal.v1.resumes.domain.entities import (
     NewResumeIn,
     PublishingOut,
@@ -95,7 +95,7 @@ class ResumesRouter(Router):
             methods=["POST"],
             view_func=resume_handlers.create_resume,
             auth=[auth],
-            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: ErrorResponse},
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: DomainErrorResponse},
             description=f"""
     422 error codes:
         1 - the user already created a resume

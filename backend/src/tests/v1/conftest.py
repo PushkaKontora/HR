@@ -1,5 +1,6 @@
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
+from loguru import logger
 
 from api.internal.v1.users.domain.utils import hash_password
 from api.models import Department, Experience, Password, Permission, User, Vacancy
@@ -7,6 +8,10 @@ from tests.v1.integrations.users.conftest import access_payload, encode_payload
 
 USER_PASSWORD = "13_очень secret password_37"
 ANOTHER_USER_PASSWORD = "SeriousDim8"
+
+
+def pytest_configure(config):
+    logger.disable("")
 
 
 @pytest.fixture

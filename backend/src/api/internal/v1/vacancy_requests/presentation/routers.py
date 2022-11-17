@@ -6,7 +6,7 @@ from django.http import HttpRequest
 from ninja import File, Form, Query, Router, UploadedFile
 from ninja.security import HttpBearer
 
-from api.internal.responses import ErrorResponse, MessageResponse
+from api.internal.responses import DomainErrorResponse, MessageResponse
 from api.internal.v1.vacancy_requests.domain.entities import RequestIn, VacancyRequestOut
 
 VACANCY_REQUEST_TAG = "vacancy requests"
@@ -33,7 +33,7 @@ class VacancyRequestsRouter(Router):
             methods=["POST"],
             view_func=vacancy_requests_handlers.create_vacancy_request,
             auth=[auth],
-            response={200: VacancyRequestOut, 401: MessageResponse, 404: MessageResponse, 422: ErrorResponse},
+            response={200: VacancyRequestOut, 401: MessageResponse, 404: MessageResponse, 422: DomainErrorResponse},
             description=f"""
     422 error codes:
         1 - the resume file is not pdf
