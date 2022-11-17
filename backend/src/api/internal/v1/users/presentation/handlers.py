@@ -187,19 +187,10 @@ class AuthHandlers(IAuthHandlers):
         self.registration_service = registration_service
 
     def register_user(self, request: HttpRequest, body: RegistrationIn = Body(...)) -> SuccessResponse:
-        logger.info(
-            "Registration a user user={user}",
-            user={"email": body.email, "surname": body.surname, "name": body.name, "patronymic": body.patronymic},
-        )
-
-        logger.info("Checking availability of the email...")
         if self.registration_service.is_email_taken(body.email):
-            logger.success("The email was already registered")
             raise EmailHasAlreadyRegisteredError()
 
-        logger.info("Registering the user...")
         self.registration_service.register(body)
-        logger.success("The user was registered")
 
         return SuccessResponse()
 
@@ -305,7 +296,7 @@ class UserHandlers(IUserHandlers):
             logger.success("Permission denied")
             raise ForbiddenError()
 
-        logger.info("Checking leadership of the user...")
+        logger.info("Checking an existence of leadership of the user...")
         if self.deleting_user_service.is_user_leader_of_department(user_id):
             logger.success("The user is leader of department")
             raise UserIsLeaderOfDepartmentError()
