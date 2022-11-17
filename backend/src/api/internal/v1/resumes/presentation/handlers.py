@@ -163,28 +163,31 @@ class ResumeHandlers(IResumeHandlers):
     def create_resume(
         self, request: HttpRequest, extra: NewResumeIn = Form(...), document: UploadedFile = File(...)
     ) -> SuccessResponse:
-        user: User = request.user
+        auth_user: User = request.user
 
         logger.info(
-            "Creating a resume user={user} extra={extra} document={document}",
+            "Creating a resume auth_user={auth_user} extra={extra} document={document}",
             user={
-                "id": user.id,
-                "has_resume": hasattr(user, "resume"),
+                "id": auth_user.id,
+                "has_resume": hasattr(auth_user, "resume"),
             },
             extra=extra.dict(),
             document={"name": document.name, "content_type": document.content_type, "size": document.size},
         )
 
-        if not self.creating_resume_service.authorize(user, extra):
+        logger.info("Authorization...")
+        if not self.creating_resume_service.authorize(auth_user, extra):
             logger.success("Permission denied")
             raise ForbiddenError()
 
         self._validate_document(document)
 
+        logger.info("Checking an existence of the user resume...")
         if self.creating_resume_service.is_resume_created_by_user(extra):
             logger.success("The user already created a resume")
             raise ResumeIsCreatedByUserError()
 
+        logger.info("Creating...")
         self.creating_resume_service.create(extra, document)
         logger.success("Resume was created")
 
@@ -197,20 +200,22 @@ class ResumeHandlers(IResumeHandlers):
         extra: ResumeIn = Form(...),
         document: UploadedFile = File(None),
     ) -> SuccessResponse:
-        user: User = request.user
+        auth_user: User = request.user
 
         logger.info(
-            "Updating a resume id={resume_id} user={user} extra={extra} document={document}",
+            "Updating a resume id={resume_id} auth_user={auth_user} extra={extra} document={document}",
             resume_id=resume_id,
-            user={
-                "id": user.id,
-                "resume": {"id": user.resume.id} if hasattr(user, "resume") else None,
+            auth_user={
+                "id": auth_user.id,
+                "resume": {"id": auth_user.resume.id} if hasattr(auth_user, "resume") else None,
             },
             extra=extra.dict(),
             document={"name": document.name, "content_type": document.content_type, "size": document.size}
             if document
             else None,
         )
+
+        logger.info("Checking an existence of the resume...")
         if not self.getting_resume_service.exists_resume_with_id(resume_id):
             logger.success("Not found the resume")
             raise NotFoundError()
@@ -218,70 +223,40 @@ class ResumeHandlers(IResumeHandlers):
         if document is not None:
             self._validate_document(document)
 
-        if not self.updating_resume_service.authorize(user, resume_id):
+        logger.info("Authorization...")
+        if not self.updating_resume_service.authorize(auth_user, resume_id):
             logger.success("Permission denied")
             raise ForbiddenError()
 
+        logger.info("Updating...")
         self.updating_resume_service.update(resume_id, extra, document)
         logger.success("The resume was updated")
 
         return SuccessResponse()
 
     def publish_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> PublishingOut:
-        user: User = request.user
-
-        logger.info(
-            "Publishing a resume id={resume_id} user={user}",
-            resume_id=resume_id,
-            user={
-                "id": user.id,
-                "resume": {"id": user.resume.id, "published_at": user.resume.published_at}
-                if hasattr(user, "resume")
-                else None,
-            },
-        )
-
         if not self.getting_resume_service.exists_resume_with_id(resume_id):
-            logger.success("Not found the resume")
             raise NotFoundError()
 
-        if not self.publishing_resume_service.authorize(user, resume_id):
-            logger.success("Permission denied")
+        if not self.publishing_resume_service.authorize(request.user, resume_id):
             raise ForbiddenError()
 
-        publishing_out = self.publishing_resume_service.publish(resume_id)
-        logger.success("The resume was published")
-
-        return publishing_out
+        return self.publishing_resume_service.publish(resume_id)
 
     def unpublish_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
-        user: User = request.user
-
-        logger.info(
-            "Unpublishing a resume id={resume_id} user={user}",
-            resume_id=resume_id,
-            user={
-                "id": user.id,
-                "resume": {"id": user.resume.id, "published_at": user.resume.published_at}
-                if hasattr(user, "resume")
-                else None,
-            },
-        )
-
         if not self.getting_resume_service.exists_resume_with_id(resume_id):
-            logger.success("Not found the resume")
             raise NotFoundError()
 
-        if not self.publishing_resume_service.authorize(user, resume_id):
-            logger.success("Permission denied")
+        if not self.publishing_resume_service.authorize(request.user, resume_id):
             raise ForbiddenError()
 
         self.publishing_resume_service.unpublish(resume_id)
-        logger.success("The resume was unpublished")
 
         return SuccessResponse()
 
     def _validate_document(self, resume: UploadedFile) -> None:
+        logger.info("Checking the resume file...")
+
         if not self.document_service.is_pdf(resume):
             logger.success("The attached document is not pdf")
             raise AttachedDocumentIsNotPDFError()
@@ -307,53 +282,29 @@ class ResumesWishlistHandlers(IResumesWishlistHandlers):
         return self.resumes_wishlist_service.get_user_wishlist(request.user, params)
 
     def add_resume_to_wishlist(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
-        user: User = request.user
-
-        logger.info(
-            "Adding a resume to wishlist id={resume_id} user={user}",
-            resume_id=resume_id,
-            user={"id": user.id, "permission": user.permission},
-        )
-
         if not self.getting_resume_service.exists_resume_with_id(resume_id):
-            logger.success("Not found the resume")
             raise NotFoundError()
 
-        if not self.resumes_wishlist_service.authorize(user):
-            logger.success("Permission denied")
+        if not self.resumes_wishlist_service.authorize(request.user):
             raise ForbiddenError()
 
         if not self.resumes_wishlist_service.is_resume_published(resume_id):
-            logger.success("The resume is unpublished")
             raise UnpublishedResumeCannotBeAddedToWishlistError()
 
-        if self.resumes_wishlist_service.exists_resume_in_wishlist(user, resume_id):
-            logger.success("The resume already is in wishlist")
+        if self.resumes_wishlist_service.exists_resume_in_wishlist(request.user, resume_id):
             raise ResumeAlreadyAddedToWishlistError()
 
-        self.resumes_wishlist_service.add_resume_to_wishlist(user, resume_id)
-        logger.success("The resume was added to wishlist")
+        self.resumes_wishlist_service.add_resume_to_wishlist(request.user, resume_id)
 
         return SuccessResponse()
 
     def delete_resume_from_wishlist(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
-        user: User = request.user
-
-        logger.info(
-            "Deleting a resume from wishlist id={resume_id} user={user}",
-            resume_id=resume_id,
-            user={"id": user.id, "permission": user.permission},
-        )
-
-        if not self.resumes_wishlist_service.authorize(user):
-            logger.success("Permission denied")
+        if not self.resumes_wishlist_service.authorize(request.user):
             raise ForbiddenError()
 
-        if not self.resumes_wishlist_service.exists_resume_in_wishlist(user, resume_id):
-            logger.success("Not found the resume")
+        if not self.resumes_wishlist_service.exists_resume_in_wishlist(request.user, resume_id):
             raise NotFoundError()
 
-        self.resumes_wishlist_service.delete_resume_from_wishlist(user, resume_id)
-        logger.success("The resume was deleted from wishlist")
+        self.resumes_wishlist_service.delete_resume_from_wishlist(request.user, resume_id)
 
         return SuccessResponse()
