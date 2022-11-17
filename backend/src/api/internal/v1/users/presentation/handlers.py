@@ -197,7 +197,7 @@ class AuthHandlers(IAuthHandlers):
             logger.success("The email was already registered")
             raise EmailHasAlreadyRegisteredError()
 
-        logger.info("Registering...")
+        logger.info("Registering the user...")
         self.registration_service.register(body)
         logger.success("The user was registered")
 
@@ -310,7 +310,7 @@ class UserHandlers(IUserHandlers):
             logger.success("The user is leader of department")
             raise UserIsLeaderOfDepartmentError()
 
-        logger.info("Deleting...")
+        logger.info("Deleting the user...")
         self.deleting_user_service.delete(user_id)
         logger.success("The user was deleted")
 
@@ -341,7 +341,7 @@ class UserHandlers(IUserHandlers):
             logger.success("The file is not image")
             raise FileIsNotImageError()
 
-        logger.info("Uploading...")
+        logger.info("Uploading the photo...")
         photo_out = self.photo_service.upload(user_id, photo)
         logger.success("The photo was uploaded")
 
@@ -366,7 +366,7 @@ class UserHandlers(IUserHandlers):
             logger.success("Permission denied")
             raise ForbiddenError()
 
-        logger.info("Deleting...")
+        logger.info("Deleting the photo...")
         self.photo_service.delete(user_id)
         logger.success("The user photo was deleted")
 

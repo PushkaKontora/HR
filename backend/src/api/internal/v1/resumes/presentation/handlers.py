@@ -187,7 +187,7 @@ class ResumeHandlers(IResumeHandlers):
             logger.success("The user already created a resume")
             raise ResumeIsCreatedByUserError()
 
-        logger.info("Creating...")
+        logger.info("Creating a resume...")
         self.creating_resume_service.create(extra, document)
         logger.success("Resume was created")
 
@@ -228,7 +228,7 @@ class ResumeHandlers(IResumeHandlers):
             logger.success("Permission denied")
             raise ForbiddenError()
 
-        logger.info("Updating...")
+        logger.info("Updating the resume...")
         self.updating_resume_service.update(resume_id, extra, document)
         logger.success("The resume was updated")
 
