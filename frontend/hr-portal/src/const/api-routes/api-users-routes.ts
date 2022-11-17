@@ -1,4 +1,6 @@
-const USERS = '/v1/users';
+import {PRODUCT_VERSION_FOR_ROUTES} from '../../const';
+
+const USERS = `${PRODUCT_VERSION_FOR_ROUTES}/users`;
 
 export const UsersRoutes = {
   register: USERS,

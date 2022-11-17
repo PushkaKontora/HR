@@ -1,64 +1,23 @@
-import React, {ChangeEvent, FormEvent, useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, FormEvent, useCallback, useEffect, useRef, useState} from 'react';
 import bannerSearchScreen from '../../assets/img/job-seach/banner-jobSearchPage.svg';
 import deleteIcon from '../../assets/img/job-seach/delete-icon.svg';
 import './job-search-screen.scss';
 import VacancyList from '../../components/vacancy-list/vacancy-list';
 import CardSorting from '../../components/card-sorting/card-sorting';
-import Select from 'react-select';
+import Select, {SingleValue} from 'react-select';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {setSalaryMax, setSalaryMin} from '../../features/vacancy/vacancy-slice';
-import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
+import {getDepartment, getVacancies} from '../../service/async-actions/async-actions-vacancy';
 import {ExpectedExperienceNameString, SortingVacancyTypes} from '../../const';
 import {timeoutCollection} from 'time-events-manager/src/timeout/timeout-decorator';
 
 const radioInput = ['Любой'].concat(Object.values(ExpectedExperienceNameString));
-const departments = [
-  {
-    'value': 1,
-    'label': 'SEO'
-  }, {
-    'value': 11,
-    'label': 'frontend'
-  }, {
-    'value': 5,
-    'label': 'backend'
-  }, {
-    'value': 3,
-    'label': 'аналитика'
-  },
-  {
-    'value': 111,
-    'label': 'frontend'
-  }, {
-    'value': 455,
-    'label': 'backend'
-  }, {
-    'value': 543,
-    'label': 'аналитика'
-  }, {
-    'value': 661,
-    'label': 'SEO'
-  }, {
-    'value': 1661,
-    'label': 'frontend'
-  }, {
-    'value': 6665,
-    'label': 'backend'
-  }, {
-    'value': 3646,
-    'label': 'аналитика'
-  },
-  {
-    'value': 11661,
-    'label': 'frontend'
-  }, {
-    'value': 45455,
-    'label': 'backend'
-  }, {
-    'value': 54453,
-    'label': 'аналитика'
-  },
-];
+
+
+type DepartmentsShortVersions = {
+  'value': number;
+  'label': string
+}
 
 const initialStateJobScreen = {
   radioChecked: radioInput[0],
@@ -74,7 +33,12 @@ function JobSearchScreen() {
   const salaryMin = useAppSelector((state) => state.vacancy.salaryMin);
   const salaryMax = useAppSelector((state) => state.vacancy.salaryMax);
   const vacancies = useAppSelector((state) => state.vacancy.vacancies);
+  const departments = useAppSelector((state) => state.vacancy.departmentsShortVersions);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(getDepartment());
+  }, []);
 
   useEffect(() => {
     timeoutCollection.removeAll();
@@ -109,8 +73,9 @@ function JobSearchScreen() {
     setRadioChecked(e.target.value);
   };
 
-  const onHandleFilterDepartment = (e: any) => {
-    setSelectDepartment(e.target.value);
+  const onHandlerFilterDepartment = (e: SingleValue<DepartmentsShortVersions>) => {
+    setSelectDepartment(e?.label);
+
   };
 
   const getVacancyWithNewParams = () => {
@@ -123,7 +88,6 @@ function JobSearchScreen() {
     }
     if (radioChecked !== radioInput[0]) {
       const experienceData = Object.entries(ExpectedExperienceNameString).filter(e => e[1] === radioChecked);
-      console.log(experienceData);
       lineWithNewParameters += `&experience=${experienceData[0][0]}`;
     }
 
@@ -165,7 +129,7 @@ function JobSearchScreen() {
               classNamePrefix="select"
               name=""
               options={departments}
-              onChange={(e) => setSelectDepartment(e?.label)}
+              onChange={onHandlerFilterDepartment}
               placeholder="Выбрать департамент"
             />
           </div>
@@ -205,7 +169,7 @@ function JobSearchScreen() {
         </div>
         <div className="contentItem contentItem__vacancies">
           <div className="cardVacancy-title">
-            <div className="title">Найдена {vacancies.items.length} вакансия</div>
+            <div className="title">Найдена {vacancies.count} вакансия</div>
             <CardSorting/>
           </div>
           <VacancyList/>

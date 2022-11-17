@@ -1,4 +1,5 @@
 export const LIMIT_ELEMENTS_ON_PAGE = 5;
+export const PRODUCT_VERSION_FOR_ROUTES = '/v1';
 
 export enum User {
   user = 'user',

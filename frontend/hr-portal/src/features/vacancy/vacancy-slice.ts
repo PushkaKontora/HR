@@ -1,10 +1,17 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {Vacancy} from '../../types/vacancy';
-import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
+import {getDepartment, getVacancies} from '../../service/async-actions/async-actions-vacancy';
+import {Department} from '../../types/department';
+import {createDepartmentShortVision} from './vacancy.actions';
 
 type VacanciesApi = {
   items: Vacancy[],
   count: number
+}
+
+export type DepartmentsShortVersions = {
+  'value': number;
+  'label': string
 }
 
 interface VacancyState {
@@ -13,6 +20,8 @@ interface VacancyState {
   isOpenRespondModal: boolean;
   salaryMin: string,
   salaryMax: string,
+  departments: Department[];
+  departmentsShortVersions: DepartmentsShortVersions[]
 }
 
 const initialState: VacancyState = {
@@ -21,6 +30,8 @@ const initialState: VacancyState = {
   isOpenRespondModal: false,
   salaryMin: '',
   salaryMax: '',
+  departments: [],
+  departmentsShortVersions: [],
 };
 
 const vacancySlice = createSlice({
@@ -38,6 +49,10 @@ const vacancySlice = createSlice({
     },
     setSalaryMax(state, action) {
       state.salaryMax = action.payload;
+    },
+    setDepartments(state, action) {
+      state.departments = action.payload;
+      state.departmentsShortVersions = createDepartmentShortVision(action.payload);
     }
   },
   extraReducers(builder) {
@@ -48,6 +63,6 @@ const vacancySlice = createSlice({
   }
 });
 
-export const {setVacancyByID, setStateRespondModal, setSalaryMin, setSalaryMax} = vacancySlice.actions;
+export const {setVacancyByID, setStateRespondModal, setSalaryMin, setSalaryMax, setDepartments} = vacancySlice.actions;
 
 export default vacancySlice.reducer;
