@@ -20,8 +20,12 @@ function VacancyList() {
   const user = useAppSelector((state) => state.general.user);
   const dispatch = useAppDispatch();
 
+  const dataState = useAppSelector((state) => state.vacancy.paramsForGetVacancies);
+  const departmentListShort = useAppSelector((state) => state.vacancy.departmentsShortVersions);
+
+
   useEffect(() => {
-    dispatch(getVacancies({sortBy: SortingVacancyTypes.BY_NAME, offset: 0}));
+    dispatch(getVacancies({dataState, departmentListShort}));
   }, []);
 
   useEffect(() => {

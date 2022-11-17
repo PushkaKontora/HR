@@ -2,22 +2,19 @@ import {useEffect, useRef, useState} from 'react';
 
 import './card-sorting.scss';
 import arrowIcon from '../../assets/img/job-seach/Arrow-select.svg';
-import {ExpectedExperience, SortingVacancyTypes} from '../../const';
+import {SelectFilterCard, SortingVacancyTypes} from '../../const';
 import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
-import {useAppDispatch} from '../../app/hooks';
-
-const SelectFilterCard = {
-  [SortingVacancyTypes.BY_NAME]: 'По умолчанию',
-  [SortingVacancyTypes.PUBLISHED_DATE]: 'По дате',
-  [SortingVacancyTypes.SALARY_DESC]: 'По убыванию зарплаты',
-  [SortingVacancyTypes.SALARY_ASC]: 'По возрастанию зарплаты'
-};
+import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import {setSortedItemParam} from '../../features/vacancy/vacancy-slice';
 
 function CardSorting() {
   const [selectFilterCard, setSelectFilterCard] = useState('По умолчанию');
   const [isOpenFilterCard, setIsOpenFilterCard] = useState(false);
   const refModal = useRef(null);
   const dispatch = useAppDispatch();
+  const dataState = useAppSelector((state) => state.vacancy.paramsForGetVacancies);
+  const departmentListShort = useAppSelector((state) => state.vacancy.departmentsShortVersions);
+
 
   useEffect(() => {
     const child = document.getElementById('child');
@@ -49,9 +46,12 @@ function CardSorting() {
   };
 
   function onHandlerSelectAnotherTypeSort(element: string) {
+
+
     setSelectFilterCard(element);
     const sortingByData = Object.entries(SelectFilterCard).filter(e => e[1] === element);
-    dispatch(getVacancies({sortBy: sortingByData[0][0] as SortingVacancyTypes, offset: 1}));
+    dispatch(setSortedItemParam( sortingByData[0][0] as SortingVacancyTypes));
+    dispatch(getVacancies({dataState, departmentListShort}));
   }
 
   return (

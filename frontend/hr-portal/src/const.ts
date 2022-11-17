@@ -1,6 +1,8 @@
 export const LIMIT_ELEMENTS_ON_PAGE = 5;
 export const PRODUCT_VERSION_FOR_ROUTES = '/v1';
 
+export const DEFAULT_ELEMENT_DEPARTMENT = {label: 'Выбрать элемент', value: 0};
+
 export enum User {
   user = 'user',
   employer = 'employer',
@@ -26,4 +28,17 @@ export enum SortingVacancyTypes {
   PUBLISHED_DATE = 'published_at_desc',
   SALARY_ASC = 'salary_asc',
   SALARY_DESC = 'salary_desc'
+}
+
+export const SelectFilterCard = {
+  [SortingVacancyTypes.BY_NAME]: 'По умолчанию',
+  [SortingVacancyTypes.PUBLISHED_DATE]: 'По дате',
+  [SortingVacancyTypes.SALARY_DESC]: 'По убыванию зарплаты',
+  [SortingVacancyTypes.SALARY_ASC]: 'По возрастанию зарплаты'
+};
+
+
+export enum TypesFilters{
+DEFAULT= 'default',
+SALARY_MIN= 'salaryMin',
 }
