@@ -118,10 +118,11 @@ class VacanciesHandlers(IVacanciesHandlers):
     def create_vacancy(self, request: HttpRequest, body: NewVacancyIn = Body(...)) -> SuccessResponse:
         auth_user: User = request.user
 
-        logger.info("Creating a vacancy auth_user={auth_user} body={body}",
-                    auth_user={"id": auth_user.id, "permission": auth_user.permission},
-                    body=body.dict(exclude={"description"})
-                    )
+        logger.info(
+            "Creating a vacancy auth_user={auth_user} body={body}",
+            auth_user={"id": auth_user.id, "permission": auth_user.permission},
+            body=body.dict(exclude={"description"}),
+        )
 
         logger.info("Checking an existence of the department...")
         if not self.creating_vacancy_service.exists_department_with_id(body):
@@ -167,9 +168,11 @@ class VacancyHandlers(IVacancyHandlers):
     ) -> SuccessResponse:
         auth_user: User = request.user
 
-        logger.info("Updating a vacancy id={vacancy_id} body={body}",
-                    vacancy_id=vacancy_id,
-                    body=body.dict(exclude={"description"}))
+        logger.info(
+            "Updating a vacancy id={vacancy_id} body={body}",
+            vacancy_id=vacancy_id,
+            body=body.dict(exclude={"description"}),
+        )
 
         logger.info("Checking an existence of the vacancy...")
         if not self.getting_vacancy_service.exists_vacancy_with_id(vacancy_id):
