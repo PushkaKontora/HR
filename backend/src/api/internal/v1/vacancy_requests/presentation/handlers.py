@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 from django.http import HttpRequest
+from loguru import logger
 from ninja import File, Form, Query, UploadedFile
 
 from api.internal.errors import NotFoundError
@@ -57,17 +58,38 @@ class VacancyRequestsHandlers(IVacancyRequestsHandlers):
     def create_vacancy_request(
         self, request: HttpRequest, extra: RequestIn = Form(...), resume: Optional[UploadedFile] = File(None)
     ) -> VacancyRequestOut:
+        auth_user: User = request.user
+
+        logger.info(
+            "Creating a vacancy request auth_user={auth_user} extra={extra} resume={resume}",
+            auth_user={"id": auth_user.id},
+            extra=extra.dict(),
+            resume={"name": resume.name, "content_type": resume.content_type, "size": resume.size}
+            if resume is not None
+            else None,
+        )
+
+        logger.info("Checking an existence of the published vacancy...")
         if not self.creating_request_service.exists_published_vacancy(extra):
+            logger.success("Not found the published vacancy")
             raise NotFoundError()
 
         if resume is not None:
+            logger.info("Checking the resume file...")
+
             if not self.document_service.is_pdf(resume):
+                logger.success("The resume file is not pdf")
                 raise ResumeIsNotPDFError()
 
             if self.document_service.is_large(resume):
+                logger.success("Size of the resume file is large")
                 raise ResumeIsLargeError()
 
-        return self.creating_request_service.create_request(request.user, extra, resume)
+        logger.info("Creating a vacancy request...")
+        vacancy_request_out = self.creating_request_service.create_request(auth_user, extra, resume)
+        logger.success("The vacancy request was created")
+
+        return vacancy_request_out
 
     def get_last_vacancy_request(self, request: HttpRequest, vacancy_id: int = Query(...)) -> VacancyRequestOut:
         request_out = self.getting_service.try_get_last_request_by_owner_and_vacancy_id(request.user, vacancy_id)
