@@ -4,7 +4,7 @@ from django.http import HttpRequest
 from ninja import Body, File, Path, Router, UploadedFile
 from ninja.security import HttpBearer
 
-from api.internal.responses import ErrorResponse, MessageResponse, SuccessResponse
+from api.internal.responses import DomainErrorResponse, MessageResponse, SuccessResponse
 from api.internal.v1.users.domain.entities import (
     AuthenticationIn,
     AuthenticationOut,
@@ -76,7 +76,7 @@ class UsersRouter(Router):
             path="",
             methods=["POST"],
             view_func=auth_handlers.register_user,
-            response={200: SuccessResponse, 422: ErrorResponse},
+            response={200: SuccessResponse, 422: DomainErrorResponse},
             description="""
     422 error codes:
         1 - the email has already registered
@@ -121,7 +121,7 @@ class UserRouter(Router):
                 401: MessageResponse,
                 403: MessageResponse,
                 404: MessageResponse,
-                422: ErrorResponse,
+                422: DomainErrorResponse,
             },
             description="""
     422 error codes:
@@ -159,7 +159,7 @@ class UserRouter(Router):
                 401: MessageResponse,
                 403: MessageResponse,
                 404: MessageResponse,
-                422: ErrorResponse,
+                422: DomainErrorResponse,
             },
             description="""
     422 error codes:
@@ -185,7 +185,7 @@ class UserRouter(Router):
                 401: MessageResponse,
                 403: MessageResponse,
                 404: MessageResponse,
-                422: ErrorResponse,
+                422: DomainErrorResponse,
             },
             description="""
     422 error codes:
