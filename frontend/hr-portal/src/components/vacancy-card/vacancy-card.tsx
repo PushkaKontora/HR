@@ -56,7 +56,7 @@ function VacancyCard(props: VacancyCard) {
                 <img src={moneyIcon} alt="experience icon"/>
               </div>
               {
-                vacancy?.salary_to !== undefined && vacancy?.salary_from === undefined &&
+                vacancy?.salary_to !== null && vacancy?.salary_from === null &&
                 (
                   <>
                     <div className="tabs-text">до {vacancy?.salary_to}</div>
@@ -67,7 +67,7 @@ function VacancyCard(props: VacancyCard) {
                 )
               }
               {
-                vacancy?.salary_to === undefined && vacancy?.salary_from !== undefined &&
+                vacancy?.salary_to === null && vacancy?.salary_from !== null &&
                 (
                   <>
                     <div className="tabs-text">от {vacancy?.salary_from}</div>
@@ -78,7 +78,7 @@ function VacancyCard(props: VacancyCard) {
                 )
               }
               {
-                vacancy?.salary_to !== undefined && vacancy?.salary_from !== undefined &&
+                vacancy?.salary_to !== null && vacancy?.salary_from !== null &&
                 (<div className="tabs-text">
                   <div className="tabs-flex">
                     <div className="text">от {vacancy?.salary_from}</div>

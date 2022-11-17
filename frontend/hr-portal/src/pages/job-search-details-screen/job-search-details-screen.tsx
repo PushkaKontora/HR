@@ -33,7 +33,7 @@ function JobSearchDetailsScreen() {
                   <img src={moneyIcon} alt="experience icon"/>
                 </div>
                 {
-                  vacancy?.salary_to !== undefined && vacancy?.salary_from === undefined &&
+                  vacancy?.salary_to !== null && vacancy?.salary_from === null &&
                   (
                     <>
                       <div className="tabs-text">до {vacancy?.salary_to}</div>
@@ -44,7 +44,7 @@ function JobSearchDetailsScreen() {
                   )
                 }
                 {
-                  vacancy?.salary_to === undefined && vacancy?.salary_from !== undefined &&
+                  vacancy?.salary_to === null && vacancy?.salary_from !== null &&
                   (
                     <>
                       <div className="tabs-text">от {vacancy?.salary_from}</div>
@@ -55,7 +55,7 @@ function JobSearchDetailsScreen() {
                   )
                 }
                 {
-                  vacancy?.salary_to !== undefined && vacancy?.salary_from !== undefined &&
+                  vacancy?.salary_to !== null && vacancy?.salary_from !== null &&
                   (<div className="tabs-text">
                     <div className="tabs-flex">
                       <div className="text">от {vacancy?.salary_from}</div>

@@ -50,8 +50,8 @@ function CardSorting() {
 
   function onHandlerSelectAnotherTypeSort(element: string) {
     setSelectFilterCard(element);
-    const experienceData = Object.entries(SelectFilterCard).filter(e => e[1] === element);
-    dispatch(getVacancies({sortBy: experienceData[0][0] as SortingVacancyTypes, offset: 1}));
+    const sortingByData = Object.entries(SelectFilterCard).filter(e => e[1] === element);
+    dispatch(getVacancies({sortBy: sortingByData[0][0] as SortingVacancyTypes, offset: 1}));
   }
 
   return (

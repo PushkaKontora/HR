@@ -26,6 +26,7 @@ export const getVacancies = createAsyncThunk<{ items: Vacancy[], count: number }
       : strRequest = `${VacancyRoutes.getVacancy}?sort_by=${sortBy}&limit=${LIMIT_ELEMENTS_ON_PAGE}&offset=${offset}`;
 
     const {data} = await api.get<{ items: Vacancy[], count: number }>(strRequest);
+    console.log('запрос');
     return data;
   },
 );

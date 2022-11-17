@@ -1,4 +1,4 @@
-import {ChangeEvent, useEffect, useState} from 'react';
+import { useEffect, useState} from 'react';
 
 import './vacancy-list.scss';
 import VacancyCard from '../vacancy-card/vacancy-card';

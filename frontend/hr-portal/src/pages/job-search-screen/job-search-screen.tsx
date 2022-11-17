@@ -1,4 +1,4 @@
-import {ChangeEvent, FormEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent, FormEvent, useEffect, useRef, useState} from 'react';
 import bannerSearchScreen from '../../assets/img/job-seach/banner-jobSearchPage.svg';
 import deleteIcon from '../../assets/img/job-seach/delete-icon.svg';
 import './job-search-screen.scss';
@@ -8,9 +8,10 @@ import Select from 'react-select';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {setSalaryMax, setSalaryMin} from '../../features/vacancy/vacancy-slice';
 import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
-import {SortingVacancyTypes} from '../../const';
+import {ExpectedExperienceNameString, SortingVacancyTypes} from '../../const';
+import {timeoutCollection} from 'time-events-manager/src/timeout/timeout-decorator';
 
-const radioInput = ['Любой', 'Более года', 'Более 3 лет', 'Более 6 лет', 'Без опыта'];
+const radioInput = ['Любой'].concat(Object.values(ExpectedExperienceNameString));
 const departments = [
   {
     'value': 1,
@@ -75,6 +76,14 @@ function JobSearchScreen() {
   const vacancies = useAppSelector((state) => state.vacancy.vacancies);
   const dispatch = useAppDispatch();
 
+  useEffect(() => {
+    timeoutCollection.removeAll();
+    setTimeout(() => getVacancyWithNewParams(), 1000);
+  }, [salaryMin, salaryMax]);
+
+  useEffect(() => {
+    getVacancyWithNewParams();
+  }, [radioChecked]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -86,13 +95,10 @@ function JobSearchScreen() {
 
   const handleChangeMinSalary = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch(setSalaryMin(e.target.value));
-    getVacancyWithNewParams();
   };
 
   const handleChangeMaxSalary = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch(setSalaryMax(e.target.value));
-    console.log('max');
-    getVacancyWithNewParams();
   };
 
   const handleEraseSearch = () => {
@@ -115,6 +121,11 @@ function JobSearchScreen() {
     if (salaryMax !== '') {
       lineWithNewParameters += `&salary_to=${salaryMax.toString()}`;
     }
+    if (radioChecked !== radioInput[0]) {
+      const experienceData = Object.entries(ExpectedExperienceNameString).filter(e => e[1] === radioChecked);
+      console.log(experienceData);
+      lineWithNewParameters += `&experience=${experienceData[0][0]}`;
+    }
 
     dispatch(getVacancies({sortBy: SortingVacancyTypes.BY_NAME, offset: 1, query: lineWithNewParameters}));
     console.log(lineWithNewParameters);
@@ -122,8 +133,8 @@ function JobSearchScreen() {
 
   const handlerClearFilters = () => {
     setRadioChecked(initialStateJobScreen.radioChecked);
-    setSalaryMax(initialStateJobScreen.salaryMax);
-    setSalaryMin(initialStateJobScreen.salaryMin);
+    dispatch(setSalaryMax(initialStateJobScreen.salaryMax));
+    dispatch(setSalaryMin(initialStateJobScreen.salaryMin));
     setSelectDepartment(initialStateJobScreen.selectDepartment);
   };
 
