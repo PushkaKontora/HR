@@ -123,8 +123,8 @@ class CreatingVacancyService(ICreatingVacancyService):
         self.department_repo = department_repo
         self.vacancy_repo = vacancy_repo
 
-    def exists_department_with_id(self, department_id: int) -> bool:
-        return self.department_repo.exists_department_with_id(department_id)
+    def exists_department_with_id(self, body: NewVacancyIn) -> bool:
+        return self.department_repo.exists_department_with_id(body.department_id)
 
     def authorize(self, auth_user: User, body: NewVacancyIn) -> bool:
         is_employer = auth_user.permission == Permission.EMPLOYER

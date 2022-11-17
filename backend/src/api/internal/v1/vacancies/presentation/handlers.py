@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Iterable, Optional
 
 from django.http import HttpRequest
+from loguru import logger
 from ninja import Body, Path, Query
 
 from api.internal.errors import ForbiddenError, NotFoundError
@@ -29,7 +30,7 @@ from api.models import User
 
 class ICreatingVacancyService(ABC):
     @abstractmethod
-    def exists_department_with_id(self, department_id: int) -> bool:
+    def exists_department_with_id(self, body: NewVacancyIn) -> bool:
         pass
 
     @abstractmethod
@@ -115,13 +116,26 @@ class VacanciesHandlers(IVacanciesHandlers):
         self.creating_vacancy_service = creating_vacancy_service
 
     def create_vacancy(self, request: HttpRequest, body: NewVacancyIn = Body(...)) -> SuccessResponse:
-        if not self.creating_vacancy_service.exists_department_with_id(body.department_id):
+        auth_user: User = request.user
+
+        logger.info("Creating a vacancy auth_user={auth_user} body={body}",
+                    auth_user={"id": auth_user.id, "permission": auth_user.permission},
+                    body=body.dict(exclude={"description"})
+                    )
+
+        logger.info("Checking an existence of the department...")
+        if not self.creating_vacancy_service.exists_department_with_id(body):
+            logger.success("Not found the department")
             raise NotFoundError()
 
-        if not self.creating_vacancy_service.authorize(request.user, body):
+        logger.info("Authorization...")
+        if not self.creating_vacancy_service.authorize(auth_user, body):
+            logger.success("Permission denied")
             raise ForbiddenError()
 
+        logger.info("Creating a vacancy...")
         self.creating_vacancy_service.create(body)
+        logger.success("The vacancy was created")
 
         return SuccessResponse()
 
@@ -151,13 +165,25 @@ class VacancyHandlers(IVacancyHandlers):
     def update_vacancy(
         self, request: HttpRequest, vacancy_id: int = Path(...), body: VacancyIn = Body(...)
     ) -> SuccessResponse:
+        auth_user: User = request.user
+
+        logger.info("Updating a vacancy id={vacancy_id} body={body}",
+                    vacancy_id=vacancy_id,
+                    body=body.dict(exclude={"description"}))
+
+        logger.info("Checking an existence of the vacancy...")
         if not self.getting_vacancy_service.exists_vacancy_with_id(vacancy_id):
+            logger.success("Not found the vacancy")
             raise NotFoundError()
 
-        if not self.updating_vacancy_service.authorize(request.user, vacancy_id):
+        logger.info("Authorization...")
+        if not self.updating_vacancy_service.authorize(auth_user, vacancy_id):
+            logger.success("Permission denied")
             raise ForbiddenError()
 
+        logger.info("Updating the vacancy...")
         self.updating_vacancy_service.update_vacancy(vacancy_id, body)
+        logger.success("The vacancy was updated")
 
         return SuccessResponse()
 
