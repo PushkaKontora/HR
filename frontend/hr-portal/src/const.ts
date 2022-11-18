@@ -38,7 +38,7 @@ export const SelectFilterCard = {
 };
 
 
-export enum TypesFilters{
-DEFAULT= 'default',
-SALARY_MIN= 'salaryMin',
+export enum TypesFilters {
+  DEFAULT = 'default',
+  SALARY_MIN = 'salaryMin',
 }

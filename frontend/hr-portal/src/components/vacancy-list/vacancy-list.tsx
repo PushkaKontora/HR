@@ -1,4 +1,4 @@
-import { useEffect, useState} from 'react';
+import {useEffect, useLayoutEffect, useRef, useState} from 'react';
 
 import './vacancy-list.scss';
 import VacancyCard from '../vacancy-card/vacancy-card';
@@ -19,13 +19,17 @@ function VacancyList() {
   const vacancyForRespond = useAppSelector((state) => state.vacancy.vacancyByID);
   const user = useAppSelector((state) => state.general.user);
   const dispatch = useAppDispatch();
+  const firstUpdate = useRef(true);
 
-  const dataState = useAppSelector((state) => state.vacancy.paramsForGetVacancies);
-  const departmentListShort = useAppSelector((state) => state.vacancy.departmentsShortVersions);
-
-
+  useLayoutEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
+  });
   useEffect(() => {
-    dispatch(getVacancies({dataState, departmentListShort}));
+    dispatch(getVacancies());
+    console.log('VacancyList');
   }, []);
 
   useEffect(() => {

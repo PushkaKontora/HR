@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useLayoutEffect, useRef} from 'react';
 
 import Select, {SingleValue} from 'react-select';
 
@@ -7,15 +7,22 @@ import {DepartmentsShortVersions, setDepartmentParam} from '../../features/vacan
 import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 
 function VacancyFilterOnDepartment() {
-  const dataState = useAppSelector((state) => state.vacancy.paramsForGetVacancies);
   const departmentListShort = useAppSelector((state) => state.vacancy.departmentsShortVersions);
   const department = useAppSelector((state) => state.vacancy.paramsForGetVacancies.department);
   const dispatch = useAppDispatch();
+  const firstUpdate = useRef(true);
+
+  useLayoutEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
+  });
 
   useEffect(() => {
-    dispatch(getVacancies({dataState, departmentListShort}));
+    dispatch(getVacancies());
+    console.log('VacancyFilterOnDepartment');
   }, [department]);
-
 
   const onHandlerFilterDepartment = (e: SingleValue<DepartmentsShortVersions>) => {
     dispatch(setDepartmentParam(e?.label));

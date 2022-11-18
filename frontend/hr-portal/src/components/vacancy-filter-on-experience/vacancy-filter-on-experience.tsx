@@ -1,26 +1,29 @@
-import React, {ChangeEvent, useEffect} from 'react';
-import {getDepartment, getVacancies} from '../../service/async-actions/async-actions-vacancy';
+import React, {ChangeEvent, useEffect, useLayoutEffect, useRef} from 'react';
+import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
-import {ExpectedExperienceNameString} from '../../const';
+import {ExpectedExperience, ExpectedExperienceNameString} from '../../const';
 import {setExperienceParam} from '../../features/vacancy/vacancy-slice';
-import {timeoutCollection} from 'time-events-manager/src/timeout/timeout-decorator';
 
 const radioInput = ['Любой'].concat(Object.values(ExpectedExperienceNameString));
 
 function VacancyFilterOnExperience() {
   const experience = useAppSelector((state) => state.vacancy.paramsForGetVacancies.experience);
   const dispatch = useAppDispatch();
+  const firstUpdate = useRef(true);
 
-  const dataState = useAppSelector((state) => state.vacancy.paramsForGetVacancies);
-  const departmentListShort = useAppSelector((state) => state.vacancy.departmentsShortVersions);
+  useLayoutEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
+  });
 
   useEffect(() => {
-    dispatch(getVacancies({dataState, departmentListShort}));
+    dispatch(getVacancies());
   }, [experience]);
 
-
-  const onHandlerClickRadio = (e: ChangeEvent<HTMLInputElement>) => {
-    dispatch(setExperienceParam(e.target.value));
+  const onHandlerClickRadio = (el: ChangeEvent<HTMLInputElement>) => {
+    dispatch(setExperienceParam(el.target.value));
   };
 
   return (

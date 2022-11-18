@@ -1,4 +1,5 @@
-import React, {ChangeEvent, FormEvent, useEffect} from 'react';
+import React, {ChangeEvent, FormEvent, useLayoutEffect, useRef} from 'react';
+
 import deleteIcon from '../../assets/img/job-seach/delete-icon.svg';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {setSearchLineParam} from '../../features/vacancy/vacancy-slice';
@@ -6,15 +7,19 @@ import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 
 function VacancySearchField() {
   const pageSearch = useAppSelector((state) => state.vacancy.paramsForGetVacancies.searchLine);
-  const dataState = useAppSelector((state) => state.vacancy.paramsForGetVacancies);
-  const departmentListShort = useAppSelector((state) => state.vacancy.departmentsShortVersions);
-
   const dispatch = useAppDispatch();
+  const firstUpdate = useRef(true);
 
+  useLayoutEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
+  });
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    dispatch(getVacancies({dataState, departmentListShort}));
+    dispatch(getVacancies());
   };
 
   const handleSearchVacancy = (e: ChangeEvent<HTMLInputElement>) => {
@@ -23,6 +28,7 @@ function VacancySearchField() {
 
   const handleEraseSearch = () => {
     dispatch(setSearchLineParam(''));
+    dispatch(getVacancies());
   };
 
   return (

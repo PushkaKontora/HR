@@ -1,30 +1,40 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useLayoutEffect, useRef, useState} from 'react';
 
 import {Pagination, PaginationItem} from '@mui/material';
 
 import './pagination-custom.scss';
 import arrowLeftPagination from '../../assets/img/job-seach/ArrowLeft-pagination.svg';
+import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import {setOffsetParam} from '../../features/vacancy/vacancy-slice';
+import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 
 
 function PaginationCustom() {
-  const [vacancyOnPage, setVacancyOnPage] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const currentPage =  useAppSelector((state) => state.vacancy.currentPage);
+  const maxPageCount = useAppSelector((state) => state.vacancy.maxPagesVacancies);
+  const vacancies = useAppSelector((state) => state.vacancy.vacancies);
+  const dispatch = useAppDispatch();
+  const firstUpdate = useRef(true);
 
-  const [maxPageCount, setMaxPageCount] = useState(15);
-
+  useLayoutEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
+  });
   useEffect(() => {
-    //запрос на страницы(на контент)
+    dispatch(getVacancies());
   }, [currentPage]);
 
 
   return (
     <div className="vacancyListPagination">
       {
-        !!maxPageCount && (
+        vacancies.items.length !== 0 && (
           <Pagination
             count={maxPageCount}
             page={currentPage}
-            onChange={(_, num) => setCurrentPage(num)}
+            onChange={(_, num) => dispatch(setOffsetParam(num))}
             variant="outlined"
             shape="rounded"
 
@@ -32,7 +42,7 @@ function PaginationCustom() {
               <PaginationItem
                 slots={{
                   previous: () => (<div><img src={arrowLeftPagination} alt="arrowLeftPagination"/></div>),
-                  next: () => (<div><img src={arrowLeftPagination} alt="arrowLeftPagination" className='arrow-right'/></div>)
+                  next: () => (<div><img src={arrowLeftPagination} alt="arrowLeftPagination" className="arrow-right"/></div>)
                 }}
                 {...item}
               />

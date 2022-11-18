@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useEffect} from 'react';
+import React, {ChangeEvent, useEffect, useLayoutEffect, useRef} from 'react';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {setSalaryMax, setSalaryMin} from '../../features/vacancy/vacancy-slice';
 import {timeoutCollection} from 'time-events-manager/src/timeout/timeout-decorator';
@@ -8,16 +8,20 @@ function VacancyFilterOnSalary() {
   const salaryMax = useAppSelector((state) => state.vacancy.paramsForGetVacancies.salaryMax);
   const salaryMin = useAppSelector((state) => state.vacancy.paramsForGetVacancies.salaryMin);
   const dispatch = useAppDispatch();
+  const firstUpdate = useRef(true);
 
-  const dataState = useAppSelector((state) => state.vacancy.paramsForGetVacancies);
-  const departmentListShort = useAppSelector((state) => state.vacancy.departmentsShortVersions);
-
-
+  useLayoutEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
+  });
 
   useEffect(() => {
     timeoutCollection.removeAll();
-    setTimeout(() =>  dispatch(getVacancies({dataState, departmentListShort})), 800);
+    setTimeout(() => dispatch(getVacancies()), 800);
   }, [salaryMin, salaryMax]);
+
 
   const handleChangeMinSalary = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch(setSalaryMin(e.target.value));
@@ -26,7 +30,7 @@ function VacancyFilterOnSalary() {
   const handleChangeMaxSalary = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch(setSalaryMax(e.target.value));
   };
-  
+
   return (
     <div className="filterItem filterItem__salary">
       <div className="filterItem-title">Зарплата</div>

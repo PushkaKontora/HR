@@ -1,8 +1,6 @@
 import {DepartmentsShortVersions} from './vacancy-slice';
 import {Department} from '../../types/department';
-import {DEFAULT_ELEMENT_DEPARTMENT, ExpectedExperienceNameString, LIMIT_ELEMENTS_ON_PAGE, SortingVacancyTypes, TypesFilters} from '../../const';
-import {useAppSelector} from '../../app/hooks';
-import {VacancyRequestParams} from '../../types/vacancy-request-params';
+import {ExpectedExperience, ExpectedExperienceNameString, LIMIT_ELEMENTS_ON_PAGE, SortingVacancyTypes, TypesFilters} from '../../const';
 
 export function createDepartmentShortVision(departmentsFull: Department[]): DepartmentsShortVersions[] {
   return departmentsFull.map(department => {
@@ -10,39 +8,64 @@ export function createDepartmentShortVision(departmentsFull: Department[]): Depa
   });
 }
 
+export const initialParamsVacancyRequest: { [index: string]: any } = {
+  '&salary_from=': '',
+  '&salary_to=': '',
+  '&experience=': 'Любой',
+  '&department_id=': '',
+  '&search=': '',
+  '?sort_by=': SortingVacancyTypes.BY_NAME,
+  '&offset=': 0,
+};
 
-type GetVacancyWithNewParams = {
-  typeFilters: TypesFilters,
-  data?: string
+const paramsVacancyRequest = Object.assign({}, initialParamsVacancyRequest);
+
+export function getParamsRequestVacancy() {
+  return paramsVacancyRequest;
 }
 
-export function getVacancyWithNewParams(params: any): string {
-  const {paramsForGetVacancies, departmentList} = params;
+export function setNewParamSalaryMin(salaryMin: string) {
+  paramsVacancyRequest['&salary_from='] = salaryMin;
+}
 
-  let lineWithNewParameters = '';
+export function setNewParamSalaryMax(salaryMax: string) {
+  paramsVacancyRequest['&salary_to='] = salaryMax;
+}
 
-  if (paramsForGetVacancies.salaryMin !== '') {
-    lineWithNewParameters += `&salary_from=${paramsForGetVacancies.salaryMin}`;
+export function setNewParamExperience(experience: string) {
+  paramsVacancyRequest['&experience='] = experience;
+}
 
-  }
-  if (paramsForGetVacancies.salaryMax !== '') {
-    lineWithNewParameters += `&salary_to=${paramsForGetVacancies.salaryMax}`;
-  }
-  if (paramsForGetVacancies.experience !== 'Любой') {
-    const experienceData = Object.entries(ExpectedExperienceNameString).filter(e => e[1] === paramsForGetVacancies.experience);
-    lineWithNewParameters += `&experience=${experienceData[0][0]}`;
-  }
-  if (paramsForGetVacancies.department !== (DEFAULT_ELEMENT_DEPARTMENT.label || '')) {
-    const elementWithLabel = departmentList.find((el: DepartmentsShortVersions) => el.label === paramsForGetVacancies.department);
-    if (elementWithLabel) {
-      lineWithNewParameters += `&department_id=${elementWithLabel.value}`;
+export function setNewParamDepartment(department: string) {
+  paramsVacancyRequest['&department_id='] = department;
+}
+
+export function setNewParamSearchLine(searchLine: string) {
+  paramsVacancyRequest['&search='] = searchLine;
+}
+
+export function setNewParamOffset(offset: number) {
+  paramsVacancyRequest['&offset='] = offset;
+}
+
+export function setNewParamSortBy(sortedItem: SortingVacancyTypes) {
+  paramsVacancyRequest['?sort_by='] = sortedItem as SortingVacancyTypes;
+}
+
+export function makeViewDataExperience(action: string): string {
+  let valueExp = 'Любой';
+  Object.entries(ExpectedExperienceNameString).map(([key, value]) => {
+    if (value === action) {
+      valueExp = key as ExpectedExperience;
     }
-  }
-  if (paramsForGetVacancies.searchLine !== '') {
-    lineWithNewParameters += `&search=${paramsForGetVacancies.searchLine}`;
-  }
+  });
 
-
-  return `${lineWithNewParameters}`;
-  //dispatch(getVacancies({sortBy: SortingVacancyTypes.BY_NAME, offset: 1, query: lineWithNewParameters}));
+  return valueExp;
 }
+
+export function getMaxPagesVacancies(countVac: number): number {
+  return Math.ceil(countVac / LIMIT_ELEMENTS_ON_PAGE);
+}
+
+
+//todo: очищение стейта после ухода со страницы

@@ -12,8 +12,7 @@ function CardSorting() {
   const [isOpenFilterCard, setIsOpenFilterCard] = useState(false);
   const refModal = useRef(null);
   const dispatch = useAppDispatch();
-  const dataState = useAppSelector((state) => state.vacancy.paramsForGetVacancies);
-  const departmentListShort = useAppSelector((state) => state.vacancy.departmentsShortVersions);
+  const sortItem = useAppSelector((state) => state.vacancy.paramsForGetVacancies.sortedItem);
 
 
   useEffect(() => {
@@ -29,6 +28,10 @@ function CardSorting() {
   useEffect(() => {
     setIsOpenFilterCard(false);
   }, [selectFilterCard]);
+
+  useEffect(() => {
+    dispatch(getVacancies());
+  }, [sortItem]);
 
   // useEffect(() => {
   //   const handleClickOutside = (e: any) => {
@@ -46,12 +49,9 @@ function CardSorting() {
   };
 
   function onHandlerSelectAnotherTypeSort(element: string) {
-
-
     setSelectFilterCard(element);
     const sortingByData = Object.entries(SelectFilterCard).filter(e => e[1] === element);
-    dispatch(setSortedItemParam( sortingByData[0][0] as SortingVacancyTypes));
-    dispatch(getVacancies({dataState, departmentListShort}));
+    dispatch(setSortedItemParam(sortingByData[0][0] as SortingVacancyTypes));
   }
 
   return (
