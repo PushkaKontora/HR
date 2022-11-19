@@ -41,10 +41,10 @@ class ResumeRepository(IResumeRepository):
             desired_salary=desired_salary,
         )
 
-    def get_published_at(self, resume_id: int) -> Resume:
-        return Resume.objects.only("published_at").get(id=resume_id)
+    def get_resume_for_update_with_only_published_at(self, resume_id: int) -> Resume:
+        return Resume.objects.only("published_at").select_for_update().get(id=resume_id)
 
-    def get_one_with_user_by_id(self, resume_id: int) -> Resume:
+    def get_resume_with_user_by_id(self, resume_id: int) -> Resume:
         return Resume.objects.select_related("owner").get(id=resume_id)
 
     def get_resumes(self, filters: Iterable[IResumesFilter], searcher: ResumesSearcherBase) -> QuerySet[Resume]:
@@ -54,6 +54,12 @@ class ResumeRepository(IResumeRepository):
             resumes = obj.filter(resumes)
 
         return searcher.search(resumes)
+
+    def get_resume_for_update(self, resume_id: int) -> Resume:
+        return Resume.objects.select_for_update().get(id=resume_id)
+
+    def get_resume_with_only_published_at(self, resume_id: int) -> Resume:
+        return Resume.objects.only("published_at").get(id=resume_id)
 
 
 class CompetencyRepository(ICompetencyRepository):
@@ -85,7 +91,7 @@ class FavouriteResumeRepository(IFavouriteResumeRepository):
         return sorter.sort(wishlist)
 
     def add_resume_to_wishlist(self, user_id: int, resume_id: int) -> None:
-        FavouriteResume.objects.create(user_id=user_id, resume_id=resume_id)
+        FavouriteResume.objects.get_or_create(user_id=user_id, resume_id=resume_id)
 
     def exists_resume_in_user_wishlist(self, user_id: int, resume_id: int) -> bool:
         return FavouriteResume.objects.filter(user_id=user_id, resume_id=resume_id).exists()

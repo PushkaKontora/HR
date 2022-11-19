@@ -27,7 +27,7 @@ from api.internal.v1.users.presentation.errors import (
     EmailHasAlreadyRegisteredError,
     EmailIsAlreadyRegisteredError,
     FileIsNotImageError,
-    PasswordDoesNotMatchError,
+    PasswordsDoNotMatchError,
     UserIsLeaderOfDepartmentError,
 )
 from api.internal.v1.users.presentation.routers import IAuthHandlers, IUserHandlers
@@ -57,11 +57,11 @@ class IResettingPasswordService(ABC):
         pass
 
     @abstractmethod
-    def match_password(self, user: User, body: ResettingPasswordIn) -> bool:
+    def match_passwords(self, user_id: int, body: ResettingPasswordIn) -> bool:
         pass
 
     @abstractmethod
-    def reset(self, user: User, body: ResettingPasswordIn) -> UpdatingPasswordOut:
+    def reset(self, user_id: int, body: ResettingPasswordIn) -> UpdatingPasswordOut:
         pass
 
 
@@ -235,10 +235,10 @@ class AuthHandlers(IAuthHandlers):
         if not self.resetting_password_service.authorize(request.user, user_id):
             raise ForbiddenError()
 
-        if not self.resetting_password_service.match_password(request.user, body):
-            raise PasswordDoesNotMatchError()
+        if not self.resetting_password_service.match_passwords(user_id, body):
+            raise PasswordsDoNotMatchError()
 
-        return self.resetting_password_service.reset(request.user, body)
+        return self.resetting_password_service.reset(user_id, body)
 
     def get_response_with_tokens(self, user: User) -> Response:
         tokens = self.jwt_service.create_tokens(user)

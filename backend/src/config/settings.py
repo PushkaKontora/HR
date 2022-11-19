@@ -17,6 +17,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import loguru
+import psycopg2.extensions
 from environ import Env
 from loguru import logger
 
@@ -99,7 +100,10 @@ DATABASES = {
         "PASSWORD": env("POSTGRES_PASSWORD", str),
         "HOST": env("POSTGRES_HOST", str),
         "PORT": env("POSTGRES_PORT", int),
-    }
+    },
+    "OPTIONS": {
+        "isolation_level": psycopg2.extensions.ISOLATION_LEVEL_REPEATABLE_READ,
+    },
 }
 
 

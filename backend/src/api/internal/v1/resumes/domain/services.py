@@ -54,11 +54,11 @@ class IResumeRepository(ABC):
         pass
 
     @abstractmethod
-    def get_published_at(self, resume_id: int) -> Resume:
+    def get_resume_for_update_with_only_published_at(self, resume_id: int) -> Resume:
         pass
 
     @abstractmethod
-    def get_one_with_user_by_id(self, resume_id: int) -> Resume:
+    def get_resume_with_user_by_id(self, resume_id: int) -> Resume:
         pass
 
     @abstractmethod
@@ -71,6 +71,14 @@ class IResumeRepository(ABC):
 
     @abstractmethod
     def get_resumes(self, filters: Iterable[IResumesFilter], searcher: ResumesSearcherBase) -> QuerySet[Resume]:
+        pass
+
+    @abstractmethod
+    def get_resume_for_update(self, resume_id: int) -> Resume:
+        pass
+
+    @abstractmethod
+    def get_resume_with_only_published_at(self, resume_id: int) -> Resume:
         pass
 
 
@@ -158,8 +166,9 @@ class PublishingResumeService(IPublishingResumeService):
     def authorize(self, auth_user: User, resume_id: int) -> bool:
         return hasattr(auth_user, "resume") and auth_user.resume.id == resume_id
 
+    @atomic
     def publish(self, resume_id: int) -> PublishingOut:
-        resume = self.resume_repo.get_published_at(resume_id)
+        resume = self.resume_repo.get_resume_for_update_with_only_published_at(resume_id)
 
         if resume.published_at is None:
             resume.published_at = now()
@@ -169,11 +178,10 @@ class PublishingResumeService(IPublishingResumeService):
 
     @atomic
     def unpublish(self, resume_id: int) -> None:
-        resume = self.resume_repo.get_published_at(resume_id)
+        resume = self.resume_repo.get_resume_for_update_with_only_published_at(resume_id)
 
-        if resume.published_at is not None:
-            resume.published_at = None
-            resume.save(update_fields=["published_at"])
+        resume.published_at = None
+        resume.save(update_fields=["published_at"])
 
         self.favourite_resume_repo.delete_resume_from_wishlists(resume_id)
 
@@ -189,7 +197,7 @@ class GettingResumeService(IGettingResumeService):
         return is_employer or is_owner
 
     def get_resume(self, resume_id: int) -> ResumeOut:
-        return ResumeOut.from_resume(self.resume_repo.get_one_with_user_by_id(resume_id))
+        return ResumeOut.from_resume(self.resume_repo.get_resume_with_user_by_id(resume_id))
 
     def exists_resume_with_id(self, resume_id: int) -> bool:
         return self.resume_repo.exists_resume_with_id(resume_id)
@@ -211,7 +219,7 @@ class UpdatingResumeService(IUpdatingResumeService):
 
     @atomic
     def update(self, resume_id: int, extra: ResumeIn, document: Optional[UploadedFile]) -> None:
-        resume = self.resume_repo.get_one_by_id(resume_id)
+        resume = self.resume_repo.get_resume_for_update(resume_id)
 
         resume.desired_job = extra.desired_job
         resume.desired_salary = extra.desired_salary
@@ -259,7 +267,7 @@ class ResumesWishlistService(IResumesWishlistService):
         self.favourite_resume_repo.delete_resume_from_wishlist(auth_user.id, resume_id)
 
     def is_resume_published(self, resume_id: int) -> bool:
-        return self.resume_repo.get_published_at(resume_id).published_at is not None
+        return self.resume_repo.get_resume_with_only_published_at(resume_id).published_at is not None
 
 
 class GettingResumesService(IGettingResumesService):

@@ -61,7 +61,7 @@ class IVacancyRepository(ABC):
         pass
 
     @abstractmethod
-    def get_only_published_at_by_id(self, vacancy_id: int) -> Vacancy:
+    def get_vacancy_with_only_published_at_by_id(self, vacancy_id: int) -> Vacancy:
         pass
 
     @abstractmethod
@@ -160,7 +160,7 @@ class GettingVacancyService(IGettingVacancyService):
         return self.vacancy_repo.exists_vacancy_with_id(vacancy_id)
 
     def is_published(self, vacancy_id: int) -> bool:
-        return self.vacancy_repo.get_only_published_at_by_id(vacancy_id).published_at is not None
+        return self.vacancy_repo.get_vacancy_with_only_published_at_by_id(vacancy_id).published_at is not None
 
 
 class PublishingVacancyService(IPublishingVacancyService):
@@ -174,8 +174,9 @@ class PublishingVacancyService(IPublishingVacancyService):
 
         return is_employer and is_leader
 
+    @atomic
     def publish(self, vacancy_id: int) -> PublishingOut:
-        vacancy = self.vacancy_repo.get_only_published_at_by_id(vacancy_id)
+        vacancy = self.vacancy_repo.get_vacancy_with_only_published_at_by_id(vacancy_id)
         published_at = vacancy.published_at or now()
 
         self.vacancy_repo.set_published_at_to_vacancy_by_id(vacancy_id, published_at)

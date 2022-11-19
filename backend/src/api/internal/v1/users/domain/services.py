@@ -17,16 +17,13 @@ from api.internal.v1.users.domain.entities import (
     EmailIn,
     JWTTokens,
     NameIn,
-    PasswordOut,
     Payload,
     PhotoOut,
     RegistrationIn,
     ResettingPasswordIn,
     TokenType,
     UpdatingPasswordOut,
-    UserDepartmentOut,
     UserOut,
-    UserResumeOut,
 )
 from api.internal.v1.users.domain.utils import hash_password
 from api.internal.v1.users.presentation.handlers import (
@@ -65,7 +62,7 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def get_user_for_update(self, user_id: int) -> User:
+    def get_user_for_update_by_id(self, user_id: int) -> User:
         pass
 
     @abstractmethod
@@ -80,6 +77,14 @@ class IUserRepository(ABC):
 class IPasswordRepository(ABC):
     @abstractmethod
     def create(self, user_id: int, password: str) -> Password:
+        pass
+
+    @abstractmethod
+    def get_password_value_by_user_id(self, user_id: int) -> Password:
+        pass
+
+    @abstractmethod
+    def get_password_for_update_by_user_id(self, user_id: int) -> Password:
         pass
 
 
@@ -197,14 +202,20 @@ class GettingUserService(IGettingUserService):
 
 
 class ResettingPasswordService(IResettingPasswordService):
+    def __init__(self, password_repo: IPasswordRepository):
+        self.password_repo = password_repo
+
     def authorize(self, user: User, user_id: int) -> bool:
         return user.id == user_id
 
-    def match_password(self, user: User, body: ResettingPasswordIn) -> bool:
-        return checkpw(body.previous_password.encode(), user.password.value.encode())
+    def match_passwords(self, user_id: int, body: ResettingPasswordIn) -> bool:
+        password = self.password_repo.get_password_value_by_user_id(user_id)
 
-    def reset(self, user: User, body: ResettingPasswordIn) -> UpdatingPasswordOut:
-        password = user.password
+        return checkpw(body.previous_password.encode(), password.value.encode())
+
+    def reset(self, user_id: int, body: ResettingPasswordIn) -> UpdatingPasswordOut:
+        password = self.password_repo.get_password_for_update_by_user_id(user_id)
+
         password.value = hash_password(body.new_password)
         password.save(update_fields=["value", "updated_at"])
 
@@ -224,7 +235,7 @@ class DeletingUserService(IDeletingUserService):
 
     @atomic
     def delete(self, user_id: int) -> None:
-        user = self.user_repo.get_user_for_update(user_id)
+        user = self.user_repo.get_user_for_update_by_id(user_id)
 
         user.delete()
 
@@ -238,7 +249,7 @@ class RenamingUserService(IRenamingUserService):
 
     @atomic
     def rename(self, user_id: int, body: NameIn) -> None:
-        user = self.user_repo.get_user_for_update(user_id)
+        user = self.user_repo.get_user_for_update_by_id(user_id)
 
         user.surname = body.surname
         user.name = body.name
@@ -258,7 +269,7 @@ class ChangingEmailService(IChangingEmailService):
 
     @atomic
     def change_email(self, user_id: int, body: EmailIn) -> None:
-        user = self.user_repo.get_user_for_update(user_id)
+        user = self.user_repo.get_user_for_update_by_id(user_id)
 
         user.email = body.email
         user.save(update_fields=["email"])
@@ -275,15 +286,16 @@ class PhotoService(IPhotoService):
 
     @atomic
     def upload(self, user_id: int, photo: UploadedFile) -> PhotoOut:
-        user = self.user_repo.get_user_for_update(user_id)
+        user = self.user_repo.get_user_for_update_by_id(user_id)
 
         user.photo = UploadedFile(photo, self._get_filename_photo(user, photo))
         user.save(update_fields=["photo"])
 
         return PhotoOut.from_user(user)
 
+    @atomic
     def delete(self, user_id: int) -> None:
-        user = self.user_repo.get_user_by_id(user_id)
+        user = self.user_repo.get_user_for_update_by_id(user_id)
 
         user.photo = None
         user.save(update_fields=["photo"])

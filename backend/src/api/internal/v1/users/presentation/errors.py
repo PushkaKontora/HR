@@ -11,7 +11,7 @@ class EmailHasAlreadyRegisteredError(DomainErrorBase):
         return "The email has already registered"
 
 
-class PasswordDoesNotMatchError(DomainErrorBase):
+class PasswordsDoNotMatchError(DomainErrorBase):
     @property
     def code(self) -> int:
         return 2

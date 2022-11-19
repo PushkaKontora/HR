@@ -47,7 +47,7 @@ class VacancyRepository(IVacancyRepository):
     def set_published_at_to_vacancy_by_id(self, vacancy_id: int, published_at: Optional[datetime]) -> None:
         Vacancy.objects.filter(id=vacancy_id).update(published_at=published_at)
 
-    def get_only_published_at_by_id(self, vacancy_id: int) -> Vacancy:
+    def get_vacancy_with_only_published_at_by_id(self, vacancy_id: int) -> Vacancy:
         return Vacancy.objects.only("published_at").get(id=vacancy_id)
 
     def exists_vacancy_with_id_and_leader_of_department_id(self, vacancy_id: int, leader_id: int) -> bool:

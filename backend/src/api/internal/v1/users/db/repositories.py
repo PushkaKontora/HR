@@ -20,7 +20,7 @@ class UserRepository(IUserRepository):
     def try_get_user_by_id(self, user_id: int) -> Optional[User]:
         return User.objects.filter(id=user_id).first()
 
-    def get_user_for_update(self, user_id: int) -> User:
+    def get_user_for_update_by_id(self, user_id: int) -> User:
         return User.objects.select_for_update().get(id=user_id)
 
     def get_user_by_id(self, user_id: int) -> User:
@@ -39,6 +39,12 @@ class UserRepository(IUserRepository):
 class PasswordRepository(IPasswordRepository):
     def create(self, user_id: int, password: str) -> Password:
         return Password.objects.create(owner_id=user_id, value=password)
+
+    def get_password_value_by_user_id(self, user_id: int) -> Password:
+        return Password.objects.only("value").get(user_id=user_id)
+
+    def get_password_for_update_by_user_id(self, user_id: int) -> Password:
+        return Password.objects.select_for_update().get(user_id=user_id)
 
 
 class IssuedTokenRepository(IIssuedTokenRepository):

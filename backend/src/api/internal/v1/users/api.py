@@ -26,7 +26,7 @@ from api.internal.v1.users.presentation.errors import (
     EmailHasAlreadyRegisteredError,
     EmailIsAlreadyRegisteredError,
     FileIsNotImageError,
-    PasswordDoesNotMatchError,
+    PasswordsDoNotMatchError,
     UserIsLeaderOfDepartmentError,
 )
 from api.internal.v1.users.presentation.handlers import AuthHandlers, UserHandlers
@@ -34,7 +34,7 @@ from api.internal.v1.users.presentation.routers import UserRouter, UsersRouter
 
 ERRORS = [
     EmailHasAlreadyRegisteredError,
-    PasswordDoesNotMatchError,
+    PasswordsDoNotMatchError,
     UserIsLeaderOfDepartmentError,
     EmailIsAlreadyRegisteredError,
     FileIsNotImageError,
