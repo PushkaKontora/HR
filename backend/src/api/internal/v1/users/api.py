@@ -51,7 +51,7 @@ class UsersContainer(containers.DeclarativeContainer):
     auth_service = providers.Singleton(AuthenticationService, user_repo=user_repo)
     jwt_service = providers.Singleton(JWTService, issued_token_repo=issued_token_repo, user_repo=user_repo)
     getting_user_service = providers.Singleton(GettingUserService, user_repo=user_repo)
-    resetting_password_service = providers.Singleton(ResettingPasswordService)
+    resetting_password_service = providers.Singleton(ResettingPasswordService, password_repo=password_repo)
     deleting_user_service = providers.Singleton(
         DeletingUserService, user_repo=user_repo, department_repo=department_repo
     )

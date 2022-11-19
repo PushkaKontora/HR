@@ -76,15 +76,15 @@ class IUserRepository(ABC):
 
 class IPasswordRepository(ABC):
     @abstractmethod
-    def create(self, user_id: int, password: str) -> Password:
+    def create(self, owner_id: int, password: str) -> Password:
         pass
 
     @abstractmethod
-    def get_password_value_by_user_id(self, user_id: int) -> Password:
+    def get_password_value_by_user_id(self, owner_id: int) -> Password:
         pass
 
     @abstractmethod
-    def get_password_for_update_by_user_id(self, user_id: int) -> Password:
+    def get_password_for_update_by_user_id(self, owner_id: int) -> Password:
         pass
 
 

@@ -37,14 +37,14 @@ class UserRepository(IUserRepository):
 
 
 class PasswordRepository(IPasswordRepository):
-    def create(self, user_id: int, password: str) -> Password:
-        return Password.objects.create(owner_id=user_id, value=password)
+    def create(self, owner_id: int, password: str) -> Password:
+        return Password.objects.create(owner_id=owner_id, value=password)
 
-    def get_password_value_by_user_id(self, user_id: int) -> Password:
-        return Password.objects.only("value").get(user_id=user_id)
+    def get_password_value_by_user_id(self, owner_id: int) -> Password:
+        return Password.objects.only("value").get(owner_id=owner_id)
 
-    def get_password_for_update_by_user_id(self, user_id: int) -> Password:
-        return Password.objects.select_for_update().get(user_id=user_id)
+    def get_password_for_update_by_user_id(self, owner_id: int) -> Password:
+        return Password.objects.select_for_update().get(owner_id=owner_id)
 
 
 class IssuedTokenRepository(IIssuedTokenRepository):
