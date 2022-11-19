@@ -138,7 +138,7 @@ SALT = b"$2b$12$" + env("SALT_POSTFIX", str).encode()
 
 REFRESH_TOKEN_COOKIE = "rf_tk"
 
-ACCESS_TOKEN_TTL = timedelta(minutes=30)
+ACCESS_TOKEN_TTL = timedelta(minutes=30) if not DEBUG else timedelta(days=1)
 REFRESH_TOKEN_TTL = timedelta(days=10)
 
 
