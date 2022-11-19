@@ -1,3 +1,4 @@
+import uuid
 from abc import ABC, abstractmethod
 from datetime import timedelta
 from typing import Optional
@@ -272,10 +273,11 @@ class PhotoService(IPhotoService):
     def authorize(self, auth_user: User, user_id: int) -> bool:
         return auth_user.id == user_id
 
+    @atomic
     def upload(self, user_id: int, photo: UploadedFile) -> PhotoOut:
-        user = self.user_repo.get_user_by_id(user_id)
+        user = self.user_repo.get_user_for_update(user_id)
 
-        user.photo = UploadedFile(photo, f"{user.id}{photo.name}")
+        user.photo = UploadedFile(photo, self._get_filename_photo(user, photo))
         user.save(update_fields=["photo"])
 
         return PhotoOut.from_user(user)
@@ -288,3 +290,7 @@ class PhotoService(IPhotoService):
 
     def is_image(self, photo: UploadedFile) -> bool:
         return photo.content_type in self.PHOTO_MIME_TYPES
+
+    @staticmethod
+    def _get_filename_photo(user: User, photo: UploadedFile) -> str:
+        return f"{user.id}_{uuid.uuid4().hex}_{photo.name}"
