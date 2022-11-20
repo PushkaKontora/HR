@@ -290,7 +290,7 @@ class PhotoService(IPhotoService):
             user = self.user_repo.get_user_for_update_by_id(user_id)
             previous_name = user.photo.name if user.photo else None
 
-            user.photo = UploadedFile(photo, get_photo_filename(photo, user_id))
+            user.photo = UploadedFile(photo, get_photo_filename(photo))
             user.save(update_fields=["photo"])
 
         if previous_name is not None:

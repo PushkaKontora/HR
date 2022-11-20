@@ -154,7 +154,7 @@ class CreatingResumeService(ICreatingResumeService):
     def create(self, extra: NewResumeIn, document: UploadedFile) -> None:
         resume = self.resume_repo.create(
             extra.user_id,
-            UploadedFile(document, get_resume_filename(extra.user_id)),
+            UploadedFile(document, get_resume_filename(document)),
             extra.desired_job,
             extra.experience,
             extra.desired_salary,
@@ -235,7 +235,7 @@ class UpdatingResumeService(IUpdatingResumeService):
 
             previous_resume = resume.document.name if resume.document else None
             if document is not None:
-                resume.document = UploadedFile(document, get_resume_filename(int(resume.owner_id)))
+                resume.document = UploadedFile(document, get_resume_filename(document))
 
             resume.save()
 
