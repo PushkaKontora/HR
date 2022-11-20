@@ -168,7 +168,7 @@ class ResumeHandlers(IResumeHandlers):
 
         logger.info(
             "Creating a resume auth_user={auth_user} extra={extra} document={document}",
-            user={
+            auth_user={
                 "id": auth_user.id,
                 "has_resume": hasattr(auth_user, "resume"),
             },
