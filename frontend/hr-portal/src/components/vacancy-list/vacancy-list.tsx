@@ -7,7 +7,6 @@ import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {setStateRespondModal} from '../../features/vacancy/vacancy-slice';
 import PaginationCustom from '../pagination-custom/paginationCustom';
 import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
-import {SortingVacancyTypes} from '../../const';
 import DownLoadIcon from '../../assets/img/job-seach/download.svg';
 import EmailPlaneIcon from '../../assets/img/vacancy-card/image_email.png';
 
@@ -16,11 +15,14 @@ function VacancyList() {
   //const [isOpenRespondModal, setIsOpenRespondModal] = useState(isOpenRespondModalState);
   const [isOpenRespondModal, setIsOpenRespondModal] = useState(true);
   const [radioChecked, setRadioChecked] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const vacancies = useAppSelector((state) => state.vacancy.vacancies);
   const vacancyForRespond = useAppSelector((state) => state.vacancy.vacancyByID);
   const user = useAppSelector((state) => state.general.user);
+  const resumeUser = useAppSelector((state) => state.user.resumeUser);
   const dispatch = useAppDispatch();
   const firstUpdate = useRef(true);
+  const filePicker = useRef<any>(null);
 
   useLayoutEffect(() => {
     if (firstUpdate.current) {
@@ -28,8 +30,15 @@ function VacancyList() {
       return;
     }
   });
+
   useEffect(() => {
     dispatch(getVacancies());
+    if (user?.resume) {
+      const resumeName = resumeUser?.document.split('?')[0].split('/').reverse()[0];
+      if (resumeName) {
+        setSelectedFile(resumeName);
+      }
+    }
     console.log('VacancyList');
   }, []);
 
@@ -44,6 +53,16 @@ function VacancyList() {
   const onHandlerClickRadio = (e: any) => {
     e.stopPropagation();
     setRadioChecked(!radioChecked);
+  };
+
+  const handleSelectNewFileResume = (file: any) => {
+    setSelectedFile(file.target.files[0].name);
+  };
+
+  const handlePick = () => {
+    if (filePicker.current) {
+      filePicker.current.click();
+    }
   };
 
   return (
@@ -75,26 +94,34 @@ function VacancyList() {
                 <div className="titleItem">
                   Резюме
                 </div>
-                {user?.resume && (
+
+                {selectedFile && (
                   <div className="contentItem">
-                    {user?.resume.id}
+                    {selectedFile}
                   </div>
                 )}
 
                 <div className="contentItem contentItem__image-addNew">
-                  <img src={DownLoadIcon} alt="download icon"/>
+                  <input
+                    className="hidden"
+                    type="file"
+                    onChange={handleSelectNewFileResume}
+                    accept="application/pdf"
+                    ref={filePicker}
+                  />
+                  <img src={DownLoadIcon} onClick={handlePick} alt="download icon"/>
                 </div>
               </div>
               <div className="itemContent radio-wrapper radio-wrapper__square">
-                <label htmlFor='withoutResume'>Отправить без резюме</label>
                 <input
-                  className="radioInput radioInput__square"
+                  className=" radioInput__square  radioInput__square__after"
                   type="checkbox"
                   name="respond"
-                  id='withoutResume'
+                  id="withoutResume"
                   checked={radioChecked}
                   onChange={onHandlerClickRadio}
                 />
+                <label className="label-radio-input label-radio-input__before" htmlFor="withoutResume">Отправить без резюме</label>
               </div>
             </div>
             <div className="btn-wrapper">

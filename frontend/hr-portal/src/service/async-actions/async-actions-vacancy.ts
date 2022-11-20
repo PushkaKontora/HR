@@ -15,6 +15,11 @@ type GetVacancyParams = {
   query?: string,
 }
 
+type PostVacancyRequests = {
+  vacancy_id: number,
+  resumeFile?: File
+}
+
 export const getVacancies = createAsyncThunk<{ items: Vacancy[], count: number }, undefined, Generics>(
   'vacancy/getVacancy',
   async (arg, {extra: api}) => {
@@ -63,6 +68,16 @@ export const getDepartment = createAsyncThunk<void, undefined, Generics>(
   async (_arg, {dispatch, extra: api}) => {
     const {data} = await api.get<Department[]>(DepartmentsRoutes.getDepartments);
     dispatch(setDepartments(data));
+  },
+);
+
+export const postVacancyRequests = createAsyncThunk<void, PostVacancyRequests, Generics>(
+  'vacancy/postVacancyRequests',
+  async ({vacancy_id, resumeFile}, {dispatch, extra: api}) => {
+    await api.post(VacancyRoutes.postVacancyRequest, {
+      vacancy_id,
+      resumeFile
+    });
   },
 );
 

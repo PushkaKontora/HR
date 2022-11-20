@@ -1,4 +1,5 @@
 @import "src/styles/radio-btn";
+@import "src/styles/custom-select";
 
 img {
   width: 100%;
@@ -133,75 +134,6 @@ img {
             }
 
             &__departments {
-              .select__control {
-                background: #FFFFFF;
-                border: 0.5px solid #000000;
-                border-radius: 10px;
-                z-index: 3;
-
-                &--menu-is-open,
-                &--is-focused {
-                  background: #F6F5F3;
-                  border: 0.5px solid #000000;
-                  border-radius: 10px;
-                  box-shadow: none;
-                }
-              }
-
-              .select__input-container,
-              .select__single-value {
-                font-weight: 300;
-                font-size: 14px;
-                line-height: 14px;
-                letter-spacing: 0.05em;
-              }
-
-              .select__indicator-separator {
-                display: none;
-              }
-
-              .select__menu {
-                margin-top: -5px;
-                padding-top: 5px;
-                z-index: 2;
-                background: #FFFFFF;
-                border: 0.5px solid #000000;
-                border-radius: 0px 0px 10px 10px;
-
-                .select__menu-list {
-                  max-height: 176px;
-
-                  &::-webkit-scrollbar-thumb {
-                    width: 2px;
-                    background: #000000;
-                    border-radius: 2.5px;
-                  }
-
-                  &::-webkit-scrollbar {
-                    width: 2px;
-                    background: #FFFFFF;
-                    padding-right: 3px;
-                    transition: 0.3ms;
-                  }
-                }
-
-                .select__option {
-                  letter-spacing: 0.05em;
-                  font-weight: 300;
-                  font-size: 14px;
-                  line-height: 14px;
-                  padding: 14px 17px;
-
-                  &--is-focused,
-                  &--is-selected {
-                    color: #000000;
-                    cursor: default;
-                    display: block;
-                    background-color: #FFFFFF;
-                    font-weight: bold;
-                  }
-                }
-              }
             }
 
             &__salary {

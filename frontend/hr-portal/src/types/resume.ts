@@ -10,8 +10,6 @@ export type ResumeUser = {
   'desired_salary': number,
   'experience': string,
   'document': string,
-  'published_at': Date | string,
-  'competencies': [
-    string
-  ]
+  'published_at': Date | string | null,
+  'competencies': string[]
 }

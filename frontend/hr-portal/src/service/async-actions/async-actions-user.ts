@@ -24,7 +24,6 @@ export const getAuthUser = createAsyncThunk<void, number, Generics>(
     const user: User = res.data;
 
     if (user) {
-      console.log('1');
       dispatch(getResumeUser(user));
     }
     dispatch(setUser(user));
@@ -97,11 +96,8 @@ export const clearErrorAction = createAsyncThunk(
 export const getResumeUser = createAsyncThunk<void, User, Generics>(
   'user/getResumeUser',
   async (user, {dispatch, extra: api}) => {
-    console.log(user);
     if (user.resume.id) {
-      console.log('done', ResumeRoutes.resumeByID(user.resume.id));
-      const resume = await api.get<ResumeUser>(ResumeRoutes.resumeByID(user.resume.id));
-
+      const resume = await api.get(ResumeRoutes.resumeByID(user.resume.id));
       dispatch(setResumeUser(resume.data));
     }
   }
