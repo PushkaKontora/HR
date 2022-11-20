@@ -120,9 +120,10 @@ class VacanciesHandlers(IVacanciesHandlers):
         logger = get_logger(request)
 
         logger.info(
-            "Creating a vacancy auth_user={auth_user} body={body}",
-            auth_user={"id": auth_user.id, "permission": auth_user.permission},
-            body=body.dict(exclude={"description"}),
+            "Creating a vacancy auth_user={auth_user} body={body}".format(
+                auth_user={"id": auth_user.id, "permission": auth_user.permission},
+                body=body.dict(exclude={"description"}),
+            )
         )
 
         logger.info("Checking an existence of the department...")
@@ -171,9 +172,10 @@ class VacancyHandlers(IVacancyHandlers):
         logger = get_logger(request)
 
         logger.info(
-            "Updating a vacancy id={vacancy_id} body={body}",
-            vacancy_id=vacancy_id,
-            body=body.dict(exclude={"description"}),
+            "Updating a vacancy id={vacancy_id} body={body}".format(
+                vacancy_id=vacancy_id,
+                body=body.dict(exclude={"description"}),
+            )
         )
 
         logger.info("Checking an existence of the vacancy...")

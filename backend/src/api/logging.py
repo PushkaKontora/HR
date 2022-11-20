@@ -1,5 +1,5 @@
 from logging import Handler, LogRecord
-from typing import Callable
+from typing import Callable, Optional
 from uuid import uuid4
 
 from django.http import HttpRequest, HttpResponse
@@ -41,5 +41,5 @@ class TelegramNotifier(Handler):
         return f"{record.exc_info[1]}.txt"
 
 
-def get_logger(request: HttpRequest) -> "Logger":
-    return logger_.bind(request_id=request.id)
+def get_logger(request: Optional[HttpRequest] = None) -> "Logger":
+    return logger_.bind(request_id=request.id if request else "")
