@@ -286,12 +286,9 @@ class PhotoService(IPhotoService):
         return auth_user.id == user_id
 
     def upload(self, user_id: int, photo: UploadedFile) -> PhotoOut:
-        previous_name = None
-
         with atomic():
             user = self.user_repo.get_user_for_update_by_id(user_id)
-            if user.photo:
-                previous_name = user.photo.name
+            previous_name = user.photo.name if user.photo else None
 
             user.photo = UploadedFile(photo, self._get_filename_photo(user, photo))
             user.save(update_fields=["photo"])
