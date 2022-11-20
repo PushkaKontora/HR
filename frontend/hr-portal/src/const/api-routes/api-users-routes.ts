@@ -7,5 +7,5 @@ export const UsersRoutes = {
   auth: `${USERS}/authenticate`,
   refresh: `${USERS}/refresh-tokens`,
   byId: (id: number) => `${USERS}/${id}`,
-  resetPassword: (id: number) => `${USERS}/${id}/reset-password`
+  resetPassword: (id: number) => `${USERS}/${id}/reset-password`,
 };

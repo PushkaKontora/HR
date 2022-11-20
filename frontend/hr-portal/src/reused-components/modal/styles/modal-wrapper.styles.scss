@@ -20,6 +20,7 @@ img {
   pointer-events: none;
 
   transition: 0.3s;
+  transform: translateZ(0);
 
 
   &__active {

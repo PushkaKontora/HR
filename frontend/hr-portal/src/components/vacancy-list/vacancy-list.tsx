@@ -9,11 +9,12 @@ import PaginationCustom from '../pagination-custom/paginationCustom';
 import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 import {SortingVacancyTypes} from '../../const';
 import DownLoadIcon from '../../assets/img/job-seach/download.svg';
+import EmailPlaneIcon from '../../assets/img/vacancy-card/image_email.png';
 
 function VacancyList() {
   const isOpenRespondModalState = useAppSelector((state) => state.vacancy.isOpenRespondModal);
-  const [isOpenRespondModal, setIsOpenRespondModal] = useState(isOpenRespondModalState);
-  //const [isOpenRespondModal, setIsOpenRespondModal] = useState(true);
+  //const [isOpenRespondModal, setIsOpenRespondModal] = useState(isOpenRespondModalState);
+  const [isOpenRespondModal, setIsOpenRespondModal] = useState(true);
   const [radioChecked, setRadioChecked] = useState(false);
   const vacancies = useAppSelector((state) => state.vacancy.vacancies);
   const vacancyForRespond = useAppSelector((state) => state.vacancy.vacancyByID);
@@ -55,41 +56,46 @@ function VacancyList() {
       >
         <div className="respondModalWrapper">
           <div className="respondModalItem respondModalItem__img">
-            <img src="" alt=""/>
+            <img src={EmailPlaneIcon} alt="Email Plane Icon"/>
           </div>
           <div className="respondModalItem respondModalItem__content">
             <div className="title">Отправить отклик на вакансию</div>
             <div className="content">
-              {/*<div className="itemContent">*/}
-              {/*  <div className="titleItem">*/}
-              {/*    Вакансия*/}
-              {/*  </div>*/}
-              {/*  <div className="contentItem">*/}
-              {/*    {vacancyForRespond?.name}*/}
-              {/*  </div>*/}
-              {/*</div>*/}
-              {/*<div className="itemContent">*/}
-              {/*  <div className="titleItem">*/}
-              {/*    Резюме*/}
-              {/*  </div>*/}
-              {/*  <div className="contentItem">*/}
-              {/*    {user?.resume.id}*/}
-              {/*  </div>*/}
-              {/*  <div className="contentItem">*/}
-              {/*    <img src={DownLoadIcon} alt="download icon"/>*/}
-              {/*  </div>*/}
-              {/*</div>*/}
-              {/*<div className="itemContent radio-wrapper radio-wrapper__square">*/}
-              {/*  <input*/}
-              {/*    className="radioInput radioInput__square"*/}
-              {/*    type="checkbox"*/}
-              {/*    name="respond"*/}
-              {/*    id='withoutResume'*/}
-              {/*    checked={radioChecked}*/}
-              {/*    onClick={onHandlerClickRadio}*/}
-              {/*  />*/}
-              {/*  <label htmlFor='withoutResume'>Отправить без резюме</label>*/}
-              {/*</div>*/}
+              <div className="itemContent">
+                <div className="titleItem">
+                  Вакансия
+                </div>
+                {vacancyForRespond && (
+                  <div className="contentItem">
+                    {vacancyForRespond?.name}
+                  </div>
+                )}
+              </div>
+              <div className="itemContent">
+                <div className="titleItem">
+                  Резюме
+                </div>
+                {user?.resume && (
+                  <div className="contentItem">
+                    {user?.resume.id}
+                  </div>
+                )}
+
+                <div className="contentItem contentItem__image-addNew">
+                  <img src={DownLoadIcon} alt="download icon"/>
+                </div>
+              </div>
+              <div className="itemContent radio-wrapper radio-wrapper__square">
+                <label htmlFor='withoutResume'>Отправить без резюме</label>
+                <input
+                  className="radioInput radioInput__square"
+                  type="checkbox"
+                  name="respond"
+                  id='withoutResume'
+                  checked={radioChecked}
+                  onChange={onHandlerClickRadio}
+                />
+              </div>
             </div>
             <div className="btn-wrapper">
               <button className="btn-sendRespond">Отправить отклик</button>
@@ -113,4 +119,4 @@ function VacancyList() {
 
 export default VacancyList;
 
-//todo: сделать модалку на отклик
+//todo: доделать формат выводимого файла (резюме)

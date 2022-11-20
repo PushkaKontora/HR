@@ -26,6 +26,36 @@
         font-weight: 600;
         font-size: 40px;
         color: #000000;
+        margin-bottom: 40px;
+      }
+
+      .content {
+        .itemContent {
+          display: flex;
+          font-weight: 400;
+          font-size: 18px;
+          letter-spacing: 0.05em;
+          gap: 12px;
+          align-items: center;
+
+          &:not(:last-child) {
+            margin-bottom: 16px;
+          }
+
+          .titleItem {
+          }
+
+          .contentItem {
+            padding: 12px 24px;
+            background: #F6F5F3;
+            border-radius: 30px;
+
+            &__image-addNew {
+              padding: 12px;
+              cursor: pointer;
+            }
+          }
+        }
       }
 
       .btn-wrapper {
