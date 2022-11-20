@@ -282,9 +282,10 @@ class UserHandlers(IUserHandlers):
         logger = get_logger(request)
 
         logger.info(
-            "Deleting a user id={user_id} auth_user={auth_user}",
-            user_id=user_id,
-            auth_user={"id": auth_user.id, "is_department_leader": hasattr(auth_user, "department")},
+            "Deleting a user id={user_id} auth_user={auth_user}".format(
+                user_id=user_id,
+                auth_user={"id": auth_user.id, "is_department_leader": hasattr(auth_user, "department")},
+            )
         )
 
         logger.info("Checking the existence of the user...")
@@ -313,10 +314,11 @@ class UserHandlers(IUserHandlers):
         logger = get_logger(request)
 
         logger.info(
-            "Uploading a photo user_id={user_id} auth_user={auth_user} photo={photo}",
-            user_id=user_id,
-            auth_user={"id": auth_user.id, "has_photo": bool(auth_user.photo)},
-            photo={"name": photo.name, "content_type": photo.content_type, "size": photo.size},
+            "Uploading a photo user_id={user_id} auth_user={auth_user} photo={photo}".format(
+                user_id=user_id,
+                auth_user={"id": auth_user.id, "has_photo": bool(auth_user.photo)},
+                photo={"name": photo.name, "content_type": photo.content_type, "size": photo.size},
+            )
         )
 
         logger.info("Checking the existence of the user...")
@@ -345,9 +347,10 @@ class UserHandlers(IUserHandlers):
         logger = get_logger(request)
 
         logger.info(
-            "Deleting a photo user_id={user_id} auth_user={auth_user}",
-            user_id=user_id,
-            auth_user={"id": auth_user.id, "has_photo": bool(auth_user.photo)},
+            "Deleting a photo user_id={user_id} auth_user={auth_user}".format(
+                user_id=user_id,
+                auth_user={"id": auth_user.id, "has_photo": bool(auth_user.photo)},
+            )
         )
 
         logger.info("Checking the existence of the user...")

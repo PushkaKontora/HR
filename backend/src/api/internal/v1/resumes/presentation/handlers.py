@@ -167,13 +167,14 @@ class ResumeHandlers(IResumeHandlers):
         logger = get_logger(request)
 
         logger.info(
-            "Creating a resume auth_user={auth_user} extra={extra} document={document}",
-            auth_user={
-                "id": auth_user.id,
-                "has_resume": hasattr(auth_user, "resume"),
-            },
-            extra=extra.dict(),
-            document={"name": document.name, "content_type": document.content_type, "size": document.size},
+            "Creating a resume auth_user={auth_user} extra={extra} document={document}".format(
+                auth_user={
+                    "id": auth_user.id,
+                    "has_resume": hasattr(auth_user, "resume"),
+                },
+                extra=extra.dict(),
+                document={"name": document.name, "content_type": document.content_type, "size": document.size},
+            ),
         )
 
         logger.info("Authorization...")
@@ -205,16 +206,17 @@ class ResumeHandlers(IResumeHandlers):
         logger = get_logger(request)
 
         logger.info(
-            "Updating a resume id={resume_id} auth_user={auth_user} extra={extra} document={document}",
-            resume_id=resume_id,
-            auth_user={
-                "id": auth_user.id,
-                "resume": {"id": auth_user.resume.id} if hasattr(auth_user, "resume") else None,
-            },
-            extra=extra.dict(),
-            document={"name": document.name, "content_type": document.content_type, "size": document.size}
-            if document
-            else None,
+            "Updating a resume id={resume_id} auth_user={auth_user} extra={extra} document={document}".format(
+                resume_id=resume_id,
+                auth_user={
+                    "id": auth_user.id,
+                    "resume": {"id": auth_user.resume.id} if hasattr(auth_user, "resume") else None,
+                },
+                extra=extra.dict(),
+                document={"name": document.name, "content_type": document.content_type, "size": document.size}
+                if document
+                else None,
+            )
         )
 
         logger.info("Checking an existence of the resume...")

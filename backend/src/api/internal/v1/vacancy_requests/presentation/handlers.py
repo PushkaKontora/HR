@@ -62,12 +62,13 @@ class VacancyRequestsHandlers(IVacancyRequestsHandlers):
         logger = get_logger(request)
 
         logger.info(
-            "Creating a vacancy request auth_user={auth_user} extra={extra} resume={resume}",
-            auth_user={"id": auth_user.id},
-            extra=extra.dict(),
-            resume={"name": resume.name, "content_type": resume.content_type, "size": resume.size}
-            if resume is not None
-            else None,
+            "Creating a vacancy request auth_user={auth_user} extra={extra} resume={resume}".format(
+                auth_user={"id": auth_user.id},
+                extra=extra.dict(),
+                resume={"name": resume.name, "content_type": resume.content_type, "size": resume.size}
+                if resume is not None
+                else None,
+            )
         )
 
         logger.info("Checking an existence of the published vacancy...")
