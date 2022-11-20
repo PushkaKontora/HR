@@ -5,6 +5,7 @@ from typing import Optional
 
 from bcrypt import checkpw
 from django.conf import settings
+from django.core.files.storage import default_storage
 from django.db.transaction import atomic
 from django.utils.timezone import now
 from jwt import PyJWTError, decode, encode
@@ -284,12 +285,19 @@ class PhotoService(IPhotoService):
     def authorize(self, auth_user: User, user_id: int) -> bool:
         return auth_user.id == user_id
 
-    @atomic
     def upload(self, user_id: int, photo: UploadedFile) -> PhotoOut:
-        user = self.user_repo.get_user_for_update_by_id(user_id)
+        previous_name = None
 
-        user.photo = UploadedFile(photo, self._get_filename_photo(user, photo))
-        user.save(update_fields=["photo"])
+        with atomic():
+            user = self.user_repo.get_user_for_update_by_id(user_id)
+            if user.photo:
+                previous_name = user.photo.name
+
+            user.photo = UploadedFile(photo, self._get_filename_photo(user, photo))
+            user.save(update_fields=["photo"])
+
+        if previous_name is not None:
+            default_storage.delete(previous_name)
 
         return PhotoOut.from_user(user)
 
@@ -297,12 +305,11 @@ class PhotoService(IPhotoService):
     def delete(self, user_id: int) -> None:
         user = self.user_repo.get_user_for_update_by_id(user_id)
 
-        user.photo = None
-        user.save(update_fields=["photo"])
+        user.photo.delete(save=True)
 
     def is_image(self, photo: UploadedFile) -> bool:
         return photo.content_type in self.PHOTO_MIME_TYPES
 
     @staticmethod
     def _get_filename_photo(user: User, photo: UploadedFile) -> str:
-        return f"{user.id}_{uuid.uuid4().hex}_{photo.name}"
+        return f"{user.id}_{uuid.uuid4().hex[:5]}_{photo.name}"
