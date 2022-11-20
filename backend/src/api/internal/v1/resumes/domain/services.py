@@ -1,7 +1,9 @@
+import uuid
 from abc import ABC, abstractmethod
 from typing import Iterable, Optional, Set
 
 from django.conf import settings
+from django.core.files.storage import default_storage
 from django.db.models import QuerySet
 from django.db.transaction import atomic
 from django.utils.timezone import now
@@ -219,19 +221,34 @@ class UpdatingResumeService(IUpdatingResumeService):
 
     @atomic
     def update(self, resume_id: int, extra: ResumeIn, document: Optional[UploadedFile]) -> None:
-        resume = self.resume_repo.get_resume_for_update(resume_id)
+        with atomic():
+            resume = self.resume_repo.get_resume_for_update(resume_id)
 
-        resume.desired_job = extra.desired_job
-        resume.desired_salary = extra.desired_salary
-        resume.experience = extra.experience
-        resume.document = document or resume.document
-        resume.save()
+            resume.desired_job = extra.desired_job
+            resume.desired_salary = extra.desired_salary
+            resume.experience = extra.experience
 
-        if extra.competencies:
-            self.resume_competencies_repo.delete_all_competencies_from_resume(resume_id)
+            previous_resume = resume.document.name if resume.document else None
+            resume.document = (
+                UploadedFile(document, self._get_filename(resume, document))
+                if document is not None
+                else resume.document
+            )
 
-            competencies = set(self.competency_repo.get_existed_competencies_by_names(set(extra.competencies)))
-            self.resume_competencies_repo.attach_competencies_to_resume(resume_id, competencies)
+            resume.save()
+
+            if extra.competencies:
+                self.resume_competencies_repo.delete_all_competencies_from_resume(resume_id)
+
+                competencies = set(self.competency_repo.get_existed_competencies_by_names(set(extra.competencies)))
+                self.resume_competencies_repo.attach_competencies_to_resume(resume_id, competencies)
+
+        if previous_resume is not None:
+            default_storage.delete(previous_resume)
+
+    @staticmethod
+    def _get_filename(resume: Resume, document: UploadedFile) -> str:
+        return f"{resume.id}_{uuid.uuid4().hex[:10]}_{document.name}"
 
 
 class ResumesWishlistService(IResumesWishlistService):
