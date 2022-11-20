@@ -26,7 +26,7 @@ from api.internal.v1.users.domain.entities import (
     UpdatingPasswordOut,
     UserOut,
 )
-from api.internal.v1.users.domain.utils import hash_password
+from api.internal.v1.users.domain.utils import get_photo_filename, hash_password
 from api.internal.v1.users.presentation.handlers import (
     IAuthenticationService,
     IChangingEmailService,
@@ -290,7 +290,7 @@ class PhotoService(IPhotoService):
             user = self.user_repo.get_user_for_update_by_id(user_id)
             previous_name = user.photo.name if user.photo else None
 
-            user.photo = UploadedFile(photo, self._get_filename_photo(user, photo))
+            user.photo = UploadedFile(photo, get_photo_filename(photo, user_id))
             user.save(update_fields=["photo"])
 
         if previous_name is not None:
@@ -306,7 +306,3 @@ class PhotoService(IPhotoService):
 
     def is_image(self, photo: UploadedFile) -> bool:
         return photo.content_type in self.PHOTO_MIME_TYPES
-
-    @staticmethod
-    def _get_filename_photo(user: User, photo: UploadedFile) -> str:
-        return f"{user.id}_{uuid.uuid4().hex[:5]}_{photo.name}"

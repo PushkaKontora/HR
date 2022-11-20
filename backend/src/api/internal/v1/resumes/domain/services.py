@@ -27,6 +27,7 @@ from api.internal.v1.resumes.domain.entities import (
     ResumesSortBy,
     ResumesWishlistQueryParams,
 )
+from api.internal.v1.resumes.domain.utils import get_resume_filename
 from api.internal.v1.resumes.presentation.handlers import (
     ICreatingResumeService,
     IDocumentService,
@@ -152,7 +153,11 @@ class CreatingResumeService(ICreatingResumeService):
     @atomic
     def create(self, extra: NewResumeIn, document: UploadedFile) -> None:
         resume = self.resume_repo.create(
-            extra.user_id, document, extra.desired_job, extra.experience, extra.desired_salary
+            extra.user_id,
+            UploadedFile(document, get_resume_filename(extra.user_id)),
+            extra.desired_job,
+            extra.experience,
+            extra.desired_salary,
         )
 
         if extra.competencies:
@@ -229,11 +234,8 @@ class UpdatingResumeService(IUpdatingResumeService):
             resume.experience = extra.experience
 
             previous_resume = resume.document.name if resume.document else None
-            resume.document = (
-                UploadedFile(document, self._get_filename(resume, document))
-                if document is not None
-                else resume.document
-            )
+            if document is not None:
+                resume.document = UploadedFile(document, get_resume_filename(int(resume.owner_id)))
 
             resume.save()
 
@@ -245,10 +247,6 @@ class UpdatingResumeService(IUpdatingResumeService):
 
         if previous_resume is not None:
             default_storage.delete(previous_resume)
-
-    @staticmethod
-    def _get_filename(resume: Resume, document: UploadedFile) -> str:
-        return f"{resume.id}_{uuid.uuid4().hex[:10]}_{document.name}"
 
 
 class ResumesWishlistService(IResumesWishlistService):
