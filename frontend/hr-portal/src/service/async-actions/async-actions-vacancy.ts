@@ -2,10 +2,10 @@ import {createAsyncThunk} from '@reduxjs/toolkit';
 
 import {Vacancy} from '../../types/vacancy';
 import {VacancyRoutes} from '../../const/api-routes/api-vacancy-routes';
-import {DEFAULT_ELEMENT_DEPARTMENT, ExpectedExperienceNameString, LIMIT_ELEMENTS_ON_PAGE, SortingVacancyTypes} from '../../const';
+import {LIMIT_ELEMENTS_ON_PAGE, SortingVacancyTypes} from '../../const';
 import {Department} from '../../types/department';
 import {Generics} from '../../types/generics';
-import {DepartmentsShortVersions, setDepartments} from '../../features/vacancy/vacancy-slice';
+import {setDepartments} from '../../features/vacancy/vacancy-slice';
 import {DepartmentsRoutes} from '../../const/api-routes/api-departments-routes';
 import {getParamsRequestVacancy, initialParamsVacancyRequest} from '../../features/vacancy/vacancy.actions';
 
@@ -63,6 +63,13 @@ export const getDepartment = createAsyncThunk<void, undefined, Generics>(
   async (_arg, {dispatch, extra: api}) => {
     const {data} = await api.get<Department[]>(DepartmentsRoutes.getDepartments);
     dispatch(setDepartments(data));
+  },
+);
+
+export const postVacancyRequests = createAsyncThunk<void, FormData, Generics>(
+  'vacancy/postVacancyRequests',
+  async (data, {dispatch, extra: api}) => {
+    await api.post(VacancyRoutes.postVacancyRequest, data);
   },
 );
 

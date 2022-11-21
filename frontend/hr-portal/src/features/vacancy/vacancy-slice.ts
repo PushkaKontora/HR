@@ -4,7 +4,7 @@ import {Vacancy} from '../../types/vacancy';
 import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 import {Department} from '../../types/department';
 import {createDepartmentShortVision, getMaxPagesVacancies, makeViewDataExperience, setNewParamDepartment, setNewParamExperience, setNewParamOffset, setNewParamSalaryMax, setNewParamSalaryMin, setNewParamSearchLine, setNewParamSortBy} from './vacancy.actions';
-import {DEFAULT_ELEMENT_DEPARTMENT, ExpectedExperience, ExpectedExperienceNameString, SortingVacancyTypes} from '../../const';
+import {DEFAULT_ELEMENT_DEPARTMENT, SortingVacancyTypes} from '../../const';
 
 export type VacanciesApi = {
   items: Vacancy[],

@@ -12,11 +12,20 @@ input[type=checkbox] {
   position: absolute;
 }
 
-.radioInput + label:before,
-input[type=checkbox] + label:before {
+.radioInput + label:before {
   height: 16px;
   width: 16px;
   margin-right: 0.85rem;
+  content: "";
+  display: inline-block;
+  vertical-align: bottom;
+  border: 0.7px solid #000000;
+}
+
+.radioInput__square + .label-radio-input__before:after{
+  height: 16px;
+  width: 16px;
+  margin-left: 0.85rem;
   content: "";
   display: inline-block;
   vertical-align: bottom;
@@ -27,17 +36,16 @@ input[type=checkbox] + label:before {
   background: radial-gradient(circle closest-side, #000000 5px, white 4.6px);
 }
 
-input[type=checkbox]:checked + label:before {
-  background: #000000;
+.radioInput__square:checked + .label-radio-input__before:after {
+  background: #000000 url('../../src/assets/img/modal/check-checkbox.svg') center no-repeat;
 }
 
 /* CUSTOM RADIO AND CHECKBOX STYLES */
 .radioInput + label:before {
   border-radius: 50%;
-
-
 }
 
-input[type=checkbox] + label:before {
+.radioInput__square + .label-radio-input__before:after {
   border-radius: 2px;
+  border: 0.5px solid #000000;
 }

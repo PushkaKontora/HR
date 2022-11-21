@@ -1,7 +1,7 @@
 import React, {ChangeEvent, useEffect, useLayoutEffect, useRef} from 'react';
 import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
-import {ExpectedExperience, ExpectedExperienceNameString} from '../../const';
+import {ExpectedExperienceNameString} from '../../const';
 import {setExperienceParam} from '../../features/vacancy/vacancy-slice';
 
 const radioInput = ['Любой'].concat(Object.values(ExpectedExperienceNameString));

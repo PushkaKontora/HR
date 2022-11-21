@@ -9,6 +9,10 @@ import {TIMEOUT_SHOW_ERROR} from '../../const/errors';
 import {SignInData} from '../../types/sign-in-data';
 import {StatusCodes} from 'http-status-codes';
 import {Generics} from '../../types/generics';
+import {useAppSelector} from '../../app/hooks';
+import {ResumeRoutes} from '../../const/api-routes/api-resume-routes';
+import {setResumeUser} from '../../features/user/user-slice';
+import {ResumeUser} from '../../types/resume';
 
 // get any user action here
 
@@ -16,7 +20,11 @@ export const getAuthUser = createAsyncThunk<void, number, Generics>(
   'users/getUser',
   async (arg, {dispatch, extra: api}) => {
     dispatch(setLoading(true));
-    const res = await api.get(UsersRoutes.byId(arg));
+    const res = await api.get(UsersRoutes.byId(arg))
+      .then((u) => {
+        dispatch(getResumeUser(u.data));
+        return u;
+      });
     const user: User = res.data;
 
     dispatch(setUser(user));
@@ -31,7 +39,7 @@ export const signIn = createAsyncThunk<void, SignInData, Generics>(
     dispatch(setLoading(true));
     const res = await api.post(UsersRoutes.register, arg);
 
-    if (res.status === StatusCodes.OK){
+    if (res.status === StatusCodes.OK) {
       dispatch(login({email: arg.email, password: arg.password}));
     } else {
       dispatch(setLoading(false));
@@ -39,7 +47,7 @@ export const signIn = createAsyncThunk<void, SignInData, Generics>(
   }
 );
 
-export const login = createAsyncThunk<void, {email: string, password: string}, Generics>(
+export const login = createAsyncThunk<void, { email: string, password: string }, Generics>(
   'users/login',
   async (arg, {dispatch, extra: api}) => {
     dispatch(setLoading(true));
@@ -52,18 +60,17 @@ export const login = createAsyncThunk<void, {email: string, password: string}, G
     dispatch(setLoading(false));
   });
 
-export const resetPassword = createAsyncThunk<
-  Promise<AxiosResponse>, {id: number, previous_password: string, new_password: string}, Generics>(
-    'users/resetPassword',
-    async (arg, {dispatch, extra: api}) => {
-      dispatch(setLoading(true));
+export const resetPassword = createAsyncThunk<Promise<AxiosResponse>, { id: number, previous_password: string, new_password: string }, Generics>(
+  'users/resetPassword',
+  async (arg, {dispatch, extra: api}) => {
+    dispatch(setLoading(true));
 
-      const res = api.patch(UsersRoutes.resetPassword(arg.id));
-      dispatch(setLoading(false));
+    const res = api.patch(UsersRoutes.resetPassword(arg.id));
+    dispatch(setLoading(false));
 
-      return res;
-    }
-  );
+    return res;
+  }
+);
 
 export const logout = createAsyncThunk<void, undefined, Generics>(
   'users/logout',
@@ -84,4 +91,15 @@ export const clearErrorAction = createAsyncThunk(
       TIMEOUT_SHOW_ERROR,
     );
   },
+);
+
+
+export const getResumeUser = createAsyncThunk<void, User, Generics>(
+  'user/getResumeUser',
+  async (user, {dispatch, extra: api}) => {
+    if (user.resume.id) {
+      const resume = await api.get(ResumeRoutes.resumeByID(user.resume.id));
+      dispatch(setResumeUser(resume.data));
+    }
+  }
 );
