@@ -6,19 +6,18 @@ import Modal from '../../reused-components/modal/modal';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {setStateRespondModal} from '../../features/vacancy/vacancy-slice';
 import PaginationCustom from '../pagination-custom/paginationCustom';
-import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
+import {getVacancies, postVacancyRequests} from '../../service/async-actions/async-actions-vacancy';
 import DownLoadIcon from '../../assets/img/job-seach/download.svg';
 import EmailPlaneIcon from '../../assets/img/vacancy-card/image_email.png';
 
 function VacancyList() {
   const isOpenRespondModalState = useAppSelector((state) => state.vacancy.isOpenRespondModal);
-  //const [isOpenRespondModal, setIsOpenRespondModal] = useState(isOpenRespondModalState);
-  const [isOpenRespondModal, setIsOpenRespondModal] = useState(true);
+  const [isOpenRespondModal, setIsOpenRespondModal] = useState(isOpenRespondModalState);
   const [radioChecked, setRadioChecked] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<null | File>(null);
+  const [selectedFileName, setSelectedFileName] = useState<null | string>(null);
   const vacancies = useAppSelector((state) => state.vacancy.vacancies);
   const vacancyForRespond = useAppSelector((state) => state.vacancy.vacancyByID);
-  const user = useAppSelector((state) => state.general.user);
   const resumeUser = useAppSelector((state) => state.user.resumeUser);
   const dispatch = useAppDispatch();
   const firstUpdate = useRef(true);
@@ -32,13 +31,17 @@ function VacancyList() {
   });
 
   useEffect(() => {
-    dispatch(getVacancies());
-    if (user?.resume) {
+    if (resumeUser) {
       const resumeName = resumeUser?.document.split('?')[0].split('/').reverse()[0];
       if (resumeName) {
-        setSelectedFile(resumeName);
+        setSelectedFileName(resumeName);
       }
     }
+  }, [resumeUser]);
+
+
+  useEffect(() => {
+    dispatch(getVacancies());
     console.log('VacancyList');
   }, []);
 
@@ -56,12 +59,30 @@ function VacancyList() {
   };
 
   const handleSelectNewFileResume = (file: any) => {
-    setSelectedFile(file.target.files[0].name);
+    setSelectedFileName(file.target.files[0].name);
+    setSelectedFile(file.target.files[0]);
   };
 
   const handlePick = () => {
     if (filePicker.current) {
       filePicker.current.click();
+    }
+  };
+
+  const handleRespondRequest = () => {
+    if (vacancyForRespond) {
+      if (selectedFile) {
+        const resumeFile = new FormData();
+        resumeFile.append('vacancy_id', vacancyForRespond.id.toString());
+        resumeFile.append('resume', selectedFile);
+        dispatch(postVacancyRequests(resumeFile));
+      } else {
+        const resumeFile = new FormData();
+        resumeFile.append('vacancy_id', vacancyForRespond.id.toString());
+        dispatch(postVacancyRequests(resumeFile));
+      }
+      setRadioChecked(false);
+      setIsOpenRespondModal(false);
     }
   };
 
@@ -95,9 +116,9 @@ function VacancyList() {
                   Резюме
                 </div>
 
-                {selectedFile && (
+                {selectedFileName && (
                   <div className="contentItem">
-                    {selectedFile}
+                    {selectedFileName}
                   </div>
                 )}
 
@@ -125,7 +146,12 @@ function VacancyList() {
               </div>
             </div>
             <div className="btn-wrapper">
-              <button className="btn-sendRespond">Отправить отклик</button>
+              <button
+                className="btn-sendRespond"
+                disabled={!radioChecked && selectedFileName === null}
+                onClick={handleRespondRequest}
+              >Отправить отклик
+              </button>
             </div>
           </div>
         </div>

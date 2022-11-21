@@ -71,13 +71,11 @@ export const getDepartment = createAsyncThunk<void, undefined, Generics>(
   },
 );
 
-export const postVacancyRequests = createAsyncThunk<void, PostVacancyRequests, Generics>(
+export const postVacancyRequests = createAsyncThunk<void, FormData, Generics>(
   'vacancy/postVacancyRequests',
-  async ({vacancy_id, resumeFile}, {dispatch, extra: api}) => {
-    await api.post(VacancyRoutes.postVacancyRequest, {
-      vacancy_id,
-      resumeFile
-    });
+  async (data, {dispatch, extra: api}) => {
+    await api.post(VacancyRoutes.postVacancyRequest, data);
+    console.log('done');
   },
 );
 

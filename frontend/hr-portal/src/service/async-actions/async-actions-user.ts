@@ -20,12 +20,13 @@ export const getAuthUser = createAsyncThunk<void, number, Generics>(
   'users/getUser',
   async (arg, {dispatch, extra: api}) => {
     dispatch(setLoading(true));
-    const res = await api.get(UsersRoutes.byId(arg));
+    const res = await api.get(UsersRoutes.byId(arg))
+      .then((u) => {
+        dispatch(getResumeUser(u.data));
+        return u;
+      });
     const user: User = res.data;
 
-    if (user) {
-      dispatch(getResumeUser(user));
-    }
     dispatch(setUser(user));
 
     dispatch(setLoading(false));
