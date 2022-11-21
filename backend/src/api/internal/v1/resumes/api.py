@@ -1,10 +1,8 @@
-from typing import Type
-
 from dependency_injector import containers, providers
 from ninja import NinjaAPI
 from ninja.security import HttpBearer
 
-from api.internal.errors import DomainErrorBase, add_domain_errors_to_api
+from api.internal.errors import add_domain_errors_to_api
 from api.internal.v1.resumes.db.filters import CompetenciesFilter, ExperienceFilter, PublishedFilter, SalaryFilter
 from api.internal.v1.resumes.db.repositories import (
     CompetencyRepository,
@@ -12,7 +10,7 @@ from api.internal.v1.resumes.db.repositories import (
     ResumeCompetenciesRepository,
     ResumeRepository,
 )
-from api.internal.v1.resumes.db.searchers import DesiredJobSearcher
+from api.internal.v1.resumes.db.searchers import DesiredJobTrigramSearcher, ResumesCombineSearcher
 from api.internal.v1.resumes.db.sorters import (
     WishlistSortByAddedAtDESC,
     WishlistSortByPublishedAtASC,
@@ -71,7 +69,9 @@ class ResumesContainer(containers.DeclarativeContainer):
     getting_resumes_service = providers.Singleton(
         GettingResumesService,
         resume_repo=resume_repo,
-        searcher_builder=providers.Singleton(ResumesSearcherBuilder, searcher_cls=providers.Object(DesiredJobSearcher)),
+        searcher_builder=providers.Singleton(
+            ResumesSearcherBuilder, searcher_cls=providers.Object(ResumesCombineSearcher)
+        ),
         filters_builder=providers.Singleton(
             ResumesFiltersBuilder,
             experience_filter_cls=providers.Object(ExperienceFilter),

@@ -1,4 +1,3 @@
-from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 
 
@@ -49,7 +48,6 @@ class Resume(models.Model):
 
     class Meta:
         db_table = "resumes"
-        indexes = [GinIndex(name="desired_job_idx", fields=["desired_job"], opclasses=["gin_trgm_ops"])]
 
 
 class ResumeCompetency(models.Model):
@@ -88,10 +86,6 @@ class Vacancy(models.Model):
 
     class Meta:
         db_table = "vacancies"
-        indexes = [
-            GinIndex(name="name_idx", fields=["name"], opclasses=["gin_trgm_ops"]),
-            GinIndex(name="description_idx", fields=["description"], opclasses=["gin_trgm_ops"]),
-        ]
 
 
 class VacancyRequest(models.Model):

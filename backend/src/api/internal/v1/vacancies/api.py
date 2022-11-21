@@ -12,7 +12,7 @@ from api.internal.v1.vacancies.db.repositories import (
     FavouriteVacancyRepository,
     VacancyRepository,
 )
-from api.internal.v1.vacancies.db.searchers import VacanciesTrigramSearcher
+from api.internal.v1.vacancies.db.searchers import VacanciesCombineSearcher, VacanciesTrigramSearcher
 from api.internal.v1.vacancies.db.sorters import (
     VacanciesSortByAverageSalaryASC,
     VacanciesSortByAverageSalaryDESC,
@@ -87,7 +87,7 @@ class VacanciesContainer(containers.DeclarativeContainer):
             published_filter_cls=providers.Object(PublishedFilter),
         ),
         searcher_builder=providers.Singleton(
-            VacanciesSearcherBuilder, searcher_cls=providers.Object(VacanciesTrigramSearcher)
+            VacanciesSearcherBuilder, searcher_cls=providers.Object(VacanciesCombineSearcher)
         ),
         sorter_builder=providers.Singleton(
             VacanciesSorterBuilder,
