@@ -75,7 +75,6 @@ export const postVacancyRequests = createAsyncThunk<void, FormData, Generics>(
   'vacancy/postVacancyRequests',
   async (data, {dispatch, extra: api}) => {
     await api.post(VacancyRoutes.postVacancyRequest, data);
-    console.log('done');
   },
 );
 
