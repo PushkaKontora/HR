@@ -88,6 +88,10 @@ class Vacancy(models.Model):
 
     class Meta:
         db_table = "vacancies"
+        indexes = [
+            GinIndex(name="name_idx", fields=["name"], opclasses=["gin_trgm_ops"]),
+            GinIndex(name="description_idx", fields=["description"], opclasses=["gin_trgm_ops"]),
+        ]
 
 
 class VacancyRequest(models.Model):
