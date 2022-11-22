@@ -3,7 +3,7 @@ import VacancyFilterOnDepartment from '../vacancy-filter-on-department/vacancy-f
 import VacancyFilterOnExperience from '../vacancy-filter-on-experience/vacancy-filter-on-experience';
 import VacancyFilterOnSalary from '../vacancy-filter-on-salary/vacancy-filter-on-salary';
 import CardSorting from '../card-sorting/card-sorting';
-import VacancyList from '../vacancy-list/vacancy-list';
+import VacancyListVacanciesPage from '../vacancy-list-vacancies-page/vacancy-list-vacancies-page';
 import {setDepartmentParam, setExperienceParam, setSalaryMax, setSalaryMin} from '../../features/vacancy/vacancy-slice';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 
@@ -37,7 +37,7 @@ function VacancyContent() {
             <div className="title">Найдена {vacancies.count} вакансия</div>
             <CardSorting/>
           </div>
-          <VacancyList/>
+          <VacancyListVacanciesPage/>
         </div>
       </div>
     </>

@@ -1,10 +1,10 @@
 import {createSlice} from '@reduxjs/toolkit';
 
 import {Vacancy} from '../../types/vacancy';
-import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 import {Department} from '../../types/department';
 import {createDepartmentShortVision, getMaxPagesVacancies, makeViewDataExperience, setNewParamDepartment, setNewParamExperience, setNewParamOffset, setNewParamSalaryMax, setNewParamSalaryMin, setNewParamSearchLine, setNewParamSortBy} from './vacancy.actions';
 import {DEFAULT_ELEMENT_DEPARTMENT, SortingVacancyTypes} from '../../const';
+import {getVacancies, getVacanciesForEmployer} from '../../service/async-actions/async-actions-vacancy';
 
 export type VacanciesApi = {
   items: Vacancy[],
@@ -18,6 +18,7 @@ export type DepartmentsShortVersions = {
 
 interface VacancyState {
   vacancies: VacanciesApi;
+  vacanciesForEmployer: Vacancy[];
   vacancyByID: Vacancy | null;
   isOpenRespondModal: boolean;
   departments: Department[];
@@ -32,11 +33,14 @@ interface VacancyState {
     offset: number
   },
   maxPagesVacancies: number,
-  currentPage: number
+  currentPage: number,
+  isGetVacanciesEmployer: boolean,
+  isPublishedVacancy: boolean
 }
 
 const initialState: VacancyState = {
   vacancies: {items: [], count: 0},
+  vacanciesForEmployer: [],
   vacancyByID: null,
   isOpenRespondModal: false,
   departments: [],
@@ -51,15 +55,23 @@ const initialState: VacancyState = {
     offset: 0,
   },
   maxPagesVacancies: 1,
-  currentPage: 1
+  currentPage: 1,
+  isGetVacanciesEmployer: false,
+  isPublishedVacancy: true
 };
 
 const vacancySlice = createSlice({
   name: 'vacancy',
   initialState,
   reducers: {
+    setIsGetVacanciesEmployer(state, action) {
+      state.isGetVacanciesEmployer = action.payload;
+    },
     setVacancyByID(state, action) {
       state.vacancyByID = action.payload;
+    },
+    setIsPublishedVacancy(state, action) {
+      state.isPublishedVacancy = action.payload;
     },
     setStateRespondModal(state, action) {
       state.isOpenRespondModal = action.payload;
@@ -133,6 +145,10 @@ const vacancySlice = createSlice({
       .addCase(getVacancies.fulfilled, (state, action) => {
         state.vacancies = action.payload;
         state.maxPagesVacancies = getMaxPagesVacancies(action.payload.count);
+      })
+      .addCase(getVacanciesForEmployer.fulfilled, (state, action) => {
+        state.vacancies = action.payload;
+        state.maxPagesVacancies = getMaxPagesVacancies(action.payload.count);
       });
   }
 });
@@ -148,7 +164,9 @@ export const {
   setDepartmentParam,
   setParamsForGetVacanciesDefault,
   setOffsetParam,
-  setDepartments
+  setDepartments,
+  setIsGetVacanciesEmployer,
+  setIsPublishedVacancy
 } = vacancySlice.actions;
 
 export default vacancySlice.reducer;

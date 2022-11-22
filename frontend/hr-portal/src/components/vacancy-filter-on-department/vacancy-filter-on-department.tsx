@@ -5,6 +5,7 @@ import Select, {SingleValue} from 'react-select';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {DepartmentsShortVersions, setDepartmentParam} from '../../features/vacancy/vacancy-slice';
 import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
+import '../../../src/styles/custom-select.scss';
 
 function VacancyFilterOnDepartment() {
   const departmentListShort = useAppSelector((state) => state.vacancy.departmentsShortVersions);

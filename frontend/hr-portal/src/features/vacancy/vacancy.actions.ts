@@ -1,6 +1,6 @@
 import {DepartmentsShortVersions} from './vacancy-slice';
 import {Department} from '../../types/department';
-import {ExpectedExperience, ExpectedExperienceNameString, LIMIT_ELEMENTS_ON_PAGE, SortingVacancyTypes, TypesFilters} from '../../const';
+import {ExpectedExperience, ExpectedExperienceNameString, LIMIT_ELEMENTS_ON_PAGE, SortingVacancyTypes} from '../../const';
 
 export function createDepartmentShortVision(departmentsFull: Department[]): DepartmentsShortVersions[] {
   return departmentsFull.map(department => {

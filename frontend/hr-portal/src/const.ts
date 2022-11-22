@@ -1,4 +1,4 @@
-export const LIMIT_ELEMENTS_ON_PAGE = 5;
+export const LIMIT_ELEMENTS_ON_PAGE = 10;
 export const PRODUCT_VERSION_FOR_ROUTES = '/v1';
 
 export const DEFAULT_ELEMENT_DEPARTMENT = {label: 'Выбрать элемент', value: 0};
@@ -37,8 +37,8 @@ export const SelectFilterCard = {
   [SortingVacancyTypes.SALARY_ASC]: 'По возрастанию зарплаты'
 };
 
-
-export enum TypesFilters {
-  DEFAULT = 'default',
-  SALARY_MIN = 'salaryMin',
+export enum TabInHeader {
+  vacancies = 'vacancies',
+  resume = 'resume',
+  myVacancy = 'myVacancy'
 }

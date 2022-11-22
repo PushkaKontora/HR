@@ -1,6 +1,6 @@
 import Select from 'react-select';
 
-import 'src/styles/custom-select.scss';
+import '../../../src/styles/custom-select.scss';
 
 type CustomSelectProps = {
   options: any,

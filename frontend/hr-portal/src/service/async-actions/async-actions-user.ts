@@ -13,6 +13,7 @@ import {useAppSelector} from '../../app/hooks';
 import {ResumeRoutes} from '../../const/api-routes/api-resume-routes';
 import {setResumeUser} from '../../features/user/user-slice';
 import {ResumeUser} from '../../types/resume';
+import {UserStatus} from '../../types/user-status';
 
 // get any user action here
 
@@ -22,7 +23,9 @@ export const getAuthUser = createAsyncThunk<void, number, Generics>(
     dispatch(setLoading(true));
     const res = await api.get(UsersRoutes.byId(arg))
       .then((u) => {
-        dispatch(getResumeUser(u.data));
+        if (u.data.permission === UserStatus.user) {
+          dispatch(getResumeUser(u.data));
+        }
         return u;
       });
     const user: User = res.data;

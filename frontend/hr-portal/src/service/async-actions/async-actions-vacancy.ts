@@ -5,7 +5,7 @@ import {VacancyRoutes} from '../../const/api-routes/api-vacancy-routes';
 import {LIMIT_ELEMENTS_ON_PAGE, SortingVacancyTypes} from '../../const';
 import {Department} from '../../types/department';
 import {Generics} from '../../types/generics';
-import {setDepartments} from '../../features/vacancy/vacancy-slice';
+import {setDepartments, VacanciesApi} from '../../features/vacancy/vacancy-slice';
 import {DepartmentsRoutes} from '../../const/api-routes/api-departments-routes';
 import {getParamsRequestVacancy, initialParamsVacancyRequest} from '../../features/vacancy/vacancy.actions';
 
@@ -14,6 +14,16 @@ type GetVacancyParams = {
   offset: number
   query?: string,
 }
+
+export const getVacanciesForEmployer = createAsyncThunk<VacanciesApi, { isPublished: boolean, idDepartment: number, offset: number }, Generics>(
+  'vacancy/getVacancyEmployer',
+  async ({isPublished, idDepartment, offset}, {extra: api}) => {
+    const lineUrl = `${VacancyRoutes.getVacancy}?sort_by=${SortingVacancyTypes.BY_NAME}&limit=${LIMIT_ELEMENTS_ON_PAGE}&offset=${offset}&department_id=${idDepartment}&published=${isPublished}`;
+    const {data} = await api.get<VacanciesApi>(lineUrl);
+    return data;
+  },
+);
+
 
 export const getVacancies = createAsyncThunk<{ items: Vacancy[], count: number }, undefined, Generics>(
   'vacancy/getVacancy',

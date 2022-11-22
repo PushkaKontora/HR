@@ -1,13 +1,16 @@
-import {createSlice, isPending} from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
 import {ResumeUser} from '../../types/resume';
+import {TabInHeader} from '../../const';
 
 interface UserState {
   resumeUser: ResumeUser | null;
+  activeTabInHeader: TabInHeader | null;
 }
 
 
 const initialState: UserState = {
-  resumeUser: null
+  resumeUser: null,
+  activeTabInHeader: TabInHeader.vacancies
 };
 
 const userSlice = createSlice({
@@ -16,10 +19,16 @@ const userSlice = createSlice({
   reducers: {
     setResumeUser(state, action) {
       state.resumeUser = action.payload;
+    },
+    changeActiveTabInHeader(state, action) {
+      state.activeTabInHeader = action.payload;
     }
   }
 });
 
-export const {setResumeUser} = userSlice.actions;
+export const {
+  setResumeUser,
+  changeActiveTabInHeader
+} = userSlice.actions;
 
 export default userSlice.reducer;
