@@ -5,7 +5,7 @@ from typing import List, Optional, Set
 from django.conf import settings
 from django.db.models import QuerySet
 from ninja import Schema
-from pydantic import EmailStr, Field, HttpUrl
+from pydantic import AnyHttpUrl, EmailStr, Field
 
 from api.models import Experience, Resume
 
@@ -40,7 +40,7 @@ class ResumeOut(Schema):
     desired_job: str
     desired_salary: Optional[int]
     experience: Optional[Experience]
-    document: HttpUrl
+    document: AnyHttpUrl
     published_at: Optional[datetime]
     competencies: List[str]
 

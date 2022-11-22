@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional
 
 from ninja import Schema
-from pydantic import EmailStr, HttpUrl, validator
+from pydantic import AnyHttpUrl, EmailStr, HttpUrl, validator
 
 from api.models import Password, Permission, User
 
@@ -55,7 +55,7 @@ class UserOut(Schema):
     surname: str
     name: str
     patronymic: str
-    photo: Optional[str]
+    photo: Optional[AnyHttpUrl]
     resume: Optional[UserResumeOut]
     department: Optional[UserDepartmentOut]
     password: PasswordOut
@@ -108,7 +108,7 @@ class UpdatingPasswordOut(Schema):
 
 
 class PhotoOut(Schema):
-    photo: HttpUrl
+    photo: AnyHttpUrl
 
     @staticmethod
     def from_user(user: User) -> "PhotoOut":
