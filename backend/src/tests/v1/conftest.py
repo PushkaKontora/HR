@@ -10,10 +10,6 @@ USER_PASSWORD = "13_очень secret password_37"
 ANOTHER_USER_PASSWORD = "SeriousDim8"
 
 
-def pytest_configure(config):
-    logger.disable("")
-
-
 @pytest.fixture
 def user(email="address@gmail.com", surname="Sidorov", name="Ivan", patronymic="Fedorovich") -> User:
     return User.objects.create(

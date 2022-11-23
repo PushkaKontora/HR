@@ -78,6 +78,8 @@ def test_update_resume(
     else:
         assert resume.document == expected_document
 
+    resume.document.close()
+
 
 @pytest.mark.integration
 @pytest.mark.django_db
@@ -129,11 +131,3 @@ def test_update_unknown_resume(
 
     assert response.status_code == 404
     assert response.json() == not_found()
-
-
-@pytest.fixture(autouse=True)
-def delete_uploaded_files() -> None:
-    yield
-
-    for resume in Resume.objects.all():
-        resume.document.delete()

@@ -151,11 +151,3 @@ def test_create_resume__authenticated_user_try_it_with_another(
 
     assert not Resume.objects.filter(owner=user).exists()
     assert not Resume.objects.filter(owner=another_user).exists()
-
-
-@pytest.fixture(autouse=True)
-def delete_uploaded_files() -> None:
-    yield
-
-    for resume in Resume.objects.all():
-        resume.document.delete()
