@@ -5,6 +5,7 @@ import {useRef} from 'react';
 import ResumeFormInput from '../../forms/form-inputs/resume-form-input';
 import {StyledComponent} from 'styled-components';
 import {InputField} from '../../forms/styled/input-field';
+import {PASSWORD_OPTIONS} from '../../../const/forms/input-options';
 
 export type ResetPasswordFormData = {
   prevPassword: string,
@@ -15,6 +16,9 @@ export type ResetPasswordFormData = {
 type ResetPasswordFormProps = {
   submit: (data: ResetPasswordFormData) => void
 };
+
+export const FORM_NAME = 'RESET_PASSWORD_FORM';
+const FIELD_WIDTH = '400px';
 
 export function ResetPasswordForm({submit}: ResetPasswordFormProps) {
   const {
@@ -29,7 +33,7 @@ export function ResetPasswordForm({submit}: ResetPasswordFormProps) {
 
   const inputs: InputData[] = [
     {
-      name: 'prev_pass',
+      name: 'prevPassword',
       label: '',
       type: 'password',
       options: {
@@ -38,16 +42,17 @@ export function ResetPasswordForm({submit}: ResetPasswordFormProps) {
       placeholder: 'Старый пароль'
     },
     {
-      name: 'new_pass',
+      name: 'newPassword',
       label: '',
       type: 'password',
       options: {
-        required: 'Введите новый пароль'
+        required: 'Введите новый пароль',
+        ...PASSWORD_OPTIONS
       },
       placeholder: 'Новый пароль'
     },
     {
-      name: 'repeat_pass',
+      name: 'repeatedPassword',
       label: '',
       type: 'password',
       options: {
@@ -62,11 +67,11 @@ export function ResetPasswordForm({submit}: ResetPasswordFormProps) {
   ];
 
   return (
-    <form onSubmit={handleSubmit(submit)}>
+    <form id={FORM_NAME} onSubmit={handleSubmit(submit)}>
       {
         inputs.map((item, idx) => {
-          const ref = item.name === 'new_pass' ? newPassRef : undefined;
-          return <ResumeFormInput key={idx} inputRef={ref} errors={errors} register={register} {...item}/>;
+          const ref = item.name === 'newPassword' ? newPassRef : undefined;
+          return <ResumeFormInput width={FIELD_WIDTH} inputMarginBottom={'16px'} key={idx} inputRef={ref} errors={errors} register={register} {...item}/>;
         })
       }
     </form>

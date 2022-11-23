@@ -1,5 +1,6 @@
 import {createSlice, isPending} from '@reduxjs/toolkit';
 import {ResumeUser} from '../../types/resume';
+import {createResumeAction} from '../../service/async-actions/async-actions-resume';
 
 interface UserState {
   resumeUser: ResumeUser | null;

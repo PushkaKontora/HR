@@ -39,9 +39,11 @@ export const createApi = () => {
         if (error.response.status === StatusCodes.UNPROCESSABLE_ENTITY) {
           const data = error.response.data as UnprocessableEntityError;
           processErrorHandle(data.error.msg);
+          throw error;
         } else {
           const data = error.response.data as StandartError;
           processErrorHandle(data.msg);
+          throw error;
         }
       }
     }

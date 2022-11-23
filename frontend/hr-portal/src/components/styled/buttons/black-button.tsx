@@ -19,4 +19,8 @@ export const BlackButton = styled.button`
     background-color: #000;
     color: #aaa;
   }
+  
+  &:disabled {
+    color: #333;
+  }
 `;

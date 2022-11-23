@@ -16,6 +16,7 @@ import JobSearchDetailsScreen from './pages/job-search-details-screen/job-search
 import EmployerCreatingNewVacancy from './components/employer-creating-new-vacancy/employer-creating-new-vacancy';
 import ProfilePage from './pages/profile-page/profile-page';
 import {ToastWrapper} from './components/toast-wrapper/toast-wrapper';
+import browserHistory from './service/browser-history';
 
 function App() {
   const status = useAppSelector((state) => state.general.statusUser);
@@ -26,6 +27,10 @@ function App() {
 
     if (isMounted) {
       checkToken(dispatch);
+      console.log(browserHistory.location);
+      if (status !== UserStatus.noAuth) {
+        browserHistory.go(-2);
+      }
     }
 
     return () => {
