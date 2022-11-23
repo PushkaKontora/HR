@@ -10,7 +10,7 @@ from ninja.responses import Response
 from api.internal.v1.resumes.domain.entities import ResumesSortBy
 from api.models import FavouriteResume, Resume, User
 from tests.v1.integrations.conftest import forbidden, get
-from tests.v1.integrations.resumes.test_getting_resume import resume_out
+from tests.v1.integrations.resumes.conftest import resume_out
 from tests.v1.integrations.resumes.wishlist.conftest import RESUMES_WISHLIST
 
 

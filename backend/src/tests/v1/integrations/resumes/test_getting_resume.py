@@ -6,31 +6,12 @@ from django.test import Client
 from ninja.responses import Response
 
 from api.models import Competency, Resume, ResumeCompetency, User
-from tests.v1.integrations.conftest import datetime_to_string, forbidden, get, not_found
-from tests.v1.integrations.resumes.conftest import RESUME
+from tests.v1.integrations.conftest import forbidden, get, not_found
+from tests.v1.integrations.resumes.conftest import RESUME, resume_out
 
 
 def get_one(client: Client, resume_id: int, token: str) -> Response:
     return get(client, RESUME.format(resume_id=resume_id), token)
-
-
-def resume_out(resume: Resume) -> dict:
-    owner = resume.owner
-    return {
-        "id": resume.id,
-        "owner": {
-            "surname": owner.surname,
-            "name": owner.name,
-            "patronymic": owner.patronymic,
-            "email": owner.email,
-        },
-        "desired_job": resume.desired_job,
-        "desired_salary": resume.desired_salary,
-        "experience": resume.experience,
-        "document": resume.document.url,
-        "published_at": datetime_to_string(resume.published_at) if resume.published_at else None,
-        "competencies": list(resume.competencies.values_list("name", flat=True)),
-    }
 
 
 @pytest.mark.integration

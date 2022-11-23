@@ -9,8 +9,7 @@ from ninja.responses import Response
 
 from api.models import Competency, Experience, Resume, ResumeCompetency, User
 from tests.v1.integrations.conftest import forbidden, get
-from tests.v1.integrations.resumes.conftest import RESUMES
-from tests.v1.integrations.resumes.test_getting_resume import resume_out
+from tests.v1.integrations.resumes.conftest import RESUMES, resume_out
 
 
 def get_resumes(

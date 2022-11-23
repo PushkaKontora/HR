@@ -33,7 +33,7 @@ class IResumeHandlers(ABC):
     @abstractmethod
     def create_resume(
         self, request: HttpRequest, extra: NewResumeIn = Form(...), document: UploadedFile = File(...)
-    ) -> SuccessResponse:
+    ) -> ResumeOut:
         pass
 
     @abstractmethod
@@ -95,7 +95,7 @@ class ResumesRouter(Router):
             methods=["POST"],
             view_func=resume_handlers.create_resume,
             auth=[auth],
-            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 422: DomainErrorResponse},
+            response={200: ResumeOut, 401: MessageResponse, 403: MessageResponse, 422: DomainErrorResponse},
             description=f"""
     422 error codes:
         1 - the user already created a resume
