@@ -10,7 +10,7 @@ from django.test import Client
 
 from api.models import Competency, Experience, Resume, User
 from tests.v1.integrations.conftest import error_422, forbidden, get_headers, success
-from tests.v1.integrations.resumes.conftest import RESUMES, resume_out
+from tests.v1.integrations.resumes.conftest import RESUMES
 
 CREATE_RESUME = RESUMES
 
@@ -63,7 +63,7 @@ def test_create_resume(
     resume = Resume.objects.get(owner=user)
 
     assert response.status_code == 200
-    assert response.json() == resume_out(resume)
+    assert response.json() == success()
 
     assert resume.desired_job == desired_job
     assert resume.experience == experience

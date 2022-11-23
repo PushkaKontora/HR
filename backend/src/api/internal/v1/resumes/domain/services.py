@@ -151,7 +151,7 @@ class CreatingResumeService(ICreatingResumeService):
         return self.resume_repo.exists_resume_by_owner_id(extra.user_id)
 
     @atomic
-    def create(self, extra: NewResumeIn, document: UploadedFile) -> ResumeOut:
+    def create(self, extra: NewResumeIn, document: UploadedFile) -> None:
         resume = self.resume_repo.create(
             extra.user_id,
             UploadedFile(document, get_resume_filename(document)),
@@ -163,8 +163,6 @@ class CreatingResumeService(ICreatingResumeService):
         if extra.competencies:
             competencies = set(self.competency_repo.get_existed_competencies_by_names(set(extra.competencies)))
             self.resume_competencies_repo.attach_competencies_to_resume(resume.id, competencies)
-
-        return ResumeOut.from_resume(resume)
 
 
 class PublishingResumeService(IPublishingResumeService):

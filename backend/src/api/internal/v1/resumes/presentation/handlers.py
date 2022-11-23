@@ -37,7 +37,7 @@ class ICreatingResumeService(ABC):
         pass
 
     @abstractmethod
-    def create(self, extra: NewResumeIn, document: UploadedFile) -> ResumeOut:
+    def create(self, extra: NewResumeIn, document: UploadedFile) -> None:
         pass
 
 
@@ -162,7 +162,7 @@ class ResumeHandlers(IResumeHandlers):
 
     def create_resume(
         self, request: HttpRequest, extra: NewResumeIn = Form(...), document: UploadedFile = File(...)
-    ) -> ResumeOut:
+    ) -> SuccessResponse:
         auth_user: User = request.user
         logger = get_logger(request)
 
@@ -190,10 +190,10 @@ class ResumeHandlers(IResumeHandlers):
             raise ResumeIsCreatedByUserError()
 
         logger.info("Creating a resume...")
-        resume_out = self.creating_resume_service.create(extra, document)
+        self.creating_resume_service.create(extra, document)
         logger.success("Resume was created")
 
-        return resume_out
+        return SuccessResponse()
 
     def update_resume(
         self,
