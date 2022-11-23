@@ -209,13 +209,13 @@ LOG_FORMAT = "[{extra[request_id]}][{time:YYYY-MM-DD HH:mm:ss}][{name}:{function
 if not DEBUG:
     logger.remove()
 
-logger.add(
-    TelegramNotifier(env("LOGGING_TELEGRAM_BOT_TOKEN", str), env("LOGGING_TELEGRAM_CHAT_ID", int)),
-    level=logging.ERROR,
-    format=LOG_FORMAT,
-    diagnose=False,
-    enqueue=True,
-)
+    logger.add(
+        TelegramNotifier(env("LOGGING_TELEGRAM_BOT_TOKEN", str), env("LOGGING_TELEGRAM_CHAT_ID", int)),
+        level=logging.ERROR,
+        format=LOG_FORMAT,
+        diagnose=False,
+        enqueue=True,
+    )
 
 logger.add(
     os.path.join(LOGS_PATH, "api.log"),
