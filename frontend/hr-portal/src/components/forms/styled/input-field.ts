@@ -1,14 +1,16 @@
 import styled from 'styled-components';
 
 export type InputFieldProps = {
+  width: string,
   normalBorderColor: string,
-  padding: string
+  padding: string,
+  borderWidth: string
 }
 
 export const InputField = styled.input<InputFieldProps>`
-  width: 525px;
+  width: ${props => props.width};
 
-  border: 1px solid ${props => props.normalBorderColor};
+  border: ${props => props.borderWidth} solid ${props => props.normalBorderColor};
   border-radius: 0.8rem;
   background-color: white;
 

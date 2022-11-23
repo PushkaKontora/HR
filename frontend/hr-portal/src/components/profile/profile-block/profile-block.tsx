@@ -4,9 +4,10 @@ import {BlackButton} from '../../styled/buttons/black-button';
 
 type ButtonData = {
   text: string,
-  onClick: () => void,
+  onClick?: () => void,
   ref?: RefObject<any>,
-  showing?: boolean
+  showing?: boolean,
+  form?: string
 };
 
 export type ProfileBlockProps = {
@@ -25,9 +26,22 @@ export function ProfileBlock(props: ProfileBlockProps) {
         </div>
         <ButtonContainer>
           {props.buttons && props.buttons.map((item, idx) =>
-            <BlackButton key={idx} onClick={item.onClick} ref={item?.ref}>
-              {item.text}
-            </BlackButton>)}
+          {
+            if (item.showing) {
+              return <BlackButton 
+                key={idx} 
+                onClick={item?.onClick}
+                ref={item?.ref} 
+                form={item?.form}
+                type={item.form ? 'submit' : undefined}
+              >
+                {item.text}
+              </BlackButton>;
+            } else {
+              return null;
+            }
+          }
+          )}
         </ButtonContainer>
       </Head>
       <div style={{width: '100%', marginTop: '32px'}}>

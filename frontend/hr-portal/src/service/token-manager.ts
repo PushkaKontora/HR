@@ -38,6 +38,8 @@ export const decodeToken = (): AccessTokenPayload | undefined => {
 export const checkToken = (dispatch: AppDispatch) => {
   const token = decodeToken();
 
+  // expired check and dispatching refresh token here
+
   if (token !== undefined) {
     const id = token.user_id;
     const permission = token.permission;

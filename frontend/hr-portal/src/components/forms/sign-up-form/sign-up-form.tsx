@@ -1,12 +1,15 @@
 import AuthFormInput from '../form-inputs/auth-form-input';
 import {InputData} from '../types/form-input-props';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {FormSubmit} from '../../styled/forms/form-submit';
 import {EmailRegex} from '../../../const/email-regex';
-import {useAppDispatch} from '../../../app/hooks';
-import {signIn} from '../../../service/async-actions/async-actions-user';
+import {useAppDispatch, useAppSelector} from '../../../app/hooks';
+import {signUp} from '../../../service/async-actions/async-actions-user';
 import {SignInData} from '../../../types/sign-in-data';
+import {EMAIL_OPTIONS, PASSWORD_OPTIONS} from '../../../const/forms/input-options';
+import {UserStatus} from '../../../types/user-status';
+import {useNavigate} from 'react-router-dom';
 
 function SignUpForm() {
   const {
@@ -23,7 +26,7 @@ function SignUpForm() {
     surname: '',
     name: '',
     patronymic: '',
-    email: '',
+    emailRoute: '',
     password: ''
   });
 
@@ -57,10 +60,7 @@ function SignUpForm() {
       type: 'email',
       options: {
         required: 'Вы не ввели e-mail',
-        pattern: {
-          value: EmailRegex,
-          message: 'Введите корректный e-mail'
-        }
+        ...EMAIL_OPTIONS
       }
     },
     {
@@ -69,16 +69,32 @@ function SignUpForm() {
       type: 'password',
       options: {
         required: 'Вы не ввели пароль',
-        minLength: {
-          value: 8,
-          message: 'Пароль должен содержать не менее 8 символов'
-        }
+        ...PASSWORD_OPTIONS
       }
     }
   ];
 
+  const userStatus = useAppSelector((state) => state.general.statusUser);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (mounted) {
+      /*
+      if (userStatus !== UserStatus.noAuth) {
+        navigate(-1);
+      }*/
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [userStatus]);
+
   const onSubmit = (data: SignInData) => {
-    dispatch(signIn(data));
+    dispatch(signUp(data));
+    //.then(() => {window.location.reload();});
   };
 
   return (

@@ -1,60 +1,75 @@
 import {ProfileBlock, ProfileBlockProps} from '../../profile-block';
-import {ResumeTitle} from '../../../../styled/values/resume-title';
+import {ResumeTitle} from '../../../../styled/resume/resume-title';
 import {getDate} from '../../../../../utils/profile';
 import {useEffect, useRef, useState} from 'react';
 import {User} from '../../../../../types/user';
-import {ResetPasswordForm, ResetPasswordFormData} from '../../../reset-password-form/reset-password-form';
-import {useAppDispatch} from '../../../../../app/hooks';
-import {resetPassword} from '../../../../../service/async-actions/async-actions-user';
+import {FORM_NAME, ResetPasswordForm, ResetPasswordFormData} from '../../../reset-password-form/reset-password-form';
+import {useAppDispatch, useAppSelector} from '../../../../../app/hooks';
+import {toast} from 'react-toastify';
+import {resetPassword} from '../../../../../service/async-actions/async-actions-profile';
 
-type ProfilePasswordProps = {
-  user: User | null
-}
-
-export function ProfilePassword({user}: ProfilePasswordProps) {
+export function ProfilePassword() {
   const [showForm, setShowForm] = useState(false);
 
-  const [userState, setUserState] = useState(user);
+  const user = useAppSelector((state) => state.general.user);
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    setUserState(user);
-  }, [user]);
+  const saveRef = useRef<HTMLButtonElement | null>(null);
+
+  const setSaveDisabled = (value: boolean) => {
+    if (saveRef.current) {
+      saveRef.current.disabled = value;
+    }
+  };
 
   const handleSubmit = (data: ResetPasswordFormData) => {
-    const arg = {
-      id: userState?.id,
-      previous_password: data.prevPassword,
-      new_password: data.newPassword
-    };
+    if (user) {
+      const arg = {
+        id: user.id,
+        previous_password: data.prevPassword,
+        new_password: data.newPassword
+      };
 
-    //dispatch(resetPassword(arg));
+      setSaveDisabled(true);
+      dispatch(resetPassword(arg))
+        .then(
+          () => {
+            //setSaveDisabled(false);
+            setShowForm(false);
+            toast.success('Пароль успешно изменен');
+          },
+          () => {setSaveDisabled(false);}
+        );
+    }
   };
 
   const input: ProfileBlockProps = {
     title: 'Смена пароля',
     description: 'Выберите надежный пароль и не используйте его для других аккаунтов.',
     buttons: [
-      {text: 'Изменить', onClick: () => {return;}},
-      {text: 'Сохранить', onClick: () => {return;}},
-      {text: 'Отмена', onClick: () => {return;}}
-    ],
-    children: (
-      <div>
-        <ResumeTitle>
-          Последнее изменение пароля: {getDate(userState?.password.updated_at)}
-        </ResumeTitle>
-        <div>
-          <ResetPasswordForm submit={handleSubmit}/>
-        </div>
-      </div>
-    )
+      {text: 'Изменить', onClick: () => {setShowForm(true);}, showing: !showForm},
+      {text: 'Сохранить', showing: showForm, ref: saveRef, form: FORM_NAME},
+      {text: 'Отмена', onClick: () => {setShowForm(false);}, showing: showForm}
+    ]
   };
 
   return (
     <ProfileBlock
       {...input}>
-      {input.children}
+      <div>
+        {
+          !showForm &&
+            <ResumeTitle>
+                Последнее изменение пароля: {getDate(user?.password.updated_at)}
+            </ResumeTitle>
+        }
+        {
+          showForm &&
+            <div>
+              <ResetPasswordForm submit={handleSubmit}/>
+            </div>
+        }
+      </div>
     </ProfileBlock>
   );
 }

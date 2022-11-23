@@ -10,6 +10,8 @@ import {getAuthUser, login} from '../../../service/async-actions/async-actions-u
 import {UserStatus} from '../../../types/user-status';
 import {Navigate, redirect, useNavigate} from 'react-router-dom';
 import {decodeToken} from '../../../service/token-manager';
+import {EMAIL_OPTIONS} from '../../../const/forms/input-options';
+import browserHistory from '../../../service/browser-history';
 
 type LoginFormData = {
   email: string
@@ -27,6 +29,7 @@ function LoginForm() {
 
   const loading = useAppSelector((state) => state.general.loading);
   const userStatus = useAppSelector((state) => state.general.statusUser);
+  const error = useAppSelector((state) => state.general.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -34,9 +37,14 @@ function LoginForm() {
     let mounted = true;
 
     if (mounted) {
+      /*
       if (userStatus !== UserStatus.noAuth) {
-        navigate(-1);
-      }
+        if (browserHistory.index >= 0) {
+          browserHistory.back();
+        } else {
+          browserHistory.push('/');
+        }
+      }*/
     }
 
     return () => {
@@ -52,10 +60,7 @@ function LoginForm() {
       type: 'email',
       options: {
         required: 'Вы не ввели e-mail',
-        pattern: {
-          value: EmailRegex,
-          message: 'Введите корректный e-mail'
-        }
+        ...EMAIL_OPTIONS
       }
     },
     {
@@ -69,8 +74,7 @@ function LoginForm() {
   ];
 
   const onSubmit = (data: LoginFormData) => {
-    dispatch(login(data))
-      .then(() => {window.location.reload();});
+    dispatch(login(data));
     console.log('Login submitted, awaiting...');
   };
 
