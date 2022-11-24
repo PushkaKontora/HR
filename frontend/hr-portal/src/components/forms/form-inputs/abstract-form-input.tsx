@@ -29,9 +29,11 @@ const LabelField = styled.label`
 `;
 
 type AbstractFormInputProps = {
+  width: string,
   normalBorderColor: string,
   padding: string,
   inputMarginBottom: string,
+  borderWidth: string
   fontComponent: StyledComponent<'div', any>
   inputRef?: RefObject<typeof InputField>
 } & FormInputProps;
@@ -47,9 +49,12 @@ function AbstractFormInput(props: AbstractFormInputProps) {
         <InputField
           normalBorderColor={props.normalBorderColor}
           padding={props.padding}
+          borderWidth={props.borderWidth}
           type={props.type}
           placeholder={props.placeholder}
           ref={props.inputRef}
+          defaultValue={props.defaultValue}
+          width={props.width}
           {...props.register(props.name, props.options)}
           aria-invalid={props.errors[fieldName] ? 'true' : 'false'}/>
       </props.fontComponent>

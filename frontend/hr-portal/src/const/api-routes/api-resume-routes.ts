@@ -5,4 +5,6 @@ const RESUME = `${PRODUCT_VERSION_FOR_ROUTES}/resumes`;
 export const ResumeRoutes = {
   resume: RESUME,
   resumeByID: (id: number) => `${RESUME}/${id}`,
+  publish: (id: number) => `${RESUME}/${id}/publish`,
+  unpublish: (id: number) => `${RESUME}/${id}/unpublish`
 };

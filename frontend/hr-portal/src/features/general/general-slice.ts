@@ -1,22 +1,31 @@
-import {createSlice, isPending} from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
 import {UserStatus} from '../../types/user-status';
 import {User} from '../../types/user';
-import {login} from '../../service/async-actions/async-actions-user';
-import history from '../../service/browser-history';
+import {
+  deleteUserPhoto,
+  loadUserPhoto, resetPassword,
+  updateEmailAction,
+  updateName
+} from '../../service/async-actions/async-actions-profile';
+import {Competency} from '../../types/competency';
+import {getCompetenciesAction} from '../../service/async-actions/async-actions-competencies';
+import {createResumeAction} from '../../service/async-actions/async-actions-resume';
+import {deleteUser} from '../../service/async-actions/async-actions-delete-user';
 
 interface GeneralState {
   statusUser: UserStatus;
   user: User | null,
   loading: boolean;
   error: string | null;
+  competencies: Competency[]
 }
-
 
 const initialState: GeneralState = {
   statusUser: UserStatus.noAuth,
   user: null,
   loading: false,
-  error: null
+  error: null,
+  competencies: []
 };
 
 const generalSlice = createSlice({
@@ -40,7 +49,48 @@ const generalSlice = createSlice({
     },
     reset(state) {
       state = initialState;
+    },
+    setCompetencies(state, action) {
+      state.competencies = action.payload;
     }
+  },
+  extraReducers(builder) {
+    builder
+      .addCase(updateEmailAction.fulfilled, (state, action) => {
+        if (state.user) {
+          state.user.email = action.payload;
+        }
+      })
+      .addCase(updateName.fulfilled, (state, action) => {
+        if (state.user) {
+          state.user.name = action.payload.name;
+          state.user.surname = action.payload.surname;
+          state.user.patronymic = action.payload.patronymic;
+        }
+      })
+      .addCase(loadUserPhoto.fulfilled, (state, action) => {
+        if (state.user) {
+          state.user.photo = action.payload;
+        }
+      })
+      .addCase(deleteUserPhoto.fulfilled, (state) => {
+        if (state.user) {
+          state.user.photo = '';
+        }
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        if (state.user) {
+          state.user.password = action.payload;
+        }
+      })
+      .addCase(getCompetenciesAction.fulfilled, (state, action) => {
+        state.competencies = action.payload;
+      }
+      )
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.user = null;
+        state.statusUser = UserStatus.noAuth;
+      });
   }
 });
 

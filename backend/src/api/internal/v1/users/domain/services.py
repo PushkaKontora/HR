@@ -214,6 +214,7 @@ class ResettingPasswordService(IResettingPasswordService):
 
         return checkpw(body.previous_password.encode(), password.value.encode())
 
+    @atomic
     def reset(self, user_id: int, body: ResettingPasswordIn) -> UpdatingPasswordOut:
         password = self.password_repo.get_password_for_update_by_user_id(user_id)
 

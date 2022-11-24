@@ -2,6 +2,7 @@ import {Navigate} from 'react-router-dom';
 import {useAppSelector} from '../../app/hooks';
 import {NoAuthRoutes} from '../../const/app-routes';
 import {UserStatus} from '../../types/user-status';
+import browserHistory from '../../service/browser-history';
 
 type PrivateRouteProps = {
   requiredUserStatus: UserStatus | 'anyLoggedIn'
@@ -15,9 +16,11 @@ function PrivateRoute(props: PrivateRouteProps): JSX.Element {
     (statusUser === props.requiredUserStatus) ||
     (props.requiredUserStatus === 'anyLoggedIn' && statusUser !== UserStatus.noAuth);
 
-  return condition
-    ? props.children
-    : <Navigate to={NoAuthRoutes.Login}/>;
+  if (condition) {
+    return (props.children);
+  } else {
+    return (<Navigate to={NoAuthRoutes.Login}/>);
+  }
 }
 
 export default PrivateRoute;

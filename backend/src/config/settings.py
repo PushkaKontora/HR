@@ -217,7 +217,6 @@ if not DEBUG:
         enqueue=True,
     )
 
-
 logger.add(
     os.path.join(LOGS_PATH, "api.log"),
     level=logging.INFO if not DEBUG else logging.DEBUG,

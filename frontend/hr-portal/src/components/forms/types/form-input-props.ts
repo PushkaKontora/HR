@@ -5,8 +5,9 @@ type InputData = {
   options: any,
   label: string,
   name: string,
-  type: string,
-  placeholder?: string
+  type?: string,
+  placeholder?: string,
+  defaultValue?: string
 }
 
 type FormInputProps = {

@@ -60,11 +60,11 @@ def test_create_resume(
         Competency.objects.bulk_create(Competency(name=n) for n in expected_competencies)
 
     response = create(client, user_token, user.id, desired_job, pdf_document, desired_salary, experience, competencies)
+    resume = Resume.objects.get(owner=user)
 
     assert response.status_code == 200
     assert response.json() == success()
 
-    resume = Resume.objects.get(owner=user)
     assert resume.desired_job == desired_job
     assert resume.experience == experience
     assert resume.desired_salary == desired_salary
