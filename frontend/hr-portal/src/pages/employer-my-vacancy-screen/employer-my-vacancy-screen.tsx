@@ -4,21 +4,12 @@ import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {TabInHeader} from '../../const';
 import {changeActiveTabInHeader} from '../../features/user/user-slice';
 import bannerSearchScreen from '../../assets/img/job-seach/banner-jobSearchPage.svg';
-import {getVacanciesForEmployer} from '../../service/async-actions/async-actions-vacancy';
-import VacancyList from '../../components/vacancy-list/vacancy-list';
 import {setIsGetVacanciesEmployer} from '../../features/vacancy/vacancy-slice';
+import VacancyListVacanciesPage from '../../components/vacancy-list-vacancies-page/vacancy-list-vacancies-page';
+import VacancyListEmployerMyVacancy from '../../components/vacancy-list-employer-my-vacancy/vacancy-list-employer-my-vacancy';
 
 function EmployerMyVacancyScreen() {
   const dispatch = useAppDispatch();
-  const departmentId = useAppSelector((state) => state.general?.user?.department.id);
-  const isPublished = useAppSelector((state) => state.vacancy.isPublishedVacancy);
-  const offset = useAppSelector((state) => state.vacancy.paramsForGetVacancies.offset);
-
-  useEffect(() => {
-    if (departmentId) {
-      dispatch(getVacanciesForEmployer({isPublished, idDepartment: departmentId, offset}));
-    }
-  }, [isPublished]);
 
   useEffect(() => {
     dispatch(changeActiveTabInHeader(TabInHeader.myVacancy));
@@ -33,7 +24,7 @@ function EmployerMyVacancyScreen() {
       <div className="jobSearchScreen-item jobSearchScreen-item__banner">
         <img src={bannerSearchScreen} alt="banner search screen" className="bannerSearchScreen"/>
       </div>
-      <VacancyList/>
+      <VacancyListEmployerMyVacancy/>
     </div>
   );
 }
