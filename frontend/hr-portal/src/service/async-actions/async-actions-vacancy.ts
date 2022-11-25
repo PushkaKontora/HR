@@ -61,7 +61,7 @@ export const getVacancies = createAsyncThunk<{ items: Vacancy[], count: number }
     //   lineWithNewParameters += `&search=${dataState.searchLine}`;
     // }
 
-    const lineUrl = `${VacancyRoutes.getVacancy}?sort_by=${paramsURL['?sort_by=']}&limit=${LIMIT_ELEMENTS_ON_PAGE}&offset=${paramsURL['&offset=']}${lineWithNewParameters}`;
+    const lineUrl = `${VacancyRoutes.getVacancy}?sort_by=${paramsURL['?sort_by=']}&published=true&limit=${LIMIT_ELEMENTS_ON_PAGE}&offset=${paramsURL['&offset=']}${lineWithNewParameters}`;
     console.log(lineUrl);
     const {data} = await api.get<{ items: Vacancy[], count: number }>(lineUrl);
     return data;

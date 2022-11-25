@@ -14,7 +14,7 @@ function PaginationCustom() {
   const maxPageCount = useAppSelector((state) => state.vacancy.maxPagesVacancies);
   const vacancies = useAppSelector((state) => state.vacancy.vacancies);
   const isGetVacanciesEmployer = useAppSelector((state) => state.vacancy.vacancies);
-  const departmentId = useAppSelector((state) => state.general?.user?.department.id);
+  const departmentId = useAppSelector((state) => state.general?.user?.department?.id);
   const offset = useAppSelector((state) => state.vacancy.paramsForGetVacancies.offset);
   const isPublished = useAppSelector((state) => state.vacancy.isPublishedVacancy);
   const dispatch = useAppDispatch();

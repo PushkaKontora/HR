@@ -1,3 +1,5 @@
+import {Link} from 'react-router-dom';
+
 import {UserStatus} from '../../types/user-status';
 import cl from 'classnames';
 import {useAppSelector} from '../../app/hooks';
@@ -11,17 +13,22 @@ function HeaderNav() {
     <>
       {statusUser !== UserStatus.noAuth && (
         <div className="header-nav">
-          <div className={cl('header-navItem', {'header-navItem__active': activeTab === TabInHeader.vacancies})}>
+          {statusUser === UserStatus.user
+          && (<Link to="/" className={cl('header-navItem', {'header-navItem__active': activeTab === TabInHeader.vacancies})}>
             Вакансии
-          </div>
+          </Link>)
+          }
           {statusUser === (UserStatus.employer || UserStatus.admin) && (
             <>
+              <div className={cl('header-navItem', {'header-navItem__active': activeTab === TabInHeader.vacancies})}>
+                Вакансии
+              </div>
               <div className={cl('header-navItem', {'header-navItem__active': activeTab === TabInHeader.resume})}>
                 Резюме
               </div>
-              <div className={cl('header-navItem', {'header-navItem__active': activeTab === TabInHeader.myVacancy})}>
+              <Link to="/" className={cl('header-navItem', {'header-navItem__active': activeTab === TabInHeader.myVacancy})}>
                 Мои вакансии
-              </div>
+              </Link>
             </>
           )}
         </div>

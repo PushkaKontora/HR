@@ -5,8 +5,9 @@ import {TabInHeader} from '../../const';
 import {changeActiveTabInHeader} from '../../features/user/user-slice';
 import bannerSearchScreen from '../../assets/img/job-seach/banner-jobSearchPage.svg';
 import {setIsGetVacanciesEmployer} from '../../features/vacancy/vacancy-slice';
-import VacancyListVacanciesPage from '../../components/vacancy-list-vacancies-page/vacancy-list-vacancies-page';
 import VacancyListEmployerMyVacancy from '../../components/vacancy-list-employer-my-vacancy/vacancy-list-employer-my-vacancy';
+import './employer-my-vacancy-screen.scss';
+
 
 function EmployerMyVacancyScreen() {
   const dispatch = useAppDispatch();

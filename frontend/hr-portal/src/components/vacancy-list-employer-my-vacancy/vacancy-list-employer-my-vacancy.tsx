@@ -10,10 +10,12 @@ function VacancyListEmployerMyVacancy() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    console.log(1,idDepartment)
     if (idDepartment) {
+      console.log('ddd')
       dispatch(getVacanciesForEmployer({isPublished, idDepartment: idDepartment, offset}));
     }
-  }, [isPublished]);
+  }, [isPublished,idDepartment]);
 
   return (
     <VacancyList/>

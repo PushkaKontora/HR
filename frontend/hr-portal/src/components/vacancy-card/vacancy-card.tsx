@@ -9,12 +9,13 @@ import {setStateRespondModal, setVacancyByID} from '../../features/vacancy/vacan
 import {useNavigate} from 'react-router-dom';
 import {NoAuthRoutes} from '../../const/app-routes';
 import moneyRUSIcon from '../../assets/img/job-seach/₽.svg';
+import ButtonActionVacancyCard from '../button-action-vacancy-card/button-action-vacancy-card';
 
-type VacancyCard = {
+type VacancyCardProps = {
   vacancy: Vacancy
 }
 
-function VacancyCard(props: VacancyCard) {
+function VacancyCard(props: VacancyCardProps) {
   const {vacancy} = props;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -22,13 +23,7 @@ function VacancyCard(props: VacancyCard) {
   const vacancyExperience = ExpectedExperienceNameString[vacancy.expected_experience as keyof typeof ExpectedExperienceNameString];
   const handleClickVacancyCard = () => {
     dispatch(setVacancyByID(vacancy));
-    navigate(`${NoAuthRoutes.Vacancy}/${vacancy.id}`);
-  };
-
-  const handlerClickRespond = (e: any) => {
-    dispatch(setVacancyByID(vacancy));
-    e.stopPropagation();
-    dispatch(setStateRespondModal(true));
+    navigate(`${vacancy.id}`);
   };
 
   return (
@@ -104,15 +99,7 @@ function VacancyCard(props: VacancyCard) {
           <span>{vacancy.department.name}</span> {vacancy.department.leader.name} {vacancy.department.leader.surname}
         </div>
         <div className="actionItem navTabs">
-          <button className="navTabs-btnItem">
-            <img src={likesIcon} alt="likes icon"/>
-          </button>
-          <button
-            className="navTabs-btnItem navTabs-btnItem__respond"
-            onClick={handlerClickRespond}
-          >
-            Откликнуться
-          </button>
+          <ButtonActionVacancyCard vacancy={vacancy}/>
         </div>
       </div>
     </div>

@@ -102,7 +102,7 @@ const vacancySlice = createSlice({
       state.paramsForGetVacancies.department = action.payload;
       const departmentItem = state.departmentsShortVersions.find((departmentItem) => action.payload === departmentItem.label);
 
-      if (departmentItem) {
+      if (departmentItem && departmentItem.label !== 'Выбрать элемент') {
         setNewParamDepartment(departmentItem.value.toString());
       } else {
         setNewParamDepartment('');

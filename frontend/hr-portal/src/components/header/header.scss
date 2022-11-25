@@ -42,6 +42,37 @@
 
       .header-nav-personal {
         cursor: pointer;
+
+        .likes-icon {
+          stroke: #000000;
+          box-shadow: none;
+
+          &:hover {
+            path{
+              fill: #FFFFFF;
+              stroke: #FFFFFF;
+              box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.15);
+            }
+
+            rect {
+              fill: #000000;
+            }
+          }
+        }
+
+        .personal-icon{
+          stroke: #000000;
+
+          &:hover {
+            path{
+              stroke: #FFFFFF;
+            }
+
+            rect {
+              fill: #000000;
+            }
+          }
+        }
       }
     }
   }

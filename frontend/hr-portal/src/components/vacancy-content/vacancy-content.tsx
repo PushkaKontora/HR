@@ -6,6 +6,8 @@ import CardSorting from '../card-sorting/card-sorting';
 import VacancyListVacanciesPage from '../vacancy-list-vacancies-page/vacancy-list-vacancies-page';
 import {setDepartmentParam, setExperienceParam, setSalaryMax, setSalaryMin} from '../../features/vacancy/vacancy-slice';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import '../../styles/custom-select.scss';
+
 
 function VacancyContent() {
   const vacancies = useAppSelector((state) => state.vacancy.vacancies);

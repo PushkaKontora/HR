@@ -1,21 +1,19 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
+
 import {indicateStatus, reset, setError, setLoading, setUser} from '../../features/general/general-slice';
-import {AppDispatch, RootState, store} from '../../app/store';
-import {AxiosInstance, AxiosResponse} from 'axios';
-import {decodeToken, dropToken, getToken, saveToken} from '../token-manager';
+import {store} from '../../app/store';
+import {decodeToken, dropToken, saveToken} from '../token-manager';
 import {UsersRoutes} from '../../const/api-routes/api-users-routes';
 import {User} from '../../types/user';
 import {TIMEOUT_SHOW_ERROR} from '../../const/errors';
 import {SignInData} from '../../types/sign-in-data';
 import {StatusCodes} from 'http-status-codes';
 import {Generics} from '../../types/generics';
-import {useAppSelector} from '../../app/hooks';
 import {ResumeRoutes} from '../../const/api-routes/api-resume-routes';
-import {setResumeUser} from '../../features/user/user-slice';
-import {ResumeUser} from '../../types/resume';
+import {changeActiveTabInHeader, setResumeUser} from '../../features/user/user-slice';
+import browserHistory from '../browser-history';
 import {UserStatus} from '../../types/user-status';
-
-// get any user action here
+import {TabInHeader} from '../../const';
 
 export const getAuthUser = createAsyncThunk<void, number, Generics>(
   'users/getUser',
@@ -25,6 +23,9 @@ export const getAuthUser = createAsyncThunk<void, number, Generics>(
       .then((u) => {
         if (u.data.permission === UserStatus.user) {
           dispatch(getResumeUser(u.data));
+        }
+        if (u.data.permission === UserStatus.employer) {
+          dispatch(changeActiveTabInHeader(TabInHeader.myVacancy));
         }
         return u;
       });
@@ -36,14 +37,15 @@ export const getAuthUser = createAsyncThunk<void, number, Generics>(
   }
 );
 
-export const signIn = createAsyncThunk<void, SignInData, Generics>(
-  'users/signin',
+export const signUp = createAsyncThunk<void, SignInData, Generics>(
+  'users/signup',
   async (arg, {dispatch, extra: api}) => {
     dispatch(setLoading(true));
     const res = await api.post(UsersRoutes.register, arg);
 
     if (res.status === StatusCodes.OK) {
       dispatch(login({email: arg.email, password: arg.password}));
+      browserHistory.push('/');
     } else {
       dispatch(setLoading(false));
     }
@@ -62,18 +64,6 @@ export const login = createAsyncThunk<void, { email: string, password: string },
 
     dispatch(setLoading(false));
   });
-
-export const resetPassword = createAsyncThunk<Promise<AxiosResponse>, { id: number, previous_password: string, new_password: string }, Generics>(
-  'users/resetPassword',
-  async (arg, {dispatch, extra: api}) => {
-    dispatch(setLoading(true));
-
-    const res = api.patch(UsersRoutes.resetPassword(arg.id));
-    dispatch(setLoading(false));
-
-    return res;
-  }
-);
 
 export const logout = createAsyncThunk<void, undefined, Generics>(
   'users/logout',
@@ -96,6 +86,13 @@ export const clearErrorAction = createAsyncThunk(
   },
 );
 
+export const getResumeById = createAsyncThunk<void, number, Generics>(
+  'user/getResumeUser',
+  async (id, {dispatch, extra: api}) => {
+    const resume = await api.get(ResumeRoutes.resumeByID(id));
+    dispatch(setResumeUser(resume.data));
+  }
+);
 
 export const getResumeUser = createAsyncThunk<void, User, Generics>(
   'user/getResumeUser',

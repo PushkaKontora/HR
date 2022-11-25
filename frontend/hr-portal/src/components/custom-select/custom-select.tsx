@@ -1,6 +1,5 @@
 import Select from 'react-select';
 import '../../styles/custom-select.scss';
-import {ActionMeta, OnChangeValue} from 'react-select/dist/declarations/src/types';
 import {OptionType} from '../selects/profile-select/profile-select';
 
 type CustomSelectProps = {

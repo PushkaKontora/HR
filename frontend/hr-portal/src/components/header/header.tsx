@@ -1,12 +1,16 @@
-import cl from 'classnames';
+import React from 'react';
 
 import logoHeader from '../../assets/img/header/logo_m.svg';
-import likeIcon from '../../assets/img/header/likes.svg';
 import personalIcon from '../../assets/img/header/personal.svg';
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import {ReactComponent  as LikeIcon} from '../../assets/img/header/default-likes.svg';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import {ReactComponent  as PersonalIcon} from '../../assets/img/header/personal.svg';
 import exitIcon from '../../assets/img/header/button-exit.svg';
-import {useAppSelector} from '../../app/hooks';
 import './header.scss';
-import {UserStatus} from '../../types/user-status';
 import HeaderNav from '../header-nav/header-nav';
 
 function Header() {
@@ -21,8 +25,8 @@ function Header() {
           <HeaderNav/>
         </div>
         <div className="side-header">
-          <div className="header-nav-personal"><img src={likeIcon} alt="like icon"/></div>
-          <div className="header-nav-personal"><img src={personalIcon} alt="personal icon"/></div>
+          <div className="header-nav-personal"><LikeIcon className='likes-icon'/></div>
+          <div className="header-nav-personal"><PersonalIcon className='personal-icon' /></div>
           <div className="header-nav-personal"><img src={exitIcon} alt="exit icon"/></div>
         </div>
       </div>
