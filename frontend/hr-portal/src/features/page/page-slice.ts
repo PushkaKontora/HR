@@ -1,23 +1,32 @@
 import {createSlice} from '@reduxjs/toolkit';
+import {ButtonVacancyCard, TabInHeader} from '../../const';
 
 interface PageSlice {
-  buttonVacancyCard: string;
+  buttonVacancyCard: ButtonVacancyCard;
+  activeTabInHeader: TabInHeader | null;
 }
 
 const initialState: PageSlice = {
-  buttonVacancyCard: ''
+  buttonVacancyCard: ButtonVacancyCard.vacancies,
+  activeTabInHeader: TabInHeader.vacancies
 };
 
 const pageSlice = createSlice({
   name: 'page',
   initialState,
   reducers: {
-    setButtonVacancyCard(state, action) {
+    changeButtonVacancyCard(state, action) {
       state.buttonVacancyCard = action.payload;
+    },
+    changeActiveTabInHeader(state, action) {
+      state.activeTabInHeader = action.payload;
     }
   }
 });
 
-export const {setButtonVacancyCard} = pageSlice.actions;
+export const {
+  changeButtonVacancyCard,
+  changeActiveTabInHeader
+} = pageSlice.actions;
 
 export default pageSlice.reducer;

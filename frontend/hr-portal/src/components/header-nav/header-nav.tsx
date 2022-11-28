@@ -7,7 +7,7 @@ import {TabInHeader} from '../../const';
 
 function HeaderNav() {
   const statusUser = useAppSelector((state) => state.general.statusUser);
-  const activeTab = useAppSelector((state) => state.user.activeTabInHeader);
+  const activeTab = useAppSelector((state) => state.page.activeTabInHeader);
 
   return (
     <>

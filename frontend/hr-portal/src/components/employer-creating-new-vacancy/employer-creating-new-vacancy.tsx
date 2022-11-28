@@ -28,7 +28,6 @@ function EmployerCreatingNewVacancy() {
 
   return (
     <div>
-      редактируемое поле
       <Editor
         editorState={editorState}
         onEditorStateChange={setEditorState}

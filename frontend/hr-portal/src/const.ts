@@ -42,3 +42,8 @@ export enum TabInHeader {
   resume = 'resume',
   myVacancy = 'myVacancy'
 }
+
+export enum ButtonVacancyCard {
+  vacancies = 'vacancies',
+  empMyVacancy = 'empMyVacancy',
+}

@@ -1,0 +1,116 @@
+@import "src/styles/custom-select";
+@import "src/styles/salary-inputs";
+
+.basic-single {
+  .select__control {
+    background: #FFFFFF;
+    border: 0.5px solid #000000;
+    border-radius: 10px;
+    z-index: 201;
+    width: 252px;
+    line-height: 16px;
+    font-weight: 300;
+    font-size: 16px;
+    height: 42px;
+  }
+}
+
+.edit-modal-item {
+  &__header {
+    .header {
+      &__title {
+        font-weight: 600;
+        font-size: 40px;
+      }
+
+      &__explanation {
+        font-weight: 400;
+        font-size: 18px;
+        letter-spacing: 0.05em;
+        color: #9C9C9C;
+
+        margin-top: 16px;
+      }
+    }
+  }
+
+  &__content {
+    margin-top: 40px;
+
+    .content-item:not(:first-child) {
+      margin-top: 24px;
+    }
+
+    .content-item:first-child {
+      margin-top: 36px;
+    }
+
+    .content-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      &__description{
+        gap: 24px;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .name-field {
+        font-weight: 400;
+        font-size: 18px;
+        letter-spacing: 0.05em;
+      }
+
+      .toggleStatusVacancy {
+        background: #F6F5F3;
+        border-radius: 10px;
+
+        .btn-status {
+          font-weight: 400;
+          font-size: 18px;
+          letter-spacing: 0.05em;
+          color: #9C9C9C;
+
+          padding: 12px 24px;
+          gap: 10px;
+
+          width: 147px;
+          height: 42px;
+          background: #F6F5F3;
+
+          border-radius: 10px;
+
+          &__active {
+            color: #000000;
+            background: #E3EDFF;
+          }
+        }
+      }
+
+      .input-name-vacancy {
+        font-weight: 300;
+        font-size: 14px;
+        letter-spacing: 0.05em;
+        color: #000000;
+
+        background: #FFFFFF;
+        border: 0.5px solid #000000;
+        border-radius: 10px;
+        padding: 15px 16px 14px;
+        width: 444px;
+      }
+
+      .salaryInput-wrapper {
+        .text-field-salary {
+          width: 150.5px;
+          border: 0.5px solid #000000;
+          &::after {
+            content: '';
+            background-image: url('../../assets/img/job-seach/₽.svg');
+          }
+        }
+      }
+    }
+  }
+}

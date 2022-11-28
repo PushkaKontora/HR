@@ -1,12 +1,12 @@
 import {useEffect, useState} from 'react';
 
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
-import {TabInHeader} from '../../const';
-import {changeActiveTabInHeader} from '../../features/user/user-slice';
+import {ButtonVacancyCard, TabInHeader} from '../../const';
 import bannerSearchScreen from '../../assets/img/job-seach/banner-jobSearchPage.svg';
 import {setIsGetVacanciesEmployer} from '../../features/vacancy/vacancy-slice';
 import VacancyListEmployerMyVacancy from '../../components/vacancy-list-employer-my-vacancy/vacancy-list-employer-my-vacancy';
 import './employer-my-vacancy-screen.scss';
+import {changeActiveTabInHeader, changeButtonVacancyCard} from '../../features/page/page-slice';
 
 
 function EmployerMyVacancyScreen() {
@@ -14,6 +14,7 @@ function EmployerMyVacancyScreen() {
 
   useEffect(() => {
     dispatch(changeActiveTabInHeader(TabInHeader.myVacancy));
+    dispatch(changeButtonVacancyCard(ButtonVacancyCard.empMyVacancy));
     dispatch(setIsGetVacanciesEmployer(true));
     return () => {
       dispatch(setIsGetVacanciesEmployer(false));

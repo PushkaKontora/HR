@@ -10,10 +10,11 @@ import {SignInData} from '../../types/sign-in-data';
 import {StatusCodes} from 'http-status-codes';
 import {Generics} from '../../types/generics';
 import {ResumeRoutes} from '../../const/api-routes/api-resume-routes';
-import {changeActiveTabInHeader, setResumeUser} from '../../features/user/user-slice';
+import {setResumeUser} from '../../features/user/user-slice';
 import browserHistory from '../browser-history';
 import {UserStatus} from '../../types/user-status';
 import {TabInHeader} from '../../const';
+import {changeActiveTabInHeader} from '../../features/page/page-slice';
 
 export const getAuthUser = createAsyncThunk<void, number, Generics>(
   'users/getUser',

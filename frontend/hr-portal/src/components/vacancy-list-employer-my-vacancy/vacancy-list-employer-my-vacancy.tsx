@@ -2,6 +2,8 @@ import VacancyList from '../vacancy-list/vacancy-list';
 import {useEffect} from 'react';
 import {getVacanciesForEmployer} from '../../service/async-actions/async-actions-vacancy';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import ModalMakeUnpublishVacancy from '../modal-make-unpublish-vacancy/modal-make-unpublish-vacancy';
+import ModalEditVacancy from '../modal-edit-vacancy/modal-edit-vacancy';
 
 function VacancyListEmployerMyVacancy() {
   const isPublished = useAppSelector((state) => state.vacancy.isPublishedVacancy);
@@ -10,15 +12,17 @@ function VacancyListEmployerMyVacancy() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    console.log(1,idDepartment)
     if (idDepartment) {
-      console.log('ddd')
       dispatch(getVacanciesForEmployer({isPublished, idDepartment: idDepartment, offset}));
     }
-  }, [isPublished,idDepartment]);
+  }, [isPublished, idDepartment]);
 
   return (
-    <VacancyList/>
+    <>
+      <ModalEditVacancy/>
+      <ModalMakeUnpublishVacancy/>
+      <VacancyList/>
+    </>
   );
 }
 

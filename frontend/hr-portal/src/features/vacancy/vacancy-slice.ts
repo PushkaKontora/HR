@@ -35,7 +35,9 @@ interface VacancyState {
   maxPagesVacancies: number,
   currentPage: number,
   isGetVacanciesEmployer: boolean,
-  isPublishedVacancy: boolean
+  isPublishedVacancy: boolean,
+  isOpenUnpublishVacancyModal: boolean;
+  isOpenEditVacancyModal: boolean;
 }
 
 const initialState: VacancyState = {
@@ -57,7 +59,9 @@ const initialState: VacancyState = {
   maxPagesVacancies: 1,
   currentPage: 1,
   isGetVacanciesEmployer: false,
-  isPublishedVacancy: true
+  isPublishedVacancy: true,
+  isOpenUnpublishVacancyModal: false,
+  isOpenEditVacancyModal: false
 };
 
 const vacancySlice = createSlice({
@@ -72,6 +76,12 @@ const vacancySlice = createSlice({
     },
     setIsPublishedVacancy(state, action) {
       state.isPublishedVacancy = action.payload;
+    },
+    setStateUnpublishedVacancy(state, action) {
+      state.isOpenUnpublishVacancyModal = action.payload;
+    },
+    setStateEditVacancy(state, action) {
+      state.isOpenEditVacancyModal = action.payload;
     },
     setStateRespondModal(state, action) {
       state.isOpenRespondModal = action.payload;
@@ -156,6 +166,8 @@ const vacancySlice = createSlice({
 export const {
   setVacancyByID,
   setStateRespondModal,
+  setStateUnpublishedVacancy,
+  setStateEditVacancy,
   setSalaryMin,
   setSalaryMax,
   setSortedItemParam,
@@ -166,7 +178,7 @@ export const {
   setOffsetParam,
   setDepartments,
   setIsGetVacanciesEmployer,
-  setIsPublishedVacancy
+  setIsPublishedVacancy,
 } = vacancySlice.actions;
 
 export default vacancySlice.reducer;
