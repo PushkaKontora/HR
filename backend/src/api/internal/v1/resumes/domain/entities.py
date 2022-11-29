@@ -7,7 +7,7 @@ from django.db.models import QuerySet
 from ninja import Schema
 from pydantic import AnyHttpUrl, EmailStr, Field
 
-from api.models import Experience, Resume
+from api.models import Experience, Resume, User
 
 
 class ResumesSortBy(Enum):
@@ -32,6 +32,17 @@ class OwnerOut(Schema):
     name: str
     patronymic: str
     email: EmailStr
+    photo: Optional[AnyHttpUrl]
+
+    @staticmethod
+    def from_user(user: User) -> "OwnerOut":
+        return OwnerOut(
+            surname=user.surname,
+            name=user.name,
+            patronymic=user.patronymic,
+            email=user.email,
+            photo=user.photo.url if user.photo else None,
+        )
 
 
 class ResumeOut(Schema):
@@ -46,16 +57,9 @@ class ResumeOut(Schema):
 
     @staticmethod
     def from_resume(resume: Resume) -> "ResumeOut":
-        owner = resume.owner
-
         return ResumeOut(
             id=resume.id,
-            owner=OwnerOut(
-                surname=owner.surname,
-                name=owner.name,
-                patronymic=owner.patronymic,
-                email=owner.email,
-            ),
+            owner=OwnerOut.from_user(resume.owner),
             desired_job=resume.desired_job,
             desired_salary=resume.desired_salary,
             experience=resume.experience,

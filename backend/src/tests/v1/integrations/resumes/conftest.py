@@ -22,6 +22,7 @@ def resume_out(resume: Resume) -> dict:
             "name": owner.name,
             "patronymic": owner.patronymic,
             "email": owner.email,
+            "photo": owner.photo.url if owner.photo else None,
         },
         "desired_job": resume.desired_job,
         "desired_salary": resume.desired_salary,
