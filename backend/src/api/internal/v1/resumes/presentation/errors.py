@@ -51,3 +51,13 @@ class AttachedDocumentIsLargeError(DomainErrorBase):
     @property
     def msg(self) -> str:
         return f"The attached document size must be lte than {settings.MAX_FILE_SIZE_BYTES} bytes"
+
+
+class NotAllRequiredFieldsAreSet(DomainErrorBase):
+    @property
+    def code(self) -> int:
+        return 6
+
+    @property
+    def msg(self) -> str:
+        return "Desired job and document must be set before publishing"

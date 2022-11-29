@@ -18,6 +18,7 @@ from api.internal.v1.resumes.domain.entities import (
 from api.internal.v1.resumes.presentation.errors import (
     AttachedDocumentIsLargeError,
     AttachedDocumentIsNotPDFError,
+    NotAllRequiredFieldsAreSet,
     ResumeAlreadyAddedToWishlistError,
     ResumeIsCreatedByUserError,
     UnpublishedResumeCannotBeAddedToWishlistError,
@@ -37,7 +38,7 @@ class ICreatingResumeService(ABC):
         pass
 
     @abstractmethod
-    def create(self, extra: NewResumeIn, document: UploadedFile) -> None:
+    def create(self, extra: NewResumeIn, document: Optional[UploadedFile]) -> None:
         pass
 
 
@@ -52,6 +53,10 @@ class IPublishingResumeService(ABC):
 
     @abstractmethod
     def unpublish(self, resume_id: int) -> None:
+        pass
+
+    @abstractmethod
+    def are_required_fields_set(self, resume_id: int) -> bool:
         pass
 
 
@@ -161,7 +166,7 @@ class ResumeHandlers(IResumeHandlers):
         return self.getting_resume_service.get_resume(resume_id)
 
     def create_resume(
-        self, request: HttpRequest, extra: NewResumeIn = Form(...), document: UploadedFile = File(...)
+        self, request: HttpRequest, extra: NewResumeIn = Form(...), document: Optional[UploadedFile] = File(None)
     ) -> SuccessResponse:
         auth_user: User = request.user
         logger = get_logger(request)
@@ -173,7 +178,9 @@ class ResumeHandlers(IResumeHandlers):
                     "has_resume": hasattr(auth_user, "resume"),
                 },
                 extra=extra.dict(),
-                document={"name": document.name, "content_type": document.content_type, "size": document.size},
+                document={"name": document.name, "content_type": document.content_type, "size": document.size}
+                if document is not None
+                else None,
             ),
         )
 
@@ -182,16 +189,17 @@ class ResumeHandlers(IResumeHandlers):
             logger.success("Permission denied")
             raise ForbiddenError()
 
-        self._validate_document(request, document)
+        if document is not None:
+            self._validate_document(request, document)
 
-        logger.info("Checking an existence of the user resume...")
+        logger.info("Checking the existence of the user resume...")
         if self.creating_resume_service.is_resume_created_by_user(extra):
             logger.success("The user already created a resume")
             raise ResumeIsCreatedByUserError()
 
         logger.info("Creating a resume...")
         self.creating_resume_service.create(extra, document)
-        logger.success("Resume was created")
+        logger.success("The resume was created")
 
         return SuccessResponse()
 
@@ -200,7 +208,7 @@ class ResumeHandlers(IResumeHandlers):
         request: HttpRequest,
         resume_id: int = Path(...),
         extra: ResumeIn = Form(...),
-        document: UploadedFile = File(None),
+        document: Optional[UploadedFile] = File(None),
     ) -> SuccessResponse:
         auth_user: User = request.user
         logger = get_logger(request)
@@ -244,6 +252,9 @@ class ResumeHandlers(IResumeHandlers):
 
         if not self.publishing_resume_service.authorize(request.user, resume_id):
             raise ForbiddenError()
+
+        if not self.publishing_resume_service.are_required_fields_set(resume_id):
+            raise NotAllRequiredFieldsAreSet()
 
         return self.publishing_resume_service.publish(resume_id)
 

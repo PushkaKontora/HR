@@ -37,10 +37,10 @@ class OwnerOut(Schema):
 class ResumeOut(Schema):
     id: int
     owner: OwnerOut
-    desired_job: str
+    desired_job: Optional[str]
     desired_salary: Optional[int]
     experience: Optional[Experience]
-    document: AnyHttpUrl
+    document: Optional[AnyHttpUrl]
     published_at: Optional[datetime]
     competencies: List[str]
 
@@ -59,7 +59,7 @@ class ResumeOut(Schema):
             desired_job=resume.desired_job,
             desired_salary=resume.desired_salary,
             experience=resume.experience,
-            document=resume.document.url,
+            document=resume.document.url if resume.document else None,
             published_at=resume.published_at,
             competencies=list(resume.competencies.values_list("name", flat=True)),
         )
@@ -78,7 +78,7 @@ class ResumesOut(Schema):
 
 
 class ResumeIn(Schema):
-    desired_job: str
+    desired_job: Optional[str] = None
     desired_salary: Optional[int] = Field(None, gte=0)
     experience: Optional[Experience] = None
     competencies: Optional[List[str]] = None

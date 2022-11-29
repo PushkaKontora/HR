@@ -39,8 +39,8 @@ class Password(models.Model):
 
 class Resume(models.Model):
     owner = models.OneToOneField("User", on_delete=models.CASCADE, related_name="resume")
-    document = models.FileField(upload_to="resumes/%Y/%m/%d/")
-    desired_job = models.CharField(max_length=128)
+    document = models.FileField(upload_to="resumes/%Y/%m/%d/", null=True)
+    desired_job = models.CharField(max_length=128, null=True)
     experience = models.CharField(max_length=32, choices=Experience.choices, null=True)
     desired_salary = models.PositiveIntegerField(null=True)
     competencies = models.ManyToManyField("Competency", through="ResumeCompetency")

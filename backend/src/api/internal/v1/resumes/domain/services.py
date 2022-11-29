@@ -49,8 +49,8 @@ class IResumeRepository(ABC):
     def create(
         self,
         owner_id: int,
-        document: UploadedFile,
-        desired_job: str,
+        document: Optional[UploadedFile],
+        desired_job: Optional[str],
         experience: Optional[Experience] = None,
         desired_salary: Optional[int] = None,
     ) -> Resume:
@@ -69,7 +69,7 @@ class IResumeRepository(ABC):
         pass
 
     @abstractmethod
-    def get_one_by_id(self, resume_id: int) -> Resume:
+    def get_resume_by_id(self, resume_id: int) -> Resume:
         pass
 
     @abstractmethod
@@ -151,10 +151,10 @@ class CreatingResumeService(ICreatingResumeService):
         return self.resume_repo.exists_resume_by_owner_id(extra.user_id)
 
     @atomic
-    def create(self, extra: NewResumeIn, document: UploadedFile) -> None:
+    def create(self, extra: NewResumeIn, document: Optional[UploadedFile]) -> None:
         resume = self.resume_repo.create(
             extra.user_id,
-            UploadedFile(document, get_resume_filename(document)),
+            UploadedFile(document, get_resume_filename(document)) if document is not None else None,
             extra.desired_job,
             extra.experience,
             extra.desired_salary,
@@ -191,6 +191,11 @@ class PublishingResumeService(IPublishingResumeService):
         resume.save(update_fields=["published_at"])
 
         self.favourite_resume_repo.delete_resume_from_wishlists(resume_id)
+
+    def are_required_fields_set(self, resume_id: int) -> bool:
+        resume = self.resume_repo.get_resume_by_id(resume_id)
+
+        return resume.desired_job is not None and bool(resume.document) is True
 
 
 class GettingResumeService(IGettingResumeService):
@@ -234,8 +239,7 @@ class UpdatingResumeService(IUpdatingResumeService):
             resume.experience = extra.experience
 
             previous_resume = resume.document.name if resume.document else None
-            if document is not None:
-                resume.document = UploadedFile(document, get_resume_filename(document))
+            resume.document = UploadedFile(document, get_resume_filename(document)) if document is not None else None
 
             resume.save()
 

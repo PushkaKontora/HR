@@ -17,7 +17,7 @@ def update(
     resume_id: int,
     token: str,
     desired_job: str,
-    document: SimpleUploadedFile,
+    document: Optional[SimpleUploadedFile],
     desired_salary: int = None,
     experience: Experience = None,
     competencies: List[str] = None,
@@ -50,7 +50,6 @@ def test_update_resume(
     competencies: Optional[Tuple] = ("Simpsons", "redux", "angular"),
 ) -> None:
     expected_competencies = competencies[1:] if competencies else None
-    expected_document = resume.document
 
     if expected_competencies:
         created_competencies = Competency.objects.bulk_create(Competency(name=n) for n in expected_competencies)
@@ -74,11 +73,12 @@ def test_update_resume(
 
     if pdf_document is not None:
         pdf_document.seek(0)
+        resume.document.seek(0)
         assert resume.document.read() == pdf_document.read()
+        resume.document.close()
+        pdf_document.close()
     else:
-        assert resume.document == expected_document
-
-    resume.document.close()
+        assert bool(resume.document) is False
 
 
 @pytest.mark.integration

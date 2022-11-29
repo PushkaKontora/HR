@@ -29,6 +29,7 @@ from api.internal.v1.resumes.domain.services import (
 from api.internal.v1.resumes.presentation.errors import (
     AttachedDocumentIsLargeError,
     AttachedDocumentIsNotPDFError,
+    NotAllRequiredFieldsAreSet,
     ResumeAlreadyAddedToWishlistError,
     ResumeIsCreatedByUserError,
     UnpublishedResumeCannotBeAddedToWishlistError,
@@ -43,6 +44,7 @@ ERRORS = [
     ResumeAlreadyAddedToWishlistError,
     UnpublishedResumeCannotBeAddedToWishlistError,
     AttachedDocumentIsLargeError,
+    NotAllRequiredFieldsAreSet,
 ]
 
 
