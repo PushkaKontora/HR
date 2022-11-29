@@ -108,7 +108,8 @@ class UserRouter(Router):
             path="",
             methods=["GET"],
             view_func=user_handlers.get_user,
-            response={200: UserOut, 404: MessageResponse},
+            auth=[auth],
+            response={200: UserOut, 403: MessageResponse, 404: MessageResponse},
         )
 
         self.add_api_operation(
