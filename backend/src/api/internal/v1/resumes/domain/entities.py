@@ -7,6 +7,7 @@ from django.db.models import QuerySet
 from ninja import Schema
 from pydantic import AnyHttpUrl, EmailStr, Field
 
+from api.internal.pagination import paginate_page_with_limit
 from api.models import Experience, Resume, User
 
 
@@ -76,7 +77,7 @@ class ResumesOut(Schema):
     @staticmethod
     def from_resumes_with_pagination(resumes: QuerySet[Resume], limit: int, offset: int) -> "ResumesOut":
         return ResumesOut(
-            items=[ResumeOut.from_resume(resume) for resume in resumes[offset : offset + limit]],
+            items=[ResumeOut.from_resume(resume) for resume in paginate_page_with_limit(resumes, offset, limit)],
             count=resumes.count(),
         )
 
