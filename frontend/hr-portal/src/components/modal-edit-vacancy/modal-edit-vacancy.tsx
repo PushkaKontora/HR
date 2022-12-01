@@ -1,6 +1,6 @@
 import Modal from '../../reused-components/modal/modal';
 import React, {ChangeEvent, useEffect, useState} from 'react';
-import {DepartmentsShortVersions, setIsEditorVacancyFlag, setSalaryMax, setSalaryMin, setStateEditVacancy} from '../../features/vacancy/vacancy-slice';
+import {DepartmentsShortVersions, setIsEditorVacancyFlag, setIsStartRequestChangeVacancy, setSalaryMax, setSalaryMin, setStateEditVacancy} from '../../features/vacancy/vacancy-slice';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import './modal-edit-vacancy.scss';
 import cl from 'classnames';
@@ -36,13 +36,39 @@ function ModalEditVacancy() {
   const isPublishedVacancy = useAppSelector((state) => state.vacancy.isPublishedVacancy);
   const isOpenEditVacancyModalState = useAppSelector((state) => state.vacancy.isOpenEditVacancyModal);
   const isEditorVacancyText = useAppSelector((state) => state.vacancy.editorTextVacancy);
+  const isStartRequestChangeVacancy = useAppSelector((state) => state.vacancy.isStartRequestChangeVacancy);
   const [isOpenEditVacancyModal, setIsOpenEditVacancyModal] = useState(isOpenEditVacancyModalState);
   const [isPublishStatus, setIsPublishStatus] = useState(isPublishedVacancy);
   const [nameVacancy, setNameVacancy] = useState('');
   const [experience, setExperience] = useState<ExpectedExperience>(ExpectedExperience.NO_EXPERIENCE);
-  const [minSalary, setMinSalary] = useState('0');
-  const [maxSalary, setMaxSalary] = useState('0');
+  const [minSalary, setMinSalary] = useState(null);
+  const [maxSalary, setMaxSalary] = useState(null);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (isStartRequestChangeVacancy === true) {
+      const vacancyBody: VacancyPutChangeParams = {
+        name: nameVacancy,
+        description: isEditorVacancyText,
+        expected_experience: experience,
+        salary_from: Number(minSalary),
+        salary_to: Number(maxSalary),
+        published: isPublishStatus
+      };
+      console.log(vacancyBody);
+      if (vacancyByID) {
+        dispatch(putVacancyChanges({idVacancy: vacancyByID.id, data: vacancyBody}))
+          .then(() => {
+            dispatch(getVacanciesForEmployer({isPublished: isPublishedVacancy, idDepartment: vacancyByID.department.id, offset: 0}))
+              .then(() => {
+                setIsOpenEditVacancyModal(false);
+              });
+          });
+      }
+      dispatch(setIsStartRequestChangeVacancy(false));
+    }
+  }, [isEditorVacancyText]);
+
 
   useEffect(() => {
     if (vacancyByID) {
@@ -95,24 +121,8 @@ function ModalEditVacancy() {
   };
 
   const putNewDescriptionVacancy = (e: any) => {
-    e.preventDefault();
+    //e.preventDefault();
     dispatch(setIsEditorVacancyFlag());
-    const vacancyBody: VacancyPutChangeParams = {
-      name: nameVacancy,
-      description: isEditorVacancyText,
-      expected_experience: experience,
-      salary_from: Number(minSalary),
-      salary_to: Number(maxSalary),
-      published: isPublishStatus
-    };
-    console.log(vacancyBody);
-    if (vacancyByID) {
-      dispatch(putVacancyChanges({idVacancy: vacancyByID.id, data: vacancyBody}))
-        .then(() => {
-          dispatch(getVacanciesForEmployer({isPublished: isPublishedVacancy, idDepartment: vacancyByID.department.id, offset: 0}))
-            .then(() => setIsOpenEditVacancyModal(false));
-        });
-    }
   };
 
   const handleUndoAction = (e: any) => {

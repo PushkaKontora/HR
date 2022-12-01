@@ -40,6 +40,7 @@ interface VacancyState {
   isOpenEditVacancyModal: boolean;
   isEditorVacancyFlag: boolean;
   editorTextVacancy: string;
+  isStartRequestChangeVacancy: boolean
 }
 
 const initialState: VacancyState = {
@@ -65,7 +66,8 @@ const initialState: VacancyState = {
   isOpenUnpublishVacancyModal: false,
   isOpenEditVacancyModal: false,
   editorTextVacancy: '',
-  isEditorVacancyFlag: true
+  isEditorVacancyFlag: true,
+  isStartRequestChangeVacancy: false
 };
 
 const vacancySlice = createSlice({
@@ -74,6 +76,9 @@ const vacancySlice = createSlice({
   reducers: {
     setEditorTextVacancy(state, action) {
       state.editorTextVacancy = action.payload;
+    },
+    setIsStartRequestChangeVacancy(state, action) {
+      state.isStartRequestChangeVacancy = action.payload;
     },
     setIsEditorVacancyFlag(state) {
       state.isEditorVacancyFlag = !state.isEditorVacancyFlag;
@@ -174,6 +179,7 @@ const vacancySlice = createSlice({
 });
 
 export const {
+  setIsStartRequestChangeVacancy,
   setIsEditorVacancyFlag,
   setEditorTextVacancy,
   setVacancyByID,

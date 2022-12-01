@@ -1,4 +1,18 @@
-.employerMyVacancyScreen-wrapper{
+.employerMyVacancyScreen-wrapper {
   width: 1412px;
   margin: 0 auto;
+
+  .jobSearchScreen-item__banner{
+    padding-bottom: 24px;
+    border-bottom: 0.7px solid #000000;
+  }
+
+
+  .tab-state-my-vacancy {
+    display: flex;
+    background: #F6F5F3;
+    border-radius: 10px;
+    width: 586px;
+    margin-top: 32px;
+  }
 }

@@ -9,7 +9,7 @@ import './employer-creating-new-vacancy.scss';
 
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import UseEditor from '../../reused-components/text-editor/useEditor';
-import {setEditorTextVacancy} from '../../features/vacancy/vacancy-slice';
+import {setEditorTextVacancy, setIsStartRequestChangeVacancy} from '../../features/vacancy/vacancy-slice';
 
 function EmployerCreatingNewVacancy() {
   const [editorState, setEditorState] = useState(
@@ -23,6 +23,7 @@ function EmployerCreatingNewVacancy() {
   useEffect(() => {
     const currentContentAsHTML = convertToHTML(editorState.getCurrentContent());
     dispatch(setEditorTextVacancy(currentContentAsHTML));
+    dispatch(setIsStartRequestChangeVacancy(true));
   }, [isEditorVacancyFlag]);
 
   useEffect(() => {
