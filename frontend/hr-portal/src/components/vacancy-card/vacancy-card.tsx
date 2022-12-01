@@ -10,6 +10,8 @@ import {useNavigate} from 'react-router-dom';
 import {NoAuthRoutes} from '../../const/app-routes';
 import moneyRUSIcon from '../../assets/img/job-seach/₽.svg';
 import ButtonActionVacancyCard from '../button-action-vacancy-card/button-action-vacancy-card';
+import UseEditor from '../../reused-components/text-editor/useEditor';
+import {useEffect, useState} from 'react';
 
 type VacancyCardProps = {
   vacancy: Vacancy
@@ -20,11 +22,29 @@ function VacancyCard(props: VacancyCardProps) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
+  const [convertedContent, setConvertedContent] = useState('');
+
   const vacancyExperience = ExpectedExperienceNameString[vacancy.expected_experience as keyof typeof ExpectedExperienceNameString];
   const handleClickVacancyCard = () => {
     dispatch(setVacancyByID(vacancy));
     navigate(`${vacancy.id}`);
   };
+
+  const createMarkup = (html: any) => {
+    return UseEditor(html).fromHtml();
+
+    // return {
+    //   __html: DOMPurify.sanitize(html)
+    // };
+  };
+
+  useEffect(() => {
+    if (vacancy.description) {
+      setConvertedContent(vacancy.description);
+    } else {
+      setConvertedContent('<p></p>');
+    }
+  }, [vacancy]);
 
   return (
     <div className="vacancyCardWrapper" onClick={handleClickVacancyCard}>
@@ -32,8 +52,7 @@ function VacancyCard(props: VacancyCardProps) {
         <div className="vacancyCardInfo vacancyCardInfo__title">
           {vacancy.name}
         </div>
-        <div className="vacancyCardInfo vacancyCardInfo__description">
-          {vacancy.description}
+        <div className="vacancyCardInfo vacancyCardInfo__description" dangerouslySetInnerHTML={createMarkup(convertedContent)}>
         </div>
         <div className="vacancyCardInfo vacancyCardInfo__tabs">
           <div className="tabsItem">

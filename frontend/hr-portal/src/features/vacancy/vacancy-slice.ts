@@ -38,6 +38,8 @@ interface VacancyState {
   isPublishedVacancy: boolean,
   isOpenUnpublishVacancyModal: boolean;
   isOpenEditVacancyModal: boolean;
+  isEditorVacancyFlag: boolean;
+  editorTextVacancy: string;
 }
 
 const initialState: VacancyState = {
@@ -61,13 +63,21 @@ const initialState: VacancyState = {
   isGetVacanciesEmployer: false,
   isPublishedVacancy: true,
   isOpenUnpublishVacancyModal: false,
-  isOpenEditVacancyModal: false
+  isOpenEditVacancyModal: false,
+  editorTextVacancy: '',
+  isEditorVacancyFlag: true
 };
 
 const vacancySlice = createSlice({
   name: 'vacancy',
   initialState,
   reducers: {
+    setEditorTextVacancy(state, action) {
+      state.editorTextVacancy = action.payload;
+    },
+    setIsEditorVacancyFlag(state) {
+      state.isEditorVacancyFlag = !state.isEditorVacancyFlag;
+    },
     setIsGetVacanciesEmployer(state, action) {
       state.isGetVacanciesEmployer = action.payload;
     },
@@ -164,6 +174,8 @@ const vacancySlice = createSlice({
 });
 
 export const {
+  setIsEditorVacancyFlag,
+  setEditorTextVacancy,
   setVacancyByID,
   setStateRespondModal,
   setStateUnpublishedVacancy,

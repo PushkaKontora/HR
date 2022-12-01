@@ -2,14 +2,22 @@ import styled from 'styled-components';
 import {LargeMedium} from '../fonts/large';
 
 export const GrayButton = styled(LargeMedium)`
-  background-color: #EDECEA;
-  color: black;
   padding: 16px 32px;
-  
+  color: #9C9C9C;
+  background: #F6F5F3;
+
   border-radius: 10px;
-  
-  &:disabled {
-    background-color: #F6F5F3;
-    color: #9C9C9C;
+
+  &:hover {
+    background: #EDECEA;
+    color: #000000;
+    transition: 0.5s;
+  }
+
+  &:active {
+    box-shadow: inset 0px 2px 10px rgba(0, 0, 0, 0.05);
+    background: #EDECEA;
+    color: #000000;
+    transition: 0.5s;
   }
 `;

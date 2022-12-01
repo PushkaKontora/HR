@@ -1,12 +1,16 @@
 import Modal from '../../reused-components/modal/modal';
 import React, {ChangeEvent, useEffect, useState} from 'react';
-import {DepartmentsShortVersions, setSalaryMax, setSalaryMin, setStateEditVacancy} from '../../features/vacancy/vacancy-slice';
+import {DepartmentsShortVersions, setIsEditorVacancyFlag, setSalaryMax, setSalaryMin, setStateEditVacancy} from '../../features/vacancy/vacancy-slice';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import './modal-edit-vacancy.scss';
 import cl from 'classnames';
 import Select, {SingleValue} from 'react-select';
 import {ExpectedExperience, ExpectedExperienceNameString} from '../../const';
 import EmployerCreatingNewVacancy from '../employer-creating-new-vacancy/employer-creating-new-vacancy';
+import {BlueButton} from '../styled/buttons/blue-button';
+import {GrayButton} from '../styled/buttons/gray-button';
+import {VacancyPutChangeParams} from '../../types/vacancy-put-change-params';
+import {getVacanciesForEmployer, putVacancyChanges} from '../../service/async-actions/async-actions-vacancy';
 
 const expectedExperienceShortVersion = [
   {
@@ -31,8 +35,30 @@ function ModalEditVacancy() {
   const vacancyByID = useAppSelector((state) => state.vacancy.vacancyByID);
   const isPublishedVacancy = useAppSelector((state) => state.vacancy.isPublishedVacancy);
   const isOpenEditVacancyModalState = useAppSelector((state) => state.vacancy.isOpenEditVacancyModal);
+  const isEditorVacancyText = useAppSelector((state) => state.vacancy.editorTextVacancy);
   const [isOpenEditVacancyModal, setIsOpenEditVacancyModal] = useState(isOpenEditVacancyModalState);
+  const [isPublishStatus, setIsPublishStatus] = useState(isPublishedVacancy);
+  const [nameVacancy, setNameVacancy] = useState('');
+  const [experience, setExperience] = useState<ExpectedExperience>(ExpectedExperience.NO_EXPERIENCE);
+  const [minSalary, setMinSalary] = useState('0');
+  const [maxSalary, setMaxSalary] = useState('0');
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (vacancyByID) {
+      setNameVacancy(vacancyByID.name);
+      if (vacancyByID?.salary_to) {
+        vacancyByID?.salary_to !== 0 ? setMaxSalary(vacancyByID?.salary_to.toString()) : setMaxSalary('0');
+      }
+      if (vacancyByID?.salary_from) {
+        vacancyByID?.salary_from !== 0 ? setMinSalary(vacancyByID?.salary_from.toString()) : setMinSalary('0');
+      }
+      if (vacancyByID?.expected_experience) {
+        //setExperience(ExpectedExperience[vacancyByID?.expected_experience as ExpectedExperienceNameString]);
+      }
+    }
+  }, [vacancyByID]);
+
 
   useEffect(() => {
     setIsOpenEditVacancyModal(isOpenEditVacancyModalState);
@@ -42,16 +68,56 @@ function ModalEditVacancy() {
     dispatch(setStateEditVacancy(isOpenEditVacancyModal));
   }, [isOpenEditVacancyModal]);
 
+  const handleChangeNameVacancy = (e: ChangeEvent<HTMLInputElement>) => {
+    setNameVacancy(e.target.value);
+  };
+
   const onHandlerChangeExpectedExperience = (e: SingleValue<DepartmentsShortVersions>) => {
-    //dispatch(setDepartmentParam(e?.label));
+    if (e?.label) {
+      const valueExp = Object.keys(ExpectedExperienceNameString).find(key => ExpectedExperienceNameString[key] === e.label);
+      if (valueExp) {
+        setExperience(valueExp);
+      }
+      console.log(e.label, valueExp);
+    }
   };
 
   const handleChangeMinSalary = (e: ChangeEvent<HTMLInputElement>) => {
-    //dispatch(setSalaryMin(e.target.value));
+    if (e.target.value) {
+      setMinSalary(e.target.value.toString());
+    }
   };
 
   const handleChangeMaxSalary = (e: ChangeEvent<HTMLInputElement>) => {
-    //dispatch(setSalaryMax(e.target.value));
+    if (e.target.value) {
+      setMaxSalary(e.target.value.toString());
+    }
+  };
+
+  const putNewDescriptionVacancy = (e: any) => {
+    e.preventDefault();
+    dispatch(setIsEditorVacancyFlag());
+    const vacancyBody: VacancyPutChangeParams = {
+      name: nameVacancy,
+      description: isEditorVacancyText,
+      expected_experience: experience,
+      salary_from: Number(minSalary),
+      salary_to: Number(maxSalary),
+      published: isPublishStatus
+    };
+    console.log(vacancyBody);
+    if (vacancyByID) {
+      dispatch(putVacancyChanges({idVacancy: vacancyByID.id, data: vacancyBody}))
+        .then(() => {
+          dispatch(getVacanciesForEmployer({isPublished: isPublishedVacancy, idDepartment: vacancyByID.department.id, offset: 0}))
+            .then(() => setIsOpenEditVacancyModal(false));
+        });
+    }
+  };
+
+  const handleUndoAction = (e: any) => {
+    e.preventDefault();
+    setIsOpenEditVacancyModal(false);
   };
 
   return (
@@ -71,10 +137,16 @@ function ModalEditVacancy() {
             Статус вакансии*
           </div>
           <div className="toggleStatusVacancy">
-            <button className={cl('btn-status', {'btn-status__active': isPublishedVacancy})}>
+            <button
+              className={cl('btn-status', {'btn-status__active': isPublishStatus})}
+              onClick={() => setIsPublishStatus(true)}
+            >
               Активна
             </button>
-            <button className={cl('btn-status', {'btn-status__active': !isPublishedVacancy})}>
+            <button
+              className={cl('btn-status', {'btn-status__active': !isPublishStatus})}
+              onClick={() => setIsPublishStatus(false)}
+            >
               Неактивна
             </button>
           </div>
@@ -85,8 +157,9 @@ function ModalEditVacancy() {
           </div>
           <input
             type="text"
-            placeholder={vacancyByID?.name}
+            onChange={handleChangeNameVacancy}
             className="input-name-vacancy"
+            value={nameVacancy}
           />
         </div>
         <div className="content-item">
@@ -136,8 +209,9 @@ function ModalEditVacancy() {
           <EmployerCreatingNewVacancy/>
         </div>
       </div>
-      <div className="edit-modal-item">
-
+      <div className="edit-modal-item edit-modal-item__nav">
+        <GrayButton as="button" onClick={handleUndoAction}>Отмена</GrayButton>
+        <BlueButton as="button" onClick={putNewDescriptionVacancy}>Сохранить изменения</BlueButton>
       </div>
     </Modal>
   );

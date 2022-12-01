@@ -8,6 +8,7 @@ import {Generics} from '../../types/generics';
 import {setDepartments, VacanciesApi} from '../../features/vacancy/vacancy-slice';
 import {DepartmentsRoutes} from '../../const/api-routes/api-departments-routes';
 import {getParamsRequestVacancy, initialParamsVacancyRequest} from '../../features/vacancy/vacancy.actions';
+import {VacancyPutChangeParams} from '../../types/vacancy-put-change-params';
 
 
 export const getVacanciesForEmployer = createAsyncThunk<VacanciesApi, { isPublished: boolean, idDepartment: number, offset: number }, Generics>(
@@ -85,3 +86,9 @@ export const patchStatusVacancyUnpublish = createAsyncThunk<void, number, Generi
   },
 );
 
+export const putVacancyChanges = createAsyncThunk<void, { idVacancy: number, data: VacancyPutChangeParams }, Generics>(
+  'vacancy/putVacancyChanges',
+  async ({idVacancy, data}, {dispatch, extra: api}) => {
+    await api.put(VacancyRoutes.vacancyWithID(idVacancy), data);
+  },
+);
