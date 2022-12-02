@@ -1,4 +1,4 @@
-import React, {Dispatch, SetStateAction} from 'react';
+import React, {Dispatch, SetStateAction, useEffect} from 'react';
 import './styles/modal.styles';
 import './styles/modal-wrapper.styles.scss';
 import {ModalContent} from './styles/modal.styles';
@@ -15,6 +15,19 @@ type ModalProps = {
 
 function Modal(props: ModalProps) {
   const {active, setActive, children, width, padding} = props;
+
+  const body = document.body;
+
+  useEffect(() => {
+    if (active) {
+      body.classList.add('disable-scroll');
+    }
+    return () => {
+      body.classList.remove('disable-scroll');
+    };
+  }, [active]);
+
+
   return (
     <div className={cl('modal', {'modal__active': active})} onClick={() => setActive(false)}>
       <ModalContent width={width && width} padding={padding && padding} className="modal-content" onClick={(e) => e.stopPropagation()}>

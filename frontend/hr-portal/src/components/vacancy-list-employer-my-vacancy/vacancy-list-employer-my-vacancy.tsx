@@ -4,6 +4,8 @@ import {getVacanciesForEmployer} from '../../service/async-actions/async-actions
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import ModalMakeUnpublishVacancy from '../modal-make-unpublish-vacancy/modal-make-unpublish-vacancy';
 import ModalEditVacancy from '../modal-edit-vacancy/modal-edit-vacancy';
+import ModalMakePublishVacancy from '../modal-make-publish-vacancy/modal-make-publish-vacancy';
+import ModalCreateVacancy from '../modal-create-vacancy/modal-create-vacancy';
 
 function VacancyListEmployerMyVacancy() {
   const isPublished = useAppSelector((state) => state.vacancy.isPublishedVacancy);
@@ -20,7 +22,9 @@ function VacancyListEmployerMyVacancy() {
   return (
     <>
       <ModalEditVacancy/>
+      <ModalCreateVacancy/>
       <ModalMakeUnpublishVacancy/>
+      <ModalMakePublishVacancy/>
       <VacancyList/>
     </>
   );

@@ -12,6 +12,7 @@ import moneyRUSIcon from '../../assets/img/job-seach/₽.svg';
 import ButtonActionVacancyCard from '../button-action-vacancy-card/button-action-vacancy-card';
 import UseEditor from '../../reused-components/text-editor/useEditor';
 import {useEffect, useState} from 'react';
+import TabsSalary from '../tabs-salary/tabs-salary';
 
 type VacancyCardProps = {
   vacancy: Vacancy
@@ -52,8 +53,10 @@ function VacancyCard(props: VacancyCardProps) {
         <div className="vacancyCardInfo vacancyCardInfo__title">
           {vacancy.name}
         </div>
-        <div className="vacancyCardInfo vacancyCardInfo__description" dangerouslySetInnerHTML={createMarkup(convertedContent)}>
-        </div>
+        <div
+          className="vacancyCardInfo vacancyCardInfo__description"
+          dangerouslySetInnerHTML={createMarkup(convertedContent)}
+        />
         <div className="vacancyCardInfo vacancyCardInfo__tabs">
           <div className="tabsItem">
             <div className="tabs-image">
@@ -63,54 +66,7 @@ function VacancyCard(props: VacancyCardProps) {
               {vacancyExperience}
             </div>
           </div>
-          {(vacancy.salary_to || vacancy.salary_from) &&
-          (
-            <div className="tabsItem">
-              <div className="tabs-image">
-                <img src={moneyIcon} alt="experience icon"/>
-              </div>
-              {
-                vacancy?.salary_to !== null && vacancy?.salary_from === null &&
-                (
-                  <>
-                    <div className="tabs-text">до {vacancy?.salary_to}</div>
-                    <div className="tabs-image-rus">
-                      <img src={moneyRUSIcon} alt="money rus icon"/>
-                    </div>
-                  </>
-                )
-              }
-              {
-                vacancy?.salary_to === null && vacancy?.salary_from !== null &&
-                (
-                  <>
-                    <div className="tabs-text">от {vacancy?.salary_from}</div>
-                    <div className="tabs-image-rus">
-                      <img src={moneyRUSIcon} alt="money rus icon"/>
-                    </div>
-                  </>
-                )
-              }
-              {
-                vacancy?.salary_to !== null && vacancy?.salary_from !== null &&
-                (<div className="tabs-text">
-                  <div className="tabs-flex">
-                    <div className="text">от {vacancy?.salary_from}</div>
-                    <div className="tabs-image-rus">
-                      <img src={moneyRUSIcon} alt="money rus icon"/>
-                    </div>
-                  </div>
-                  <div className="tabs-flex">
-                    <div className="text">до {vacancy?.salary_to}</div>
-                    <div className="tabs-image-rus">
-                      <img src={moneyRUSIcon} alt="money rus icon"/>
-                    </div>
-                  </div>
-                </div>)
-              }
-            </div>
-          )
-          }
+          <TabsSalary/>
         </div>
       </div>
       <div className="vacancyCardItem vacancyCardItem__action">

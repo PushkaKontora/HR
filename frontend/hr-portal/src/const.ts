@@ -47,3 +47,27 @@ export enum ButtonVacancyCard {
   vacancies = 'vacancies',
   empMyVacancy = 'empMyVacancy',
 }
+
+export const expectedExperienceShortVersion = [
+  {
+    'value': 1,
+    'label': ExpectedExperienceNameString[ExpectedExperience.NO_EXPERIENCE]
+  },
+  {
+    'value': 2,
+    'label': ExpectedExperienceNameString[ExpectedExperience.FROM_ONE_TO_THREE_YEARS]
+  },
+  {
+    'value': 3,
+    'label': ExpectedExperienceNameString[ExpectedExperience.FROM_THREE_TO_SIX_YEARS]
+  },
+  {
+    'value': 4,
+    'label': ExpectedExperienceNameString[ExpectedExperience.MORE_THAN_SIX_YEARS]
+  },
+];
+
+export enum typeRequestVacancyModal {
+  CREATE = 'create',
+  CHANGE = 'change'
+}

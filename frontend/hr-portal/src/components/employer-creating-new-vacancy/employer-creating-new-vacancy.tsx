@@ -8,7 +8,6 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import './employer-creating-new-vacancy.scss';
 
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
-import UseEditor from '../../reused-components/text-editor/useEditor';
 import {setEditorTextVacancy, setIsStartRequestChangeVacancy} from '../../features/vacancy/vacancy-slice';
 
 function EmployerCreatingNewVacancy() {
@@ -38,14 +37,6 @@ function EmployerCreatingNewVacancy() {
       setEditorState(EditorState.createEmpty());
     }
   }, [descriptionVacancy]);
-
-  const createMarkup = (html: any) => {
-    return UseEditor(html).fromHtml();
-
-    // return {
-    //   __html: DOMPurify.sanitize(html)
-    // };
-  };
 
   return (
     <div className="wrapper-employer-creating-new-vacancy">

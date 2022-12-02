@@ -1,4 +1,4 @@
-export type VacancyPutChangeParams = {
+export interface VacancyPutChangeParams  {
   name: string,
   description: string,
   expected_experience: string,

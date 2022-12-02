@@ -13,7 +13,10 @@ export const ModalContent = styled.div.attrs<ModalContentProps>((props) => ({
   padding: ${({padding = '80px 80px 60px 80px'}) => padding};
   width: ${({width}) => width};
   position: relative;
-  
+
   min-height: 100px;
+  max-height: 80vh;
+
+  overflow: auto;
 `;
 

@@ -3,8 +3,9 @@ import {createSlice} from '@reduxjs/toolkit';
 import {Vacancy} from '../../types/vacancy';
 import {Department} from '../../types/department';
 import {createDepartmentShortVision, getMaxPagesVacancies, makeViewDataExperience, setNewParamDepartment, setNewParamExperience, setNewParamOffset, setNewParamSalaryMax, setNewParamSalaryMin, setNewParamSearchLine, setNewParamSortBy} from './vacancy.actions';
-import {DEFAULT_ELEMENT_DEPARTMENT, SortingVacancyTypes} from '../../const';
-import {getVacancies, getVacanciesForEmployer} from '../../service/async-actions/async-actions-vacancy';
+import {DEFAULT_ELEMENT_DEPARTMENT, SortingVacancyTypes, typeRequestVacancyModal} from '../../const';
+import {getVacancies, getVacanciesForEmployer, patchStatusVacancyUnpublish} from '../../service/async-actions/async-actions-vacancy';
+import {toast} from 'react-toastify';
 
 export type VacanciesApi = {
   items: Vacancy[],
@@ -40,7 +41,11 @@ interface VacancyState {
   isOpenEditVacancyModal: boolean;
   isEditorVacancyFlag: boolean;
   editorTextVacancy: string;
-  isStartRequestChangeVacancy: boolean
+  isStartRequestChangeVacancy: boolean;
+  isOpenPublishVacancyModal: boolean;
+
+  isOpenCreateVacancyModal: boolean,
+  typeRequestModalVacancy: typeRequestVacancyModal
 }
 
 const initialState: VacancyState = {
@@ -67,7 +72,11 @@ const initialState: VacancyState = {
   isOpenEditVacancyModal: false,
   editorTextVacancy: '',
   isEditorVacancyFlag: true,
-  isStartRequestChangeVacancy: false
+  isStartRequestChangeVacancy: false,
+  isOpenPublishVacancyModal: false,
+
+  isOpenCreateVacancyModal: false,
+  typeRequestModalVacancy: typeRequestVacancyModal.CHANGE
 };
 
 const vacancySlice = createSlice({
@@ -76,6 +85,12 @@ const vacancySlice = createSlice({
   reducers: {
     setEditorTextVacancy(state, action) {
       state.editorTextVacancy = action.payload;
+    },
+    setTypeRequestModalVacancy(state, action) {
+      state.typeRequestModalVacancy = action.payload;
+    },
+    setIsOpenCreateVacancyModal(state, action) {
+      state.isOpenCreateVacancyModal = action.payload;
     },
     setIsStartRequestChangeVacancy(state, action) {
       state.isStartRequestChangeVacancy = action.payload;
@@ -91,9 +106,15 @@ const vacancySlice = createSlice({
     },
     setIsPublishedVacancy(state, action) {
       state.isPublishedVacancy = action.payload;
+      state.paramsForGetVacancies.offset = 0;
+      state.currentPage = 1;
+      setNewParamOffset(0);
     },
     setStateUnpublishedVacancy(state, action) {
       state.isOpenUnpublishVacancyModal = action.payload;
+    },
+    setStatePublishedVacancy(state, action) {
+      state.isOpenPublishVacancyModal = action.payload;
     },
     setStateEditVacancy(state, action) {
       state.isOpenEditVacancyModal = action.payload;
@@ -174,12 +195,17 @@ const vacancySlice = createSlice({
       .addCase(getVacanciesForEmployer.fulfilled, (state, action) => {
         state.vacancies = action.payload;
         state.maxPagesVacancies = getMaxPagesVacancies(action.payload.count);
+      })
+      .addCase(patchStatusVacancyUnpublish.fulfilled, (state, action) => {
+        toast.dark('Вакансия успешно снята с публикации');
       });
   }
 });
 
 export const {
+  setIsOpenCreateVacancyModal,
   setIsStartRequestChangeVacancy,
+  setStatePublishedVacancy,
   setIsEditorVacancyFlag,
   setEditorTextVacancy,
   setVacancyByID,
@@ -197,6 +223,7 @@ export const {
   setDepartments,
   setIsGetVacanciesEmployer,
   setIsPublishedVacancy,
+  setTypeRequestModalVacancy
 } = vacancySlice.actions;
 
 export default vacancySlice.reducer;

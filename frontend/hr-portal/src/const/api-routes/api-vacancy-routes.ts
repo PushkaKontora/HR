@@ -7,4 +7,5 @@ export const VacancyRoutes = {
   postVacancyRequest: `${PRODUCT_VERSION_FOR_ROUTES}/vacancy-requests`,
   vacancyWithID: (id: number) =>  `${VACANCY}/${id}`,
   patchStatusVacancyUnpublish: (id: number) =>  `${VACANCY}/${id}/unpublish`,
+  patchStatusVacancyPublish: (id: number) =>  `${VACANCY}/${id}/publish`,
 };

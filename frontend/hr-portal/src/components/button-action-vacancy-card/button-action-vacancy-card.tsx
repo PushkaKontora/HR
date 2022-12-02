@@ -1,8 +1,8 @@
 import likesIcon from '../../assets/img/vacancy-card/yes_like.svg';
-import {setStateUnpublishedVacancy, setStateRespondModal, setVacancyByID, setStateEditVacancy} from '../../features/vacancy/vacancy-slice';
+import {setStateUnpublishedVacancy, setStateRespondModal, setVacancyByID, setStateEditVacancy, setStatePublishedVacancy, setTypeRequestModalVacancy} from '../../features/vacancy/vacancy-slice';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {Vacancy} from '../../types/vacancy';
-import {ButtonVacancyCard} from '../../const';
+import {ButtonVacancyCard, typeRequestVacancyModal} from '../../const';
 
 type ButtonActionVacancyCardProps = {
   vacancy: Vacancy
@@ -11,6 +11,7 @@ type ButtonActionVacancyCardProps = {
 function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
   const {vacancy} = props;
   const buttonView = useAppSelector((state) => state.page.buttonVacancyCard);
+  const isPublishedVacancy = useAppSelector((state) => state.vacancy.isPublishedVacancy);
   const dispatch = useAppDispatch();
 
   const handlerClickRespond = (e: any) => {
@@ -25,9 +26,16 @@ function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
     dispatch(setStateUnpublishedVacancy(true));
   };
 
+  const handlerClickPublishVacancy = (e: any) => {
+    dispatch(setVacancyByID(vacancy));
+    e.stopPropagation();
+    dispatch(setStatePublishedVacancy(true));
+  };
+
   const handlerClickEditVacancy = (e: any) => {
     dispatch(setVacancyByID(vacancy));
     e.stopPropagation();
+    dispatch(setTypeRequestModalVacancy(typeRequestVacancyModal.CHANGE));
     dispatch(setStateEditVacancy(true));
   };
 
@@ -48,12 +56,23 @@ function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
       }
       {buttonView === ButtonVacancyCard.empMyVacancy
       && (<>
-        <button
-          className="navTabs-btnItem navTabs-btnItem__respond"
-          onClick={handlerClickUnpublishVacancy}
-        >
-          Снять с публикации
-        </button>
+        {isPublishedVacancy
+          ? (
+            <button
+              className="navTabs-btnItem navTabs-btnItem__respond"
+              onClick={handlerClickUnpublishVacancy}
+            >
+              Снять с публикации
+            </button>
+          ) : (
+            <button
+              className="navTabs-btnItem navTabs-btnItem__respond"
+              onClick={handlerClickPublishVacancy}
+            >
+              Опубликовать
+            </button>
+          )}
+
         <button
           className="navTabs-btnItem navTabs-btnItem__respond"
           onClick={handlerClickEditVacancy}
