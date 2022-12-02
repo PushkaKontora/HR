@@ -37,7 +37,7 @@ class IResumeHandlers(ABC):
         pass
 
     @abstractmethod
-    def update_resume(
+    def update_partial_resume(
         self,
         request: HttpRequest,
         resume_id: int = Path(...),
@@ -124,7 +124,7 @@ class ResumeRouter(Router):
             path="",
             methods=["POST"],
             auth=[auth],
-            view_func=resume_handlers.update_resume,
+            view_func=resume_handlers.update_partial_resume,
             response={
                 200: SuccessResponse,
                 401: MessageResponse,

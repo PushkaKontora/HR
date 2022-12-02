@@ -231,23 +231,31 @@ class UpdatingResumeService(IUpdatingResumeService):
 
     @atomic
     def update(self, resume_id: int, extra: ResumeIn, document: Optional[UploadedFile]) -> None:
+        previous_resume = None
+
         with atomic():
             resume = self.resume_repo.get_resume_for_update(resume_id)
 
-            resume.desired_job = extra.desired_job
-            resume.desired_salary = extra.desired_salary
-            resume.experience = extra.experience
+            if extra.desired_job is not None:
+                resume.desired_job = extra.desired_job
 
-            previous_resume = resume.document.name if resume.document else None
-            resume.document = UploadedFile(document, get_resume_filename(document)) if document is not None else None
+            if extra.desired_salary is not None:
+                resume.desired_salary = extra.desired_salary
 
-            resume.save()
+            if extra.experience is not None:
+                resume.experience = extra.experience
+
+            if document is not None:
+                previous_resume = resume.document.name if resume.document else None
+                resume.document = UploadedFile(document, get_resume_filename(document))
 
             if extra.competencies:
                 self.resume_competencies_repo.delete_all_competencies_from_resume(resume_id)
 
                 competencies = set(self.competency_repo.get_existed_competencies_by_names(set(extra.competencies)))
                 self.resume_competencies_repo.attach_competencies_to_resume(resume_id, competencies)
+
+            resume.save()
 
         if previous_resume is not None:
             default_storage.delete(previous_resume)

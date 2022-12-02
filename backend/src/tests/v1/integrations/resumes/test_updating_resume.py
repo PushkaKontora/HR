@@ -44,12 +44,17 @@ def test_update_resume(
     resume: Resume,
     user_token: str,
     pdf_document: Optional[SimpleUploadedFile],
-    desired_job: str = "Frontend",
+    desired_job: Optional[str] = "Frontend",
     desired_salary: Optional[int] = 100,
     experience: Optional[Experience] = Experience.NO_EXPERIENCE,
     competencies: Optional[Tuple] = ("Simpsons", "redux", "angular"),
 ) -> None:
     expected_competencies = competencies[1:] if competencies else None
+    prev_desired_job, prev_experience, prev_desired_salary = (
+        resume.desired_job,
+        resume.experience,
+        resume.desired_salary,
+    )
 
     if expected_competencies:
         created_competencies = Competency.objects.bulk_create(Competency(name=n) for n in expected_competencies)
@@ -63,9 +68,9 @@ def test_update_resume(
     assert response.json() == success()
 
     resume.refresh_from_db()
-    assert resume.desired_job == desired_job
-    assert resume.experience == experience
-    assert resume.desired_salary == desired_salary
+    assert resume.desired_job == desired_job or prev_desired_job
+    assert resume.experience == experience or prev_experience
+    assert resume.desired_salary == desired_salary or prev_desired_salary
     if expected_competencies:
         assert set(resume.competencies.values_list("name", flat=True)) == set(expected_competencies)
     else:
@@ -77,8 +82,6 @@ def test_update_resume(
         assert resume.document.read() == pdf_document.read()
         resume.document.close()
         pdf_document.close()
-    else:
-        assert bool(resume.document) is False
 
 
 @pytest.mark.integration
@@ -86,8 +89,20 @@ def test_update_resume(
 def test_update_resume__with_null_parameters(
     client: Client, resume: Resume, user_token: str, pdf_document: SimpleUploadedFile
 ) -> None:
+    resume.desired_job = "asdf"
+    resume.desired_salary = 10**3
+    resume.experience = Experience.MORE_THAN_SIX_YEARS
+    resume.save()
+
     test_update_resume(
-        client, resume, user_token, pdf_document=None, desired_salary=None, experience=None, competencies=None
+        client,
+        resume,
+        user_token,
+        desired_job=None,
+        pdf_document=None,
+        desired_salary=None,
+        experience=None,
+        competencies=None,
     )
 
 

@@ -203,7 +203,7 @@ class ResumeHandlers(IResumeHandlers):
 
         return SuccessResponse()
 
-    def update_resume(
+    def update_partial_resume(
         self,
         request: HttpRequest,
         resume_id: int = Path(...),
