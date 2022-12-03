@@ -1,11 +1,11 @@
 import Modal from '../../reused-components/modal/modal';
 import React, {ChangeEvent, useEffect, useState} from 'react';
-import {DepartmentsShortVersions, setIsEditorVacancyFlag, setIsStartRequestChangeVacancy, setSalaryMax, setSalaryMin, setStateEditVacancy} from '../../features/vacancy/vacancy-slice';
+import {DepartmentsShortVersions, setIsEditorVacancyFlag, setIsOpenEditVacancyModal, setIsStartRequestChangeVacancy, setSalaryMax, setSalaryMin, setStateEditVacancy} from '../../features/vacancy/vacancy-slice';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import './modal-edit-vacancy.scss';
 import cl from 'classnames';
 import Select, {SingleValue} from 'react-select';
-import {ExpectedExperience, ExpectedExperienceNameString, expectedExperienceShortVersion, typeRequestVacancyModal} from '../../const';
+import {ExpectedExperience, ExpectedExperienceNameString, expectedExperienceShortVersion, TypeRequestVacancyModal} from '../../const';
 import EmployerCreatingNewVacancy from '../employer-creating-new-vacancy/employer-creating-new-vacancy';
 import {BlueButton} from '../styled/buttons/blue-button';
 import {GrayButton} from '../styled/buttons/gray-button';
@@ -21,7 +21,7 @@ function ModalEditVacancy() {
   const isEditorVacancyText = useAppSelector((state) => state.vacancy.editorTextVacancy);
   const isEditorVacancyFlag = useAppSelector((state) => state.vacancy.isEditorVacancyFlag);
   const isStartRequestChangeVacancy = useAppSelector((state) => state.vacancy.isStartRequestChangeVacancy);
-  const [isOpenEditVacancyModal, setIsOpenEditVacancyModal] = useState(isOpenEditVacancyModalState);
+  const [isOpenEditVacancy, setIsOpenEditVacancy] = useState(isOpenEditVacancyModalState);
   const [isPublishStatus, setIsPublishStatus] = useState(isPublishedVacancy);
   const [nameVacancy, setNameVacancy] = useState('');
   const [experience, setExperience] = useState<ExpectedExperience>(ExpectedExperience.NO_EXPERIENCE);
@@ -30,7 +30,7 @@ function ModalEditVacancy() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (isStartRequestChangeVacancy === true && typeRequestModalVacancy === typeRequestVacancyModal.CHANGE) {
+    if (isStartRequestChangeVacancy === true && typeRequestModalVacancy === TypeRequestVacancyModal.CHANGE) {
       const vacancyBody: VacancyPutChangeParams = {
         name: nameVacancy,
         description: isEditorVacancyText,
@@ -45,7 +45,7 @@ function ModalEditVacancy() {
           .then(() => {
             dispatch(getVacanciesForEmployer({isPublished: isPublishedVacancy, idDepartment: vacancyByID.department.id, offset: 0}))
               .then(() => {
-                setIsOpenEditVacancyModal(false);
+                setIsOpenEditVacancy(false);
               });
           });
       }
@@ -71,12 +71,12 @@ function ModalEditVacancy() {
 
 
   useEffect(() => {
-    setIsOpenEditVacancyModal(isOpenEditVacancyModalState);
+    setIsOpenEditVacancy(isOpenEditVacancyModalState);
   }, [isOpenEditVacancyModalState]);
 
   useEffect(() => {
-    dispatch(setStateEditVacancy(isOpenEditVacancyModal));
-  }, [isOpenEditVacancyModal]);
+    dispatch(setIsOpenEditVacancyModal(isOpenEditVacancy));
+  }, [isOpenEditVacancy]);
 
   const handleChangeNameVacancy = (e: ChangeEvent<HTMLInputElement>) => {
     setNameVacancy(e.target.value);
@@ -106,20 +106,22 @@ function ModalEditVacancy() {
 
   const putNewDescriptionVacancy = (e: any) => {
     //e.preventDefault();
-    dispatch(setIsEditorVacancyFlag());
+    if (nameVacancy.length > 0 && !(Number(maxSalary) !== 0 && Number(maxSalary) <= Number(minSalary))) {
+      dispatch(setIsEditorVacancyFlag());
+    }
   };
 
   const handleUndoAction = (e: any) => {
     e.preventDefault();
-    setIsOpenEditVacancyModal(false);
+    setIsOpenEditVacancy(false);
   };
 
   return (
     <Modal
       padding="80px 80px 60px 80px"
       width={1026}
-      active={isOpenEditVacancyModal}
-      setActive={setIsOpenEditVacancyModal}
+      active={isOpenEditVacancy}
+      setActive={setIsOpenEditVacancy}
     >
       <div className="edit-modal-item edit-modal-item__header">
         <div className="header header__title">Редактирование вакансии</div>
@@ -170,7 +172,7 @@ function ModalEditVacancy() {
                 onChange={handleChangeMinSalary}
                 placeholder="min"
               />
-            </div>'
+            </div>
             <div className="text-field-salary text-field-salary__max">
               <input
                 className="text-field-salary-input"
@@ -187,13 +189,12 @@ function ModalEditVacancy() {
           <div className="name-field">
             Описание вакансии*
           </div>
-          <EmployerCreatingNewVacancy/>
+          <EmployerCreatingNewVacancy typeViewToolbar={TypeRequestVacancyModal.CHANGE}/>
         </div>
       </div>
       <div className="edit-modal-item edit-modal-item__nav">
         <GrayButton as="button" onClick={handleUndoAction}>Отмена</GrayButton>
-        <BlueButton as="button"
-                    onClick={putNewDescriptionVacancy}
+        <BlueButton as="button" onClick={putNewDescriptionVacancy}
         >
           Сохранить изменения
         </BlueButton>

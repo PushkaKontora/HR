@@ -67,7 +67,7 @@ export const expectedExperienceShortVersion = [
   },
 ];
 
-export enum typeRequestVacancyModal {
+export enum TypeRequestVacancyModal {
   CREATE = 'create',
   CHANGE = 'change'
 }

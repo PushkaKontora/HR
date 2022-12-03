@@ -71,6 +71,7 @@ export const logout = createAsyncThunk<void, undefined, Generics>(
   async (_arg, {dispatch, extra: api}) => {
     dispatch(setLoading(true));
     dropToken();
+    //browserHistory.go(-2);
     // drop refresh token from cookie
     dispatch(reset());
     dispatch(setLoading(false));

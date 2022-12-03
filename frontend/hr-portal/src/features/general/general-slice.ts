@@ -11,6 +11,8 @@ import {Competency} from '../../types/competency';
 import {getCompetenciesAction} from '../../service/async-actions/async-actions-competencies';
 import {createResumeAction} from '../../service/async-actions/async-actions-resume';
 import {deleteUser} from '../../service/async-actions/async-actions-delete-user';
+import {logout} from '../../service/async-actions/async-actions-user';
+import browserHistory from '../../service/browser-history';
 
 interface GeneralState {
   statusUser: UserStatus;

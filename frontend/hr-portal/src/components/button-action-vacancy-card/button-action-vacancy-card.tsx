@@ -1,8 +1,8 @@
 import likesIcon from '../../assets/img/vacancy-card/yes_like.svg';
-import {setStateUnpublishedVacancy, setStateRespondModal, setVacancyByID, setStateEditVacancy, setStatePublishedVacancy, setTypeRequestModalVacancy} from '../../features/vacancy/vacancy-slice';
+import {setStateUnpublishedVacancy, setStateRespondModal, setVacancyByID, setStatePublishedVacancy, setTypeRequestModalVacancy, setIsOpenEditVacancyModal} from '../../features/vacancy/vacancy-slice';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {Vacancy} from '../../types/vacancy';
-import {ButtonVacancyCard, typeRequestVacancyModal} from '../../const';
+import {ButtonVacancyCard, TypeRequestVacancyModal} from '../../const';
 
 type ButtonActionVacancyCardProps = {
   vacancy: Vacancy
@@ -35,8 +35,8 @@ function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
   const handlerClickEditVacancy = (e: any) => {
     dispatch(setVacancyByID(vacancy));
     e.stopPropagation();
-    dispatch(setTypeRequestModalVacancy(typeRequestVacancyModal.CHANGE));
-    dispatch(setStateEditVacancy(true));
+    dispatch(setTypeRequestModalVacancy(TypeRequestVacancyModal.CHANGE));
+    dispatch(setIsOpenEditVacancyModal(true));
   };
 
   return (

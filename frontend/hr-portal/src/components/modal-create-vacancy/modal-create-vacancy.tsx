@@ -1,12 +1,11 @@
 import '../modal-edit-vacancy/modal-edit-vacancy.scss';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import React, {ChangeEvent, useEffect, useState} from 'react';
-import {ExpectedExperience, ExpectedExperienceNameString, expectedExperienceShortVersion, SortingVacancyTypes, typeRequestVacancyModal} from '../../const';
+import {ExpectedExperience, ExpectedExperienceNameString, expectedExperienceShortVersion, SortingVacancyTypes, TypeRequestVacancyModal} from '../../const';
 import {createVacancy, getVacanciesForEmployer} from '../../service/async-actions/async-actions-vacancy';
-import {DepartmentsShortVersions, setIsEditorVacancyFlag, setIsStartRequestChangeVacancy, setStateEditVacancy} from '../../features/vacancy/vacancy-slice';
+import {DepartmentsShortVersions, setIsEditorVacancyFlag, setIsOpenCreateVacancyModal, setIsStartRequestChangeVacancy} from '../../features/vacancy/vacancy-slice';
 import Select, {SingleValue} from 'react-select';
 import Modal from '../../reused-components/modal/modal';
-import cl from 'classnames';
 import EmployerCreatingNewVacancy from '../employer-creating-new-vacancy/employer-creating-new-vacancy';
 import {GrayButton} from '../styled/buttons/gray-button';
 import {BlueButton} from '../styled/buttons/blue-button';
@@ -21,7 +20,7 @@ function ModalCreateVacancy() {
   const isEditorVacancyFlag = useAppSelector((state) => state.vacancy.isEditorVacancyFlag);
   const isStartRequestChangeVacancy = useAppSelector((state) => state.vacancy.isStartRequestChangeVacancy);
   const departmentID = useAppSelector((state) => state.general.user?.department.id);
-  const [isOpenCreateVacancyVacancyModal, setIsOpenCreateVacancyVacancyModal] = useState(isOpenCreateVacancyModalFromRedux);
+  const [isOpenCreateVacancy, setIsOpenCreateVacancy] = useState(isOpenCreateVacancyModalFromRedux);
   const [isPublishStatus, setIsPublishStatus] = useState(isPublishedVacancy);
   const [nameVacancy, setNameVacancy] = useState('');
   const [experience, setExperience] = useState<ExpectedExperience>(ExpectedExperience.NO_EXPERIENCE);
@@ -32,7 +31,7 @@ function ModalCreateVacancy() {
   useEffect(() => {
     if (isStartRequestChangeVacancy === true
       && departmentID
-      && typeRequestModalVacancy === typeRequestVacancyModal.CREATE) {
+      && typeRequestModalVacancy === TypeRequestVacancyModal.CREATE) {
       const vacancyBody: CreateVacancyParams = {
         name: nameVacancy,
         description: isEditorVacancyText,
@@ -47,7 +46,7 @@ function ModalCreateVacancy() {
         .then(() => {
           dispatch(getVacanciesForEmployer({isPublished: isPublishedVacancy, idDepartment: departmentID, offset: 0}))
             .then(() => {
-              setIsOpenCreateVacancyVacancyModal(false);
+              setIsOpenCreateVacancy(false);
             });
         });
 
@@ -57,12 +56,12 @@ function ModalCreateVacancy() {
 
 
   useEffect(() => {
-    setIsOpenCreateVacancyVacancyModal(isOpenCreateVacancyModalFromRedux);
+    setIsOpenCreateVacancy(isOpenCreateVacancyModalFromRedux);
   }, [isOpenCreateVacancyModalFromRedux]);
 
   useEffect(() => {
-    dispatch(setStateEditVacancy(isOpenCreateVacancyVacancyModal));
-  }, [isOpenCreateVacancyVacancyModal]);
+    dispatch(setIsOpenCreateVacancyModal(isOpenCreateVacancy));
+  }, [isOpenCreateVacancy]);
 
   const handleChangeNameVacancy = (e: ChangeEvent<HTMLInputElement>) => {
     setNameVacancy(e.target.value);
@@ -91,24 +90,23 @@ function ModalCreateVacancy() {
   };
 
   const handlerClickCreateVacancy = (e: any) => {
-    if (nameVacancy.length > 0){
+    if (nameVacancy.length > 0 && !(Number(maxSalary) !== 0 && Number(maxSalary) <= Number(minSalary))) {
       dispatch(setIsEditorVacancyFlag());
     }
-      //e.preventDefault();
-
+    //e.preventDefault();
   };
 
   const handleUndoAction = (e: any) => {
     e.preventDefault();
-    setIsOpenCreateVacancyVacancyModal(false);
+    setIsOpenCreateVacancy(false);
   };
 
   return (
     <Modal
       padding="80px 80px 60px 80px"
       width={1026}
-      active={isOpenCreateVacancyVacancyModal}
-      setActive={setIsOpenCreateVacancyVacancyModal}
+      active={isOpenCreateVacancy}
+      setActive={setIsOpenCreateVacancy}
     >
       <div className="edit-modal-item edit-modal-item__header">
         <div className="header header__title">Создание новой вакансии</div>
@@ -130,7 +128,7 @@ function ModalCreateVacancy() {
             onChange={handleChangeNameVacancy}
             className="input-name-vacancy"
             value={nameVacancy}
-            placeholder="HR-специалист"
+            placeholder="Введите название"
           />
         </div>
         <div className="content-item">
@@ -177,14 +175,12 @@ function ModalCreateVacancy() {
           <div className="name-field">
             Описание вакансии*
           </div>
-          <EmployerCreatingNewVacancy/>
+          <EmployerCreatingNewVacancy typeViewToolbar={TypeRequestVacancyModal.CREATE}/>
         </div>
       </div>
       <div className="edit-modal-item edit-modal-item__nav">
         <GrayButton as="button" onClick={handleUndoAction}>Отмена</GrayButton>
-        <BlueButton as="button"
-                    onClick={handlerClickCreateVacancy}
-        >
+        <BlueButton as="button" onClick={handlerClickCreateVacancy}>
           Создать вакансию
         </BlueButton>
       </div>

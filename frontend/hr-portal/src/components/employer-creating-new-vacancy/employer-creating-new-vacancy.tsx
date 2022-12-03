@@ -9,14 +9,21 @@ import './employer-creating-new-vacancy.scss';
 
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {setEditorTextVacancy, setIsStartRequestChangeVacancy} from '../../features/vacancy/vacancy-slice';
+import {TypeRequestVacancyModal} from '../../const';
 
-function EmployerCreatingNewVacancy() {
+type EmployerCreatingNewVacancyProps = {
+  typeViewToolbar: TypeRequestVacancyModal
+}
+
+function EmployerCreatingNewVacancy(props: EmployerCreatingNewVacancyProps) {
+  const {typeViewToolbar} = props;
   const [editorState, setEditorState] = useState(
     EditorState.createEmpty()
   );
   const descriptionVacancy = useAppSelector((state) => state.vacancy.vacancyByID?.description);
-  const isOpenToolbar = useAppSelector((state) => state.vacancy.isOpenEditVacancyModal);
+  const isHiddenToolbar = useAppSelector((state) => state.vacancy.isHiddenToolbar);
   const isEditorVacancyFlag = useAppSelector((state) => state.vacancy.isEditorVacancyFlag);
+  const typeOpenModal = useAppSelector((state) => state.vacancy.typeRequestModalVacancy);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -43,7 +50,7 @@ function EmployerCreatingNewVacancy() {
       <div className="wrapper-editor-text">
         <Editor
           editorState={editorState}
-          toolbarHidden={!isOpenToolbar}
+          toolbarHidden={isHiddenToolbar || (typeViewToolbar !== typeOpenModal)}
           onEditorStateChange={setEditorState}
           placeholder="Описание вашей вакансии..."
           toolbar={{

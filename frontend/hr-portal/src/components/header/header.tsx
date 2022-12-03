@@ -1,19 +1,25 @@
-import React from 'react';
+import cl from 'classnames';
 
 import logoHeader from '../../assets/img/header/logo_m.svg';
-import personalIcon from '../../assets/img/header/personal.svg';
-
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import {ReactComponent  as LikeIcon} from '../../assets/img/header/default-likes.svg';
+import {ReactComponent as LikeIcon} from '../../assets/img/header/default-likes.svg';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import {ReactComponent  as PersonalIcon} from '../../assets/img/header/personal.svg';
-import exitIcon from '../../assets/img/header/button-exit.svg';
-import './header.scss';
+import {ReactComponent as PersonalIcon} from '../../assets/img/header/personal.svg';
 import HeaderNav from '../header-nav/header-nav';
 
+import './header.scss';
+import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import {logout} from '../../service/async-actions/async-actions-user';
+
 function Header() {
+  const isLoading = useAppSelector((state) => state.general.loading);
+  const dispatch = useAppDispatch();
+
+  const handlerClickLogout = () => {
+    dispatch(logout());
+  };
 
   return (
     <div className="header-wrapper">
@@ -25,9 +31,19 @@ function Header() {
           <HeaderNav/>
         </div>
         <div className="side-header">
-          <div className="header-nav-personal"><LikeIcon className='likes-icon'/></div>
-          <div className="header-nav-personal"><PersonalIcon className='personal-icon' /></div>
-          <div className="header-nav-personal"><img src={exitIcon} alt="exit icon"/></div>
+          <div className="header-nav-personal"><LikeIcon className="likes-icon"/></div>
+          <div className="header-nav-personal"><PersonalIcon className="personal-icon"/></div>
+          <div
+            className='header-nav-personal header-nav-personal__exit'
+            onClick={handlerClickLogout}
+          >
+            <button className={cl('btn-exit', {'btn-exit__load': isLoading})}>
+              {isLoading
+                ? (<div className="loading"/>)
+                : (<>Выйти</>)
+              }</button>
+
+          </div>
         </div>
       </div>
     </div>

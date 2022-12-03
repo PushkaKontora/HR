@@ -3,7 +3,7 @@ import {createSlice} from '@reduxjs/toolkit';
 import {Vacancy} from '../../types/vacancy';
 import {Department} from '../../types/department';
 import {createDepartmentShortVision, getMaxPagesVacancies, makeViewDataExperience, setNewParamDepartment, setNewParamExperience, setNewParamOffset, setNewParamSalaryMax, setNewParamSalaryMin, setNewParamSearchLine, setNewParamSortBy} from './vacancy.actions';
-import {DEFAULT_ELEMENT_DEPARTMENT, SortingVacancyTypes, typeRequestVacancyModal} from '../../const';
+import {DEFAULT_ELEMENT_DEPARTMENT, SortingVacancyTypes, TypeRequestVacancyModal} from '../../const';
 import {getVacancies, getVacanciesForEmployer, patchStatusVacancyUnpublish} from '../../service/async-actions/async-actions-vacancy';
 import {toast} from 'react-toastify';
 
@@ -45,7 +45,9 @@ interface VacancyState {
   isOpenPublishVacancyModal: boolean;
 
   isOpenCreateVacancyModal: boolean,
-  typeRequestModalVacancy: typeRequestVacancyModal
+  typeRequestModalVacancy: TypeRequestVacancyModal;
+
+  isHiddenToolbar: boolean
 }
 
 const initialState: VacancyState = {
@@ -76,7 +78,9 @@ const initialState: VacancyState = {
   isOpenPublishVacancyModal: false,
 
   isOpenCreateVacancyModal: false,
-  typeRequestModalVacancy: typeRequestVacancyModal.CHANGE
+  typeRequestModalVacancy: TypeRequestVacancyModal.CHANGE,
+
+  isHiddenToolbar: true
 };
 
 const vacancySlice = createSlice({
@@ -91,6 +95,11 @@ const vacancySlice = createSlice({
     },
     setIsOpenCreateVacancyModal(state, action) {
       state.isOpenCreateVacancyModal = action.payload;
+      state.isHiddenToolbar = !action.payload;
+    },
+    setIsOpenEditVacancyModal(state, action) {
+      state.isOpenEditVacancyModal = action.payload;
+      state.isHiddenToolbar = !action.payload;
     },
     setIsStartRequestChangeVacancy(state, action) {
       state.isStartRequestChangeVacancy = action.payload;
@@ -115,9 +124,6 @@ const vacancySlice = createSlice({
     },
     setStatePublishedVacancy(state, action) {
       state.isOpenPublishVacancyModal = action.payload;
-    },
-    setStateEditVacancy(state, action) {
-      state.isOpenEditVacancyModal = action.payload;
     },
     setStateRespondModal(state, action) {
       state.isOpenRespondModal = action.payload;
@@ -204,6 +210,7 @@ const vacancySlice = createSlice({
 
 export const {
   setIsOpenCreateVacancyModal,
+  setIsOpenEditVacancyModal,
   setIsStartRequestChangeVacancy,
   setStatePublishedVacancy,
   setIsEditorVacancyFlag,
@@ -211,7 +218,6 @@ export const {
   setVacancyByID,
   setStateRespondModal,
   setStateUnpublishedVacancy,
-  setStateEditVacancy,
   setSalaryMin,
   setSalaryMax,
   setSortedItemParam,
