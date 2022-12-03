@@ -11,4 +11,9 @@ export const BlueButton = styled(ButtonGeneralSize)`
   &:active {
     background-color: #E3EDFF;
   }
+
+  classname {
+    background-color: #42041b;
+  }
+
 `;

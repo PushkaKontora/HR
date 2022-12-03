@@ -1,8 +1,6 @@
 import './job-search-details-screen.scss';
 import {useAppSelector} from '../../app/hooks';
-import moneyIcon from '../../assets/img/vacancy-card/money.svg';
 import experienceIcon from '../../assets/img/vacancy-card/experience.svg';
-import moneyRUSIcon from '../../assets/img/job-seach/₽.svg';
 import {ExpectedExperienceNameString} from '../../const';
 import likesIcon from '../../assets/img/vacancy-card/yes_like.svg';
 import departmentLogoIcon from '../../assets/img/vacancy-card/departments-icon.svg';
@@ -16,7 +14,7 @@ function JobSearchDetailsScreen() {
   const [convertedContent, setConvertedContent] = useState('');
 
   useEffect(() => {
-    if (vacancy.description) {
+    if (vacancy && vacancy.description) {
       setConvertedContent(vacancy.description);
     } else {
       setConvertedContent('<p></p>');

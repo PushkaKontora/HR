@@ -52,7 +52,7 @@ function App() {
               </PrivateRoute>
           }/>
           <Route path={':id'} element={
-            <PrivateRoute requiredUserStatus={UserStatus.user}>
+            <PrivateRoute requiredUserStatus={UserStatus.user && UserStatus.employer}>
               <JobSearchDetailsScreen/>
             </PrivateRoute>
           }/>

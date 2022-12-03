@@ -11,6 +11,8 @@ import {GrayButton} from '../styled/buttons/gray-button';
 import {BlueButton} from '../styled/buttons/blue-button';
 import {CreateVacancyParams} from '../../types/create-vacancy-params';
 import ModalBtnStatusVacancy from '../modal-btn-status-vacancy/modal-btn-status-vacancy';
+import cl from 'classnames';
+import '../../styles/btn-blue-disabled.scss';
 
 function ModalCreateVacancy() {
   const typeRequestModalVacancy = useAppSelector((state) => state.vacancy.typeRequestModalVacancy);
@@ -180,7 +182,9 @@ function ModalCreateVacancy() {
       </div>
       <div className="edit-modal-item edit-modal-item__nav">
         <GrayButton as="button" onClick={handleUndoAction}>Отмена</GrayButton>
-        <BlueButton as="button" onClick={handlerClickCreateVacancy}>
+        <BlueButton as="button"
+                    className={cl({'disabledBlueBtn': nameVacancy.length <= 0 || (Number(maxSalary) !== 0 && Number(maxSalary) <= Number(minSalary))})}
+                    onClick={handlerClickCreateVacancy}>
           Создать вакансию
         </BlueButton>
       </div>

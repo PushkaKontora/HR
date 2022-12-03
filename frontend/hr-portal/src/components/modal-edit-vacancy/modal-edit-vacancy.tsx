@@ -3,6 +3,7 @@ import React, {ChangeEvent, useEffect, useState} from 'react';
 import {DepartmentsShortVersions, setIsEditorVacancyFlag, setIsOpenEditVacancyModal, setIsStartRequestChangeVacancy, setSalaryMax, setSalaryMin, setStateEditVacancy} from '../../features/vacancy/vacancy-slice';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import './modal-edit-vacancy.scss';
+import '../../styles/btn-blue-disabled.scss';
 import cl from 'classnames';
 import Select, {SingleValue} from 'react-select';
 import {ExpectedExperience, ExpectedExperienceNameString, expectedExperienceShortVersion, TypeRequestVacancyModal} from '../../const';
@@ -194,7 +195,9 @@ function ModalEditVacancy() {
       </div>
       <div className="edit-modal-item edit-modal-item__nav">
         <GrayButton as="button" onClick={handleUndoAction}>Отмена</GrayButton>
-        <BlueButton as="button" onClick={putNewDescriptionVacancy}
+        <BlueButton as="button"
+                    className={cl({'disabledBlueBtn': nameVacancy.length <= 0 || (Number(maxSalary) !== 0 && Number(maxSalary) <= Number(minSalary))})}
+                    onClick={putNewDescriptionVacancy}
         >
           Сохранить изменения
         </BlueButton>
