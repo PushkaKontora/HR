@@ -9,7 +9,7 @@ import {signUp} from '../../../service/async-actions/async-actions-user';
 import {SignInData} from '../../../types/sign-in-data';
 import {EMAIL_OPTIONS, PASSWORD_OPTIONS} from '../../../const/forms/input-options';
 import {UserStatus} from '../../../types/user-status';
-import {useNavigate} from 'react-router-dom';
+import {redirect, useLocation, useNavigate} from 'react-router-dom';
 
 function SignUpForm() {
   const {
@@ -81,6 +81,9 @@ function SignUpForm() {
     let mounted = true;
 
     if (mounted) {
+      if (userStatus !== UserStatus.noAuth) {
+        navigate('/');
+      }
       /*
       if (userStatus !== UserStatus.noAuth) {
         navigate(-1);
@@ -94,6 +97,7 @@ function SignUpForm() {
 
   const onSubmit = (data: SignInData) => {
     dispatch(signUp(data));
+    //.then(() => {redirect(location.state.prevLocation);});
     //.then(() => {window.location.reload();});
   };
 

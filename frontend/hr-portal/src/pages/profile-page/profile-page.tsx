@@ -41,13 +41,13 @@ function ProfilePage() {
         <h4 style={{marginBottom: '16px'}}>Вы действительно уверены, что хотите удалить аккаунт?</h4>
         <LargeRegular style={{marginBottom: '40px'}}>Вся информация, связанная с аккаунтом будет удалена.</LargeRegular>
         <ModalButtonContainer>
-          <BlueButton
+          <GrayButton
             as={'button'}
             style={{flex: 1, marginRight: '20px'}}
             onClick={() => {setShowingModal(false);}}>
             Отмена
-          </BlueButton>
-          <GrayButton
+          </GrayButton>
+          <BlueButton
             as={'button'}
             style={{flex: 1}}
             onClick={() => {
@@ -60,7 +60,7 @@ function ProfilePage() {
               }
             }}>
             Удалить мой аккаунт
-          </GrayButton>
+          </BlueButton>
         </ModalButtonContainer>
       </Modal>
 

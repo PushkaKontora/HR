@@ -6,6 +6,8 @@ import CardSorting from '../card-sorting/card-sorting';
 import VacancyList from '../vacancy-list/vacancy-list';
 import {setDepartmentParam, setExperienceParam, setSalaryMax, setSalaryMin} from '../../features/vacancy/vacancy-slice';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import {useEffect} from 'react';
+import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 
 function VacancyContent() {
   const vacancies = useAppSelector((state) => state.vacancy.vacancies);
@@ -17,6 +19,11 @@ function VacancyContent() {
     dispatch(setSalaryMin(''));
     dispatch(setDepartmentParam(''));
   };
+
+  useEffect(() => {
+    dispatch(getVacancies());
+    console.log('VacancyList');
+  }, []);
 
   return (
     <>
@@ -37,7 +44,7 @@ function VacancyContent() {
             <div className="title">Найдена {vacancies.count} вакансия</div>
             <CardSorting/>
           </div>
-          <VacancyList/>
+          <VacancyList vacancies={vacancies.items} showPagination/>
         </div>
       </div>
     </>

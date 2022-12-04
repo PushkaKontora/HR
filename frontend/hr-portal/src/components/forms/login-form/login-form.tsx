@@ -8,7 +8,7 @@ import {LargeRegular} from '../../styled/fonts/large';
 import {useAppDispatch, useAppSelector} from '../../../app/hooks';
 import {getAuthUser, login} from '../../../service/async-actions/async-actions-user';
 import {UserStatus} from '../../../types/user-status';
-import {Navigate, redirect, useNavigate} from 'react-router-dom';
+import {Navigate, redirect, useLocation, useNavigate} from 'react-router-dom';
 import {decodeToken} from '../../../service/token-manager';
 import {EMAIL_OPTIONS} from '../../../const/forms/input-options';
 import browserHistory from '../../../service/browser-history';
@@ -32,11 +32,19 @@ function LoginForm() {
   const error = useAppSelector((state) => state.general.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     let mounted = true;
 
     if (mounted) {
+      if (userStatus !== UserStatus.noAuth) {
+        if (location.state) {
+          navigate(location.state.prevLocation);
+        } else {
+          navigate('/');
+        }
+      }
       /*
       if (userStatus !== UserStatus.noAuth) {
         if (browserHistory.index >= 0) {
@@ -75,6 +83,7 @@ function LoginForm() {
 
   const onSubmit = (data: LoginFormData) => {
     dispatch(login(data));
+    //.then(() => {redirect(location.state.prevLocation);});
     console.log('Login submitted, awaiting...');
   };
 

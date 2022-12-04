@@ -1,14 +1,19 @@
 import {createSlice, isPending} from '@reduxjs/toolkit';
 import {ResumeUser} from '../../types/resume';
-import {createResumeAction} from '../../service/async-actions/async-actions-resume';
+import {createResumeAction, getResumeWishlist} from '../../service/async-actions/async-actions-resume';
+import {Vacancy} from '../../types/vacancy';
+import {getVacancyWishlist} from '../../service/async-actions/async-actions-vacancy';
 
 interface UserState {
   resumeUser: ResumeUser | null;
+  favoriteVacancies: Vacancy[],
+  favoriteResumes: ResumeUser[]
 }
 
-
 const initialState: UserState = {
-  resumeUser: null
+  resumeUser: null,
+  favoriteVacancies: [],
+  favoriteResumes: []
 };
 
 const userSlice = createSlice({
@@ -18,6 +23,15 @@ const userSlice = createSlice({
     setResumeUser(state, action) {
       state.resumeUser = action.payload;
     }
+  },
+  extraReducers(builder) {
+    builder
+      .addCase(getVacancyWishlist.fulfilled, (state, action) => {
+        state.favoriteVacancies = action.payload;
+      })
+      .addCase(getResumeWishlist.fulfilled, (state, action) => {
+        state.favoriteResumes = action.payload;
+      });
   }
 });
 

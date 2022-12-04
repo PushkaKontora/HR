@@ -6,6 +6,7 @@ export const ResumeFieldContainer = styled.div`
   align-items: center;
   
   margin-bottom: 16px;
+  height: 42px;
 `;
 
 export const ResumeFieldLabel = styled(XLargeRegular)`

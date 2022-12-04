@@ -1,6 +1,5 @@
-import {InputData} from '../../../../forms/types/form-input-props';
 import {Image, ImageLabel} from '../../../../../pages/profile-page/styles';
-import placeholder from '../../../../../assets/img/profile/placeholder.jpg';
+import placeholder from '../../../../../assets/svg/placeholder.svg';
 import {ProfileBlock, ProfileBlockProps} from '../../profile-block';
 import {useAppDispatch, useAppSelector} from '../../../../../app/hooks';
 import {FileLoadInput} from '../../../../file-load-form/file-load-input';
@@ -41,7 +40,7 @@ export function ProfilePhoto() {
                 toast.error('Фото профиля удалено');
               });
           }
-        }, showing: true},
+        }, showing: Boolean(user?.photo)},
       {text: 'Загрузить',
         onClick: () => {
           photoInputRef.current?.click();

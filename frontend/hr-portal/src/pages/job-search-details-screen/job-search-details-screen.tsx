@@ -4,7 +4,7 @@ import moneyIcon from '../../assets/img/vacancy-card/money.svg';
 import experienceIcon from '../../assets/img/vacancy-card/experience.svg';
 import moneyRUSIcon from '../../assets/img/job-seach/₽.svg';
 import {ExpectedExperienceNameString} from '../../const';
-import likesIcon from '../../assets/img/vacancy-card/yes_like.svg';
+import likesIcon from '../../assets/img/vacancy-card/no_like.svg';
 import departmentLogoIcon from '../../assets/img/vacancy-card/departments-icon.svg';
 import UseEditor from '../../reused-components/text-editor/useEditor';
 

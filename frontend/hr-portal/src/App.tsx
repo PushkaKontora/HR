@@ -17,6 +17,7 @@ import EmployerCreatingNewVacancy from './components/employer-creating-new-vacan
 import ProfilePage from './pages/profile-page/profile-page';
 import {ToastWrapper} from './components/toast-wrapper/toast-wrapper';
 import browserHistory from './service/browser-history';
+import {FavoritePage} from './pages/favorite-page/favorite-page';
 
 function App() {
   const status = useAppSelector((state) => state.general.statusUser);
@@ -27,10 +28,10 @@ function App() {
 
     if (isMounted) {
       checkToken(dispatch);
-      console.log(browserHistory.location);
+      /*console.log(browserHistory.location);
       if (status !== UserStatus.noAuth) {
         browserHistory.go(-2);
-      }
+      }*/
     }
 
     return () => {
@@ -43,18 +44,23 @@ function App() {
       <Routes>
         <Route path={'/'} element={<DefaultLayout/>}>
           <Route index element={
-            <PrivateRoute requiredUserStatus={UserStatus.user}>
+            <PrivateRoute requiredUserStatus={'anyLoggedIn'}>
               <JobSearchScreen/>
             </PrivateRoute>
           }/>
           <Route path={':id'} element={
-            <PrivateRoute requiredUserStatus={UserStatus.user}>
+            <PrivateRoute requiredUserStatus={'anyLoggedIn'}>
               <JobSearchDetailsScreen/>
             </PrivateRoute>
           }/>
           <Route path={AuthRoutes.Profile} element={
             <PrivateRoute requiredUserStatus={'anyLoggedIn'}>
               <ProfilePage/>
+            </PrivateRoute>
+          }/>
+          <Route path={AuthRoutes.Favorite} element={
+            <PrivateRoute requiredUserStatus={'anyLoggedIn'}>
+              <FavoritePage/>
             </PrivateRoute>
           }/>
           <Route path={NoAuthRoutes.Login} element={<LoginPage/>}/>
