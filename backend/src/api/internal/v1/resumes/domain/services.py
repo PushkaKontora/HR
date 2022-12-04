@@ -30,6 +30,7 @@ from api.internal.v1.resumes.domain.entities import (
 from api.internal.v1.resumes.domain.utils import get_resume_filename
 from api.internal.v1.resumes.presentation.handlers import (
     ICreatingResumeService,
+    IDeletingDocumentService,
     IDocumentService,
     IGettingResumeService,
     IGettingResumesService,
@@ -320,3 +321,18 @@ class GettingResumesService(IGettingResumesService):
         resumes = self.resume_repo.get_resumes(filters, searcher)
 
         return ResumesOut.from_resumes_with_pagination(resumes, limit, offset)
+
+
+class DeletingDocumentService(IDeletingDocumentService):
+    def __init__(self, resume_repo: IResumeRepository):
+        self.resume_repo = resume_repo
+
+    def authorize(self, auth_user: User, resume_id: int) -> bool:
+        return hasattr(auth_user, "resume") and auth_user.resume.id == resume_id
+
+    @atomic
+    def delete_document_by_resume_id(self, resume_id: int) -> None:
+        resume = self.resume_repo.get_resume_for_update(resume_id)
+
+        if resume.document:
+            resume.document.delete(save=True)

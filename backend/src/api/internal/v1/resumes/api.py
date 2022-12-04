@@ -19,6 +19,7 @@ from api.internal.v1.resumes.db.sorters import (
 from api.internal.v1.resumes.domain.builders import ResumesFiltersBuilder, ResumesSearcherBuilder, WishlistSorterBuilder
 from api.internal.v1.resumes.domain.services import (
     CreatingResumeService,
+    DeletingDocumentService,
     DocumentService,
     GettingResumeService,
     GettingResumesService,
@@ -82,6 +83,7 @@ class ResumesContainer(containers.DeclarativeContainer):
             published_filter_cls=providers.Object(PublishedFilter),
         ),
     )
+    deleting_document_service = providers.Singleton(DeletingDocumentService, resume_repo=resume_repo)
 
     updating_resume_service = providers.Singleton(
         UpdatingResumeService,
@@ -108,6 +110,7 @@ class ResumesContainer(containers.DeclarativeContainer):
         getting_resume_service=getting_resume_service,
         document_service=providers.Singleton(DocumentService),
         updating_resume_service=updating_resume_service,
+        deleting_document_service=deleting_document_service,
     )
     resumes_handlers = providers.Singleton(ResumesHandlers, getting_resumes_service)
     resumes_wishlist_handlers = providers.Singleton(

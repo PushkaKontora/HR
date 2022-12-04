@@ -130,6 +130,16 @@ class IResumesWishlistService(ABC):
         pass
 
 
+class IDeletingDocumentService(ABC):
+    @abstractmethod
+    def authorize(self, auth_user: User, resume_id: int) -> bool:
+        pass
+
+    @abstractmethod
+    def delete_document_by_resume_id(self, resume_id: int) -> None:
+        pass
+
+
 class ResumesHandlers(IResumesHandlers):
     def __init__(self, getting_resumes_service: IGettingResumesService):
         self.getting_resumes_service = getting_resumes_service
@@ -148,8 +158,10 @@ class ResumeHandlers(IResumeHandlers):
         publishing_resume_service: IPublishingResumeService,
         getting_resume_service: IGettingResumeService,
         updating_resume_service: IUpdatingResumeService,
+        deleting_document_service: IDeletingDocumentService,
         document_service: IDocumentService,
     ):
+        self.deleting_document_service = deleting_document_service
         self.document_service = document_service
         self.updating_resume_service = updating_resume_service
         self.getting_resume_service = getting_resume_service
@@ -266,6 +278,17 @@ class ResumeHandlers(IResumeHandlers):
             raise ForbiddenError()
 
         self.publishing_resume_service.unpublish(resume_id)
+
+        return SuccessResponse()
+
+    def delete_document(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
+        if not self.getting_resume_service.exists_resume_with_id(resume_id):
+            raise NotFoundError()
+
+        if not self.deleting_document_service.authorize(request.user, resume_id):
+            raise ForbiddenError()
+
+        self.deleting_document_service.delete_document_by_resume_id(resume_id)
 
         return SuccessResponse()
 

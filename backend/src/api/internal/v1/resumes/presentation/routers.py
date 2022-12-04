@@ -54,6 +54,10 @@ class IResumeHandlers(ABC):
     def unpublish_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
         pass
 
+    @abstractmethod
+    def delete_document(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
+        pass
+
 
 class IResumesWishlistHandlers(ABC):
     @abstractmethod
@@ -156,6 +160,14 @@ class ResumeRouter(Router):
             methods=["PATCH"],
             auth=[auth],
             view_func=resume_handlers.unpublish_resume,
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
+        )
+
+        self.add_api_operation(
+            path="/document",
+            methods=["DELETE"],
+            auth=[auth],
+            view_func=resume_handlers.delete_document,
             response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
         )
 
