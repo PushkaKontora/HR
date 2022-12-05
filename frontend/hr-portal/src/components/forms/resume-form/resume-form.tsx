@@ -16,6 +16,7 @@ import {ResumeUser} from '../../../types/resume';
 import {extractFileNameFromYandex} from '../../../utils/resume';
 import {useEffect, useState} from 'react';
 import {toast} from 'react-toastify';
+import {ResumeTitle} from '../../styled/resume/resume-title';
 
 export type ResumeFormData = {
   desired_job: string,
@@ -146,7 +147,7 @@ export function ResumeForm({submit}: ResumeFormProps) {
       </ResumeFieldContainer>
       <ResumeFieldContainer>
         <ResumeFieldLabel>Мои компетенции</ResumeFieldLabel>
-        <CompetencyList values={bufferComps} showDeleteButtons={true} onDelete={deleteComp}/>
+        <CompetencyList values={bufferComps} showDeleteButtons={true} onDelete={deleteComp} competencyComponent={ResumeTitle}/>
         <CompetenciesSelect name={'competencies_select'} onChange={onCompetencyChange} selectedComps={bufferComps}/>
       </ResumeFieldContainer>
     </form>

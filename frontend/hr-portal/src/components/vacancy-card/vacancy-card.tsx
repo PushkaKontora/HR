@@ -4,14 +4,16 @@ import experienceIcon from '../../assets/img/vacancy-card/experience.svg';
 import likesIcon from '../../assets/img/vacancy-card/no_like.svg';
 import './vacancy-card.scss';
 import {ExpectedExperienceNameString} from '../../const';
-import {useAppDispatch} from '../../app/hooks';
+import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {setStateRespondModal, setVacancyByID} from '../../features/vacancy/vacancy-slice';
 import {useNavigate} from 'react-router-dom';
 import {NoAuthRoutes} from '../../const/app-routes';
 import moneyRUSIcon from '../../assets/img/job-seach/₽.svg';
 import {LikeButton} from '../../reused-components/like-button/like-button';
-import {addToVacancyWishlist} from '../../service/async-actions/async-actions-vacancy';
+import {addToVacancyWishlist, deleteFromVacancyWishlist} from '../../service/async-actions/async-actions-vacancy';
 import {toast} from 'react-toastify';
+import {useState} from 'react';
+import {isFavorite} from '../../utils/favorite';
 
 type VacancyCard = {
   vacancy: Vacancy
@@ -34,11 +36,26 @@ function VacancyCard(props: VacancyCard) {
     dispatch(setStateRespondModal(true));
   };
 
+  const favoriteVacancies = useAppSelector((state) => state.user.favoriteVacancies);
+
+  const [liked, setLiked] = useState(isFavorite(vacancy, favoriteVacancies));
+
   const like = () => {
     if (vacancy) {
       dispatch(addToVacancyWishlist(vacancy.id))
         .then(() => {
           toast.success('Вакансия добавлена в избранное');
+          setLiked(true);
+        });
+    }
+  };
+
+  const dislike = () => {
+    if (vacancy) {
+      dispatch(deleteFromVacancyWishlist(vacancy.id))
+        .then(() => {
+          toast.error('Вакансия удалена из избранного');
+          setLiked(false);
         });
     }
   };
@@ -116,7 +133,10 @@ function VacancyCard(props: VacancyCard) {
           <span>{vacancy.department.name}</span> {vacancy.department.leader.name} {vacancy.department.leader.surname}
         </div>
         <div className="actionItem navTabs">
-          <LikeButton onLike={like}/>
+          <LikeButton
+            onLike={like}
+            onDislike={dislike}
+            liked={liked}/>
           <button
             className="navTabs-btnItem navTabs-btnItem__respond"
             onClick={handlerClickRespond}

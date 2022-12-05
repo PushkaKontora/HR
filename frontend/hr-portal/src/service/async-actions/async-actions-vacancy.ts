@@ -94,7 +94,7 @@ export const addToVacancyWishlist = createAsyncThunk<void, number, Generics>(
   }
 );
 
-export const deleteToVacancyWishlist = createAsyncThunk<void, number, Generics>(
+export const deleteFromVacancyWishlist = createAsyncThunk<void, number, Generics>(
   'vacancy/deleteFromWishlist',
   async (vacancyId, {dispatch, extra: api}) => {
     await api.delete(VacancyRoutes.modifyWishlist(vacancyId));

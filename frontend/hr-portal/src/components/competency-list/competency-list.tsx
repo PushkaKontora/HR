@@ -1,8 +1,9 @@
 import {ResumeTitle} from '../styled/resume/resume-title';
 import {CompetencyFlexContainer} from '../styled/values/competency-flex-container';
-import {useEffect, useState} from 'react';
+import {ReactComponentElement, useEffect, useState} from 'react';
 import deleteIcon from '../../assets/icons/delete-rounded.svg';
 import {Icon} from './styles';
+import {StyledComponent} from 'styled-components';
 
 export type CompetencyListProps = {
   values: string[],

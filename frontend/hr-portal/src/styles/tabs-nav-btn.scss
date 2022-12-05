@@ -5,6 +5,25 @@
   .navTabs-btnItem {
     background: none;
 
+    &__like {
+      background: none;
+      border: 1px solid black;
+      border-radius: 50%;
+      width: 54px;
+      height: 54px;
+
+      img {
+        width: 20px;
+        height: 18px;
+      }
+
+      &_yes {
+        &:hover, &:active {
+          background: #000000;
+        }
+      }
+    }
+
     &__respond {
       font-weight: 400;
       font-size: 16px;

@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import {XLargeRegular} from '../styled/fonts/x-large';
+import {MediumRegular} from '../styled/fonts/medium';
 
 export const Icon = styled.img`
   width: 22px;
@@ -18,4 +20,18 @@ export const UserIcon = styled.img`
 export const ResumeField = styled.div`
   margin-top: 8px;
   vertical-align: middle;
+`;
+
+export const Contacts = styled(XLargeRegular)`
+  background-color: white;
+  border-radius: 27px;
+  padding: 18px 24px;
+  color: black;
+`;
+
+export const CompetencyItem = styled(MediumRegular)`
+  padding: 5px 15px;
+  margin-right: 9px;
+  color: #000;
+  border-radius: 20px;
 `;
