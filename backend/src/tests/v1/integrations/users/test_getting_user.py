@@ -7,11 +7,11 @@ from tests.v1.integrations.conftest import datetime_to_string, get, not_found
 from tests.v1.integrations.users.conftest import USER
 
 
-def get_one(client: Client, user_id: int) -> Response:
-    return get(client, USER.format(user_id=user_id))
+def get_user(client: Client, user_id: int, token: str) -> Response:
+    return get(client, USER.format(user_id=user_id), token)
 
 
-def get_expected_user_out(user: User) -> dict:
+def user_out(user: User) -> dict:
     return {
         "id": user.id,
         "email": user.email,
@@ -28,42 +28,53 @@ def get_expected_user_out(user: User) -> dict:
 
 @pytest.mark.integration
 @pytest.mark.django_db
-def test_get_one__when_resume_and_department_are_none(client: Client, user_with_password: User) -> None:
-    response = get_one(client, user_with_password.id)
+def test_get_one__when_resume_and_department_are_none(
+    client: Client, user_with_password: User, user_token: str
+) -> None:
+    response = get_user(client, user_with_password.id, user_token)
 
     assert response.status_code == 200
-    assert response.json() == get_expected_user_out(user_with_password)
+    assert response.json() == user_out(user_with_password)
 
 
 @pytest.mark.integration
 @pytest.mark.django_db
-def test_get_one__with_resume(client: Client, user_with_password: User) -> None:
+def test_get_one__with_resume(client: Client, user_with_password: User, user_token: str) -> None:
     Resume.objects.create(
         owner=user_with_password,
         desired_job="abc",
     )
 
-    response = get_one(client, user_with_password.id)
+    response = get_user(client, user_with_password.id, user_token)
 
     assert response.status_code == 200
-    assert response.json() == get_expected_user_out(user_with_password)
+    assert response.json() == user_out(user_with_password)
 
 
 @pytest.mark.integration
 @pytest.mark.django_db
-def test_get_one__with_department(client: Client, user_with_password: User) -> None:
+def test_get_one__with_department(client: Client, user_with_password: User, user_token: str) -> None:
     Department.objects.create(leader=user_with_password, name="asdf", description="asdf")
 
-    response = get_one(client, user_with_password.id)
+    response = get_user(client, user_with_password.id, user_token)
 
     assert response.status_code == 200
-    assert response.json() == get_expected_user_out(user_with_password)
+    assert response.json() == user_out(user_with_password)
 
 
 @pytest.mark.integration
 @pytest.mark.django_db
-def test_get_one__unknown_user_id(client: Client, user: User) -> None:
-    response = get_one(client, 0)
+def test_get_one__unknown_user_id(client: Client, user: User, user_token: str) -> None:
+    response = get_user(client, 0, user_token)
 
     assert response.status_code == 404
     assert response.json() == not_found()
+
+
+@pytest.mark.integration
+@pytest.mark.django_db
+def test_getting_user_by_employer(client: Client, user_with_password: User, employer_token: str) -> None:
+    response = get_user(client, user_with_password.id, employer_token)
+
+    assert response.status_code == 200
+    assert response.json() == user_out(user_with_password)

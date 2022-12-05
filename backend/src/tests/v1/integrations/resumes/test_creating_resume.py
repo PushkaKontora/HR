@@ -20,7 +20,7 @@ def create(
     token: str,
     user_id: int,
     desired_job: str,
-    document: SimpleUploadedFile,
+    document: Optional[SimpleUploadedFile],
     desired_salary: int = None,
     experience: Experience = None,
     competencies: List[str] = None,
@@ -48,7 +48,7 @@ def test_create_resume(
     client: Client,
     user: User,
     user_token: str,
-    pdf_document: SimpleUploadedFile,
+    pdf_document: Optional[SimpleUploadedFile],
     desired_job: Optional[str] = "Frontend",
     desired_salary: Optional[int] = 100,
     experience: Optional[Experience] = Experience.NO_EXPERIENCE,
@@ -60,11 +60,10 @@ def test_create_resume(
         Competency.objects.bulk_create(Competency(name=n) for n in expected_competencies)
 
     response = create(client, user_token, user.id, desired_job, pdf_document, desired_salary, experience, competencies)
-    resume = Resume.objects.get(owner=user)
-
     assert response.status_code == 200
     assert response.json() == success()
 
+    resume = Resume.objects.get(owner=user)
     assert resume.desired_job == desired_job
     assert resume.experience == experience
     assert resume.desired_salary == desired_salary
@@ -74,13 +73,31 @@ def test_create_resume(
         assert resume.competencies.count() == 0
     assert resume.published_at is None
 
+    if pdf_document is None:
+        assert bool(resume.document) is False
+    else:
+        resume.document.seek(0)
+        pdf_document.seek(0)
+        assert resume.document.read() == pdf_document.read()
+        pdf_document.close()
+        resume.document.close()
+
 
 @pytest.mark.integration
 @pytest.mark.django_db
 def test_create_resume__with_null_parameters(
     client: Client, user: User, user_token: str, pdf_document: SimpleUploadedFile
 ) -> None:
-    test_create_resume(client, user, user_token, pdf_document, desired_salary=None, experience=None, competencies=None)
+    test_create_resume(
+        client,
+        user,
+        user_token,
+        desired_job=None,
+        pdf_document=None,
+        desired_salary=None,
+        experience=None,
+        competencies=None,
+    )
 
 
 @pytest.mark.integration
@@ -121,7 +138,7 @@ def test_create_resume__document_size_is_large(
 
 @pytest.mark.integration
 @pytest.mark.django_db
-def test_create_resume__that_has_already_created(
+def test_create_resume_that_has_already_created(
     client: Client, user: User, user_token: str, pdf_document: SimpleUploadedFile, desired_job="Frontend"
 ) -> None:
     resume = Resume.objects.create(owner=user, desired_job="123")

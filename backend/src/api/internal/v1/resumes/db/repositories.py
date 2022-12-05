@@ -19,7 +19,7 @@ class ResumeRepository(IResumeRepository):
     def exists_resume_with_id(self, resume_id: int) -> bool:
         return Resume.objects.filter(id=resume_id).exists()
 
-    def get_one_by_id(self, resume_id: int) -> Resume:
+    def get_resume_by_id(self, resume_id: int) -> Resume:
         return Resume.objects.get(id=resume_id)
 
     def exists_resume_by_owner_id(self, owner_id: int) -> bool:
@@ -28,8 +28,8 @@ class ResumeRepository(IResumeRepository):
     def create(
         self,
         owner_id: int,
-        document: UploadedFile,
-        desired_job: str,
+        document: Optional[UploadedFile],
+        desired_job: Optional[str],
         experience: Optional[Experience] = None,
         desired_salary: Optional[int] = None,
     ) -> Resume:

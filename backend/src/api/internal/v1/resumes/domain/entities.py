@@ -7,7 +7,8 @@ from django.db.models import QuerySet
 from ninja import Schema
 from pydantic import AnyHttpUrl, EmailStr, Field
 
-from api.models import Experience, Resume
+from api.internal.pagination import paginate_page_with_limit
+from api.models import Experience, Resume, User
 
 
 class ResumesSortBy(Enum):
@@ -32,34 +33,38 @@ class OwnerOut(Schema):
     name: str
     patronymic: str
     email: EmailStr
+    photo: Optional[AnyHttpUrl]
+
+    @staticmethod
+    def from_user(user: User) -> "OwnerOut":
+        return OwnerOut(
+            surname=user.surname,
+            name=user.name,
+            patronymic=user.patronymic,
+            email=user.email,
+            photo=user.photo.url if user.photo else None,
+        )
 
 
 class ResumeOut(Schema):
     id: int
     owner: OwnerOut
-    desired_job: str
+    desired_job: Optional[str]
     desired_salary: Optional[int]
     experience: Optional[Experience]
-    document: AnyHttpUrl
+    document: Optional[AnyHttpUrl]
     published_at: Optional[datetime]
     competencies: List[str]
 
     @staticmethod
     def from_resume(resume: Resume) -> "ResumeOut":
-        owner = resume.owner
-
         return ResumeOut(
             id=resume.id,
-            owner=OwnerOut(
-                surname=owner.surname,
-                name=owner.name,
-                patronymic=owner.patronymic,
-                email=owner.email,
-            ),
+            owner=OwnerOut.from_user(resume.owner),
             desired_job=resume.desired_job,
             desired_salary=resume.desired_salary,
             experience=resume.experience,
-            document=resume.document.url,
+            document=resume.document.url if resume.document else None,
             published_at=resume.published_at,
             competencies=list(resume.competencies.values_list("name", flat=True)),
         )
@@ -72,13 +77,13 @@ class ResumesOut(Schema):
     @staticmethod
     def from_resumes_with_pagination(resumes: QuerySet[Resume], limit: int, offset: int) -> "ResumesOut":
         return ResumesOut(
-            items=[ResumeOut.from_resume(resume) for resume in resumes[offset : offset + limit]],
+            items=[ResumeOut.from_resume(resume) for resume in paginate_page_with_limit(resumes, offset, limit)],
             count=resumes.count(),
         )
 
 
 class ResumeIn(Schema):
-    desired_job: str
+    desired_job: Optional[str] = None
     desired_salary: Optional[int] = Field(None, gte=0)
     experience: Optional[Experience] = None
     competencies: Optional[List[str]] = None

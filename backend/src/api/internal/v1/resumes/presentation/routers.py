@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Iterable, List
+from typing import Iterable, List, Optional
 
 from django.conf import settings
 from django.http import HttpRequest
@@ -32,17 +32,17 @@ class IResumeHandlers(ABC):
 
     @abstractmethod
     def create_resume(
-        self, request: HttpRequest, extra: NewResumeIn = Form(...), document: UploadedFile = File(...)
+        self, request: HttpRequest, extra: NewResumeIn = Form(...), document: Optional[UploadedFile] = File(None)
     ) -> SuccessResponse:
         pass
 
     @abstractmethod
-    def update_resume(
+    def update_partial_resume(
         self,
         request: HttpRequest,
         resume_id: int = Path(...),
         extra: NewResumeIn = Form(...),
-        document: UploadedFile = File(...),
+        document: Optional[UploadedFile] = File(None),
     ) -> SuccessResponse:
         pass
 
@@ -52,6 +52,10 @@ class IResumeHandlers(ABC):
 
     @abstractmethod
     def unpublish_resume(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
+        pass
+
+    @abstractmethod
+    def delete_document(self, request: HttpRequest, resume_id: int = Path(...)) -> SuccessResponse:
         pass
 
 
@@ -124,7 +128,7 @@ class ResumeRouter(Router):
             path="",
             methods=["POST"],
             auth=[auth],
-            view_func=resume_handlers.update_resume,
+            view_func=resume_handlers.update_partial_resume,
             response={
                 200: SuccessResponse,
                 401: MessageResponse,
@@ -145,6 +149,10 @@ class ResumeRouter(Router):
             auth=[auth],
             view_func=resume_handlers.publish_resume,
             response={200: PublishingOut, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
+            description="""
+    422 error codes:
+        6 - Desired job and document must be set before publishing
+    """,
         )
 
         self.add_api_operation(
@@ -152,6 +160,14 @@ class ResumeRouter(Router):
             methods=["PATCH"],
             auth=[auth],
             view_func=resume_handlers.unpublish_resume,
+            response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
+        )
+
+        self.add_api_operation(
+            path="/document",
+            methods=["DELETE"],
+            auth=[auth],
+            view_func=resume_handlers.delete_document,
             response={200: SuccessResponse, 401: MessageResponse, 403: MessageResponse, 404: MessageResponse},
         )
 

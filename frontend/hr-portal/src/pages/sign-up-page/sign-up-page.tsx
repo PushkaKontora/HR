@@ -5,8 +5,11 @@ import {BlueLink} from '../../components/styled/links/blue';
 import {LargeRegular} from '../../components/styled/fonts/large';
 import {NoAuthRoutes} from '../../const/app-routes';
 import {Content} from '../../components/styled/markup/content';
+import {useLocation} from 'react-router-dom';
 
 function SignUpPage() {
+  const location = useLocation();
+
   return (
     <Content>
       <Title marginTop={'0'}>Создайте свой профиль</Title>
@@ -17,7 +20,7 @@ function SignUpPage() {
 
       <LargeRegular style={{marginBottom: '160px'}}>
         <p>
-          Уже есть аккаунт? <BlueLink to={NoAuthRoutes.Login}>Войти</BlueLink>
+          Уже есть аккаунт? <BlueLink to={NoAuthRoutes.Login} state={location.state}>Войти</BlueLink>
         </p>
       </LargeRegular>
     </Content>

@@ -8,4 +8,6 @@ export const VacancyRoutes = {
   vacancyWithID: (id: number) =>  `${VACANCY}/${id}`,
   patchStatusVacancyUnpublish: (id: number) =>  `${VACANCY}/${id}/unpublish`,
   patchStatusVacancyPublish: (id: number) =>  `${VACANCY}/${id}/publish`,
+  wishlist: (sortBy: string) => `${VACANCY}/wishlist?sort_by=${sortBy}`,
+  modifyWishlist: (id: number) => `${VACANCY}/wishlist/${id}`
 };

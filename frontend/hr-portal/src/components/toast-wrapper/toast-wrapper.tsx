@@ -7,7 +7,7 @@ export function ToastWrapper() {
   return (
     <ToastContainer
       position="bottom-right"
-      autoClose={false}
+      autoClose={5000}
       limit={3}
       newestOnTop={false}
       closeOnClick

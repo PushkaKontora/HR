@@ -30,6 +30,7 @@ from api.internal.v1.resumes.domain.entities import (
 from api.internal.v1.resumes.domain.utils import get_resume_filename
 from api.internal.v1.resumes.presentation.handlers import (
     ICreatingResumeService,
+    IDeletingDocumentService,
     IDocumentService,
     IGettingResumeService,
     IGettingResumesService,
@@ -49,8 +50,8 @@ class IResumeRepository(ABC):
     def create(
         self,
         owner_id: int,
-        document: UploadedFile,
-        desired_job: str,
+        document: Optional[UploadedFile],
+        desired_job: Optional[str],
         experience: Optional[Experience] = None,
         desired_salary: Optional[int] = None,
     ) -> Resume:
@@ -69,7 +70,7 @@ class IResumeRepository(ABC):
         pass
 
     @abstractmethod
-    def get_one_by_id(self, resume_id: int) -> Resume:
+    def get_resume_by_id(self, resume_id: int) -> Resume:
         pass
 
     @abstractmethod
@@ -151,10 +152,10 @@ class CreatingResumeService(ICreatingResumeService):
         return self.resume_repo.exists_resume_by_owner_id(extra.user_id)
 
     @atomic
-    def create(self, extra: NewResumeIn, document: UploadedFile) -> None:
+    def create(self, extra: NewResumeIn, document: Optional[UploadedFile]) -> None:
         resume = self.resume_repo.create(
             extra.user_id,
-            UploadedFile(document, get_resume_filename(document)),
+            UploadedFile(document, get_resume_filename(document)) if document is not None else None,
             extra.desired_job,
             extra.experience,
             extra.desired_salary,
@@ -192,6 +193,11 @@ class PublishingResumeService(IPublishingResumeService):
 
         self.favourite_resume_repo.delete_resume_from_wishlists(resume_id)
 
+    def are_required_fields_set(self, resume_id: int) -> bool:
+        resume = self.resume_repo.get_resume_by_id(resume_id)
+
+        return resume.desired_job is not None and bool(resume.document) is True
+
 
 class GettingResumeService(IGettingResumeService):
     def __init__(self, resume_repo: IResumeRepository):
@@ -226,24 +232,31 @@ class UpdatingResumeService(IUpdatingResumeService):
 
     @atomic
     def update(self, resume_id: int, extra: ResumeIn, document: Optional[UploadedFile]) -> None:
+        previous_resume = None
+
         with atomic():
             resume = self.resume_repo.get_resume_for_update(resume_id)
 
-            resume.desired_job = extra.desired_job
-            resume.desired_salary = extra.desired_salary
-            resume.experience = extra.experience
+            if extra.desired_job is not None:
+                resume.desired_job = extra.desired_job
 
-            previous_resume = resume.document.name if resume.document else None
+            if extra.desired_salary is not None:
+                resume.desired_salary = extra.desired_salary
+
+            if extra.experience is not None:
+                resume.experience = extra.experience
+
             if document is not None:
+                previous_resume = resume.document.name if resume.document else None
                 resume.document = UploadedFile(document, get_resume_filename(document))
-
-            resume.save()
 
             if extra.competencies:
                 self.resume_competencies_repo.delete_all_competencies_from_resume(resume_id)
 
                 competencies = set(self.competency_repo.get_existed_competencies_by_names(set(extra.competencies)))
                 self.resume_competencies_repo.attach_competencies_to_resume(resume_id, competencies)
+
+            resume.save()
 
         if previous_resume is not None:
             default_storage.delete(previous_resume)
@@ -308,3 +321,18 @@ class GettingResumesService(IGettingResumesService):
         resumes = self.resume_repo.get_resumes(filters, searcher)
 
         return ResumesOut.from_resumes_with_pagination(resumes, limit, offset)
+
+
+class DeletingDocumentService(IDeletingDocumentService):
+    def __init__(self, resume_repo: IResumeRepository):
+        self.resume_repo = resume_repo
+
+    def authorize(self, auth_user: User, resume_id: int) -> bool:
+        return hasattr(auth_user, "resume") and auth_user.resume.id == resume_id
+
+    @atomic
+    def delete_document_by_resume_id(self, resume_id: int) -> None:
+        resume = self.resume_repo.get_resume_for_update(resume_id)
+
+        if resume.document:
+            resume.document.delete(save=True)

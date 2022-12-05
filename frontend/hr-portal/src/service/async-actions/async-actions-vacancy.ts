@@ -22,6 +22,11 @@ export const getVacanciesForEmployer = createAsyncThunk<VacanciesApi, { isPublis
 );
 
 
+export const VacancyWishListSortBy = {
+  published_at_asc: 'published_at_asc',
+  added_at_desc: 'added_at_desc'
+};
+
 export const getVacancies = createAsyncThunk<{ items: Vacancy[], count: number }, undefined, Generics>(
   'vacancy/getVacancy',
   async (arg, {extra: api}) => {
@@ -114,4 +119,27 @@ export const getVacancyByID = createAsyncThunk<Vacancy, number, Generics>(
     const {data} = await api.get<Vacancy>(VacancyRoutes.vacancyWithID(vacancyID));
     return data;
   },
+);
+export const getVacancyWishlist = createAsyncThunk<Vacancy[], string, Generics>(
+  'vacancy/wishlist',
+  async (arg, {dispatch, extra: api}) => {
+    const res = await api.get(VacancyRoutes.wishlist(arg));
+    return res.data;
+  }
+);
+
+export const addToVacancyWishlist = createAsyncThunk<void, number, Generics>(
+  'vacancy/addToWishlist',
+  async (vacancyId, {dispatch, extra: api}) => {
+    await api.post(VacancyRoutes.modifyWishlist(vacancyId));
+    await getVacancyWishlist(VacancyWishListSortBy.added_at_desc);
+  }
+);
+
+export const deleteToVacancyWishlist = createAsyncThunk<void, number, Generics>(
+  'vacancy/deleteFromWishlist',
+  async (vacancyId, {dispatch, extra: api}) => {
+    await api.delete(VacancyRoutes.modifyWishlist(vacancyId));
+    await getVacancyWishlist(VacancyWishListSortBy.added_at_desc);
+  }
 );

@@ -146,6 +146,10 @@ class IGettingUserService(ABC):
     def exists_user_with_id(self, user_id: int) -> bool:
         pass
 
+    @abstractmethod
+    def authorize(self, auth_user: User, user_id: int) -> bool:
+        pass
+
 
 class IPhotoService(ABC):
     @abstractmethod
@@ -274,6 +278,9 @@ class UserHandlers(IUserHandlers):
 
         if not user_out:
             raise NotFoundError()
+
+        if not self.getting_user_service.authorize(request.user, user_id):
+            raise ForbiddenError()
 
         return user_out
 

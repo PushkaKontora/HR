@@ -8,6 +8,8 @@ import {setDepartmentParam, setExperienceParam, setSalaryMax, setSalaryMin} from
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import '../../styles/custom-select.scss';
 
+import {useEffect} from 'react';
+import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 
 function VacancyContent() {
   const vacancies = useAppSelector((state) => state.vacancy.vacancies);
@@ -19,6 +21,11 @@ function VacancyContent() {
     dispatch(setSalaryMin(''));
     dispatch(setDepartmentParam(''));
   };
+
+  useEffect(() => {
+    dispatch(getVacancies());
+    console.log('VacancyList');
+  }, []);
 
   return (
     <>

@@ -2,6 +2,13 @@ import {createAsyncThunk} from '@reduxjs/toolkit';
 import {Generics} from '../../types/generics';
 import {ResumeRoutes} from '../../const/api-routes/api-resume-routes';
 import {ResumeUser} from '../../types/resume';
+import {Vacancy} from '../../types/vacancy';
+
+export const ResumeWishListSortBy = {
+  published_at_desc: 'published_at_desc',
+  published_at_asc: 'published_at_asc',
+  added_at_desc: 'added_at_desc'
+};
 
 export const createResumeAction = createAsyncThunk<void, {user_id: number, data: FormData}, Generics>(
   'resume/create',
@@ -30,5 +37,34 @@ export const unpublishResumeAction = createAsyncThunk<void, {resume_id: number},
   'resume/unpublish',
   async (arg, {dispatch, extra: api}) => {
     await api.patch(ResumeRoutes.unpublish(arg.resume_id));
+  }
+);
+
+export const deleteDocument = createAsyncThunk<void, number, Generics>(
+  'resume/deleteDocument',
+  async (resume_id, {dispatch, extra: api}) => {
+    await api.delete(ResumeRoutes.document(resume_id));
+  }
+);
+
+export const getResumeWishlist = createAsyncThunk<ResumeUser[], string, Generics>(
+  'resume/wishlist',
+  async (arg, {dispatch, extra: api}) => {
+    const res = await api.get(ResumeRoutes.wishlist(arg));
+    return res.data;
+  }
+);
+
+export const addToResumeWishlist = createAsyncThunk<void, number, Generics>(
+  'resume/addToWishlist',
+  async (resumeId, {dispatch, extra: api}) => {
+    await api.post(ResumeRoutes.modifyWishlist(resumeId));
+  }
+);
+
+export const deleteToResumeWishlist = createAsyncThunk<void, number, Generics>(
+  'resume/deleteToWishlist',
+  async (resumeId, {dispatch, extra: api}) => {
+    await api.delete(ResumeRoutes.modifyWishlist(resumeId));
   }
 );

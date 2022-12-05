@@ -4,7 +4,8 @@ export type ResumeUser = {
     'surname': string,
     'name': string,
     'patronymic': string,
-    'email': string
+    'email': string,
+    'photo': string
   },
   'desired_job': string,
   'desired_salary': number,

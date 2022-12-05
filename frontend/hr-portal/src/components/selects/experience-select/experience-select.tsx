@@ -19,7 +19,7 @@ export type ExperienceSelectProps = {
 
 export function ExperienceSelect({name, selectedValue, controllerValue, onChange}: ExperienceSelectProps) {
   return (
-    <ProfileSelect onChange={onChange} controllerValue={controllerValue} name={name} options={OPTIONS} placeholder={'Без опыта'}
+    <ProfileSelect onChange={onChange} controllerValue={controllerValue} name={name} options={OPTIONS} placeholder={'Не выбран'}
       value={OPTIONS.find((item) => selectedValue === item.value)}/>
   );
 }

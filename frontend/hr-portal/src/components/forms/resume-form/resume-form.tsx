@@ -4,17 +4,18 @@ import {ResumeFieldContainer, ResumeFieldLabel} from '../../styled/resume/styles
 import ResumeFormInput from '../form-inputs/resume-form-input';
 import {InputData} from '../types/form-input-props';
 import {FileLoadInput} from '../../file-load-form/file-load-input';
-import {FileLoadComponent} from '../../../file-load-component/file-load-component';
+import {FileLoadComponent} from '../../../reused-components/file-load-component/file-load-component';
 import {RESUME_FORMATS} from '../../../const/approved-file-formats';
 import {ProfileSelect} from '../../selects/profile-select/profile-select';
 import {ExperienceSelect, OPTIONS} from '../../selects/experience-select/experience-select';
 import {CompetenciesSelect} from '../../selects/competencies-select/competencies-select';
 import {useAppDispatch, useAppSelector} from '../../../app/hooks';
 import {createResumeAction, updateResumeAction} from '../../../service/async-actions/async-actions-resume';
-import {CompetencyList} from '../../../competency-list/competency-list';
+import {CompetencyList} from '../../competency-list/competency-list';
 import {ResumeUser} from '../../../types/resume';
 import {extractFileNameFromYandex} from '../../../utils/resume';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
+import {toast} from 'react-toastify';
 
 export type ResumeFormData = {
   desired_job: string,
@@ -28,7 +29,7 @@ export const DOC_FIELD_NAME = 'document';
 export const FORM_NAME = 'PROFILE_RESUME_FORM';
 
 export type ResumeFormProps = {
-  submit: (data: ResumeFormData, file: File | null, competencies: string[]) => void
+  submit: (data: ResumeFormData, file: File | null | undefined, competencies: string[]) => void
 }
 
 export function ResumeForm({submit}: ResumeFormProps) {
@@ -43,10 +44,38 @@ export function ResumeForm({submit}: ResumeFormProps) {
 
   const resume = useAppSelector((state) => state.user.resumeUser);
   const [bufferComps, setBufferComps] = useState(resume?.competencies ? resume.competencies.slice() : []);
-  const [newResume, setNewResume] = useState<File | null>(null);
+  const [newResume, setNewResume] = useState<File | null | undefined>(undefined);
+
+  /*
+  useEffect(() => {
+    let mounted = true;
+
+    if (mounted) {
+      if (resume?.document) {
+        fetch(resume.document)
+          .then(response => response.blob())
+          .then(blob => {
+            const file = new File([blob], resume.document, {
+              type: blob.type,
+            });
+            setNewResume(file);
+          });
+      }
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [resume]);
+   */
 
   const onCompetencyChange = (e: any) => {
     setBufferComps(bufferComps.concat(e.value));
+  };
+
+  const deleteComp = (index: number) => {
+    bufferComps.splice(index, 1);
+    setBufferComps(bufferComps.slice());
   };
 
   const submitForm = (data: ResumeFormData) => {
@@ -59,7 +88,7 @@ export function ResumeForm({submit}: ResumeFormProps) {
       label: '',
       type: 'text',
       options: {
-        required: 'Введите желаемую компетенцию'
+        required: Boolean(resume?.published_at) && 'Чтобы очистить это поле, снимите резюме с публикации'
       },
       defaultValue: resume?.desired_job
     },
@@ -72,7 +101,7 @@ export function ResumeForm({submit}: ResumeFormProps) {
         value: resume?.desired_salary,
         min: 0
       },
-      defaultValue: '10000'
+      //defaultValue: '10000'
     }
   ];
 
@@ -85,8 +114,20 @@ export function ResumeForm({submit}: ResumeFormProps) {
       <ResumeFieldContainer>
         <ResumeFieldLabel>Резюме в формате PDF</ResumeFieldLabel>
         <FileLoadComponent
-          onUpdate={(file: File) => {
+          onUpdate={(file: File | null | undefined) => {
             setNewResume(file);
+          }}
+          onDelete={() => {
+            if (resume?.published_at) {
+              toast.error('Чтобы удалить файл PDF, снимите резюме с публикации');
+              return Promise.reject();
+            } else {
+              if (resume)
+                setNewResume(null);
+              else
+                setNewResume(undefined);
+              return Promise.resolve();
+            }
           }}
           register={register}
           fieldName={DOC_FIELD_NAME}
@@ -96,7 +137,6 @@ export function ResumeForm({submit}: ResumeFormProps) {
         <ResumeFieldLabel>Опыт работы</ResumeFieldLabel>
         <Controller
           control={control}
-          defaultValue={resume?.experience || 'no_experience'}
           render={({field: {onChange, value}}) => <ExperienceSelect onChange={(val) => onChange(val.value)} controllerValue={value} name={'experience'} selectedValue={resume?.experience}/>}
           name={'experience'}/>
       </ResumeFieldContainer>
@@ -106,7 +146,7 @@ export function ResumeForm({submit}: ResumeFormProps) {
       </ResumeFieldContainer>
       <ResumeFieldContainer>
         <ResumeFieldLabel>Мои компетенции</ResumeFieldLabel>
-        <CompetencyList values={bufferComps}/>
+        <CompetencyList values={bufferComps} showDeleteButtons={true} onDelete={deleteComp}/>
         <CompetenciesSelect name={'competencies_select'} onChange={onCompetencyChange} selectedComps={bufferComps}/>
       </ResumeFieldContainer>
     </form>

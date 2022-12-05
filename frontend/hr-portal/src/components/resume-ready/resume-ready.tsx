@@ -3,8 +3,8 @@ import {CompetencyFlexContainer} from '../styled/values/competency-flex-containe
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {ResumeTitle} from '../styled/resume/resume-title';
 import {ExperienceOptions} from '../../types/experience-options';
-import {CompetencyList} from '../../competency-list/competency-list';
-import {extractFileNameFromYandex} from '../../utils/resume';
+import {CompetencyList} from '../competency-list/competency-list';
+import {extractFileNameFromYandex, getExperienceOptionByKey} from '../../utils/resume';
 import {getResumeById} from '../../service/async-actions/async-actions-user';
 
 export function ResumeReady() {
@@ -14,21 +14,30 @@ export function ResumeReady() {
     <div>
       <ResumeFieldContainer>
         <ResumeFieldLabel>Желаемая должность</ResumeFieldLabel>
-        <ResumeTitle>
-          {resume?.desired_job}
-        </ResumeTitle>
+        {
+          resume?.desired_job &&
+            <ResumeTitle>
+              {resume?.desired_job}
+            </ResumeTitle>
+        }
       </ResumeFieldContainer>
       <ResumeFieldContainer>
         <ResumeFieldLabel>Резюме в формате PDF</ResumeFieldLabel>
-        <ResumeTitle>
-          {extractFileNameFromYandex(resume?.document)}
-        </ResumeTitle>
+        {
+          resume?.document &&
+            <ResumeTitle>
+              {extractFileNameFromYandex(resume?.document)}
+            </ResumeTitle>
+        }
       </ResumeFieldContainer>
       <ResumeFieldContainer>
         <ResumeFieldLabel>Опыт работы</ResumeFieldLabel>
-        <ResumeTitle>
-          {resume?.experience && ExperienceOptions[resume.experience as keyof typeof ExperienceOptions]}
-        </ResumeTitle>
+        {
+          resume?.experience &&
+            <ResumeTitle>
+              {resume?.experience && getExperienceOptionByKey(resume.experience)}
+            </ResumeTitle>
+        }
       </ResumeFieldContainer>
       <ResumeFieldContainer>
         <ResumeFieldLabel>Ожидаемая зарплата</ResumeFieldLabel>
@@ -38,7 +47,7 @@ export function ResumeReady() {
       </ResumeFieldContainer>
       <ResumeFieldContainer>
         <ResumeFieldLabel>Мои компетенции</ResumeFieldLabel>
-        <CompetencyList values={resume?.competencies || []}/>
+        <CompetencyList values={resume?.competencies || []} showDeleteButtons={false}/>
       </ResumeFieldContainer>
     </div>
   );

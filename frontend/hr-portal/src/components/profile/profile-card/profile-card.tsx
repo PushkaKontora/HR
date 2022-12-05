@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import placeholder from '../../../assets/img/profile/placeholder.jpg';
+import placeholder from '../../../assets/svg/placeholder.svg';
 import {XLargeRegular} from '../../styled/fonts/x-large';
 import {BlueButton} from '../../styled/buttons/blue-button';
 import {User} from '../../../types/user';

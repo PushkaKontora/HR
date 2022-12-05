@@ -7,6 +7,7 @@ from django.db.models import QuerySet
 from ninja import Schema
 from pydantic import Field, validator
 
+from api.internal.pagination import paginate_page_with_limit
 from api.models import Experience, Vacancy
 
 
@@ -91,7 +92,7 @@ class VacanciesOut(Schema):
     @staticmethod
     def from_vacancies_with_pagination(vacancies: QuerySet[Vacancy], limit: int, offset: int) -> "VacanciesOut":
         return VacanciesOut(
-            items=[VacancyOut.from_vacancy(vacancy) for vacancy in vacancies[offset : offset + limit]],
+            items=[VacancyOut.from_vacancy(vacancy) for vacancy in paginate_page_with_limit(vacancies, offset, limit)],
             count=vacancies.count(),
         )
 

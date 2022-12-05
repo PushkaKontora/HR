@@ -201,6 +201,12 @@ class GettingUserService(IGettingUserService):
     def exists_user_with_id(self, user_id: int) -> bool:
         return self.user_repo.exists_user_with_id(user_id)
 
+    def authorize(self, auth_user: User, user_id: int) -> bool:
+        is_employer = auth_user.permission == Permission.EMPLOYER
+        is_self = auth_user.id == user_id
+
+        return is_self or is_employer
+
 
 class ResettingPasswordService(IResettingPasswordService):
     def __init__(self, password_repo: IPasswordRepository):

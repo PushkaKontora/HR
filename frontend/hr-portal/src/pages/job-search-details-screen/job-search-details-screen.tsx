@@ -2,7 +2,7 @@ import './job-search-details-screen.scss';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import experienceIcon from '../../assets/img/vacancy-card/experience.svg';
 import {ExpectedExperienceNameString} from '../../const';
-import likesIcon from '../../assets/img/vacancy-card/yes_like.svg';
+import likesIcon from '../../assets/img/vacancy-card/no_like.svg';
 import departmentLogoIcon from '../../assets/img/vacancy-card/departments-icon.svg';
 import UseEditor from '../../reused-components/text-editor/useEditor';
 import TabsSalary from '../../components/tabs-salary/tabs-salary';
