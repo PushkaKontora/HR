@@ -25,7 +25,7 @@ function Header() {
       .then(() => {
         browserHistory.push('/login');
         dispatch(setUser(null));
-        dispatch(indicateStatus(UserStatus.noAuth))
+        dispatch(indicateStatus(UserStatus.noAuth));
       });
   };
 

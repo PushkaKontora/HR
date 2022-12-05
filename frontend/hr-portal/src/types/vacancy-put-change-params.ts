@@ -1,8 +1,8 @@
-export interface VacancyPutChangeParams  {
+export interface VacancyPutChangeParams {
   name: string,
   description: string,
   expected_experience: string,
-  salary_from: number,
-  salary_to: number,
+  salary_from: number | null,
+  salary_to: number | null,
   published: boolean
 }

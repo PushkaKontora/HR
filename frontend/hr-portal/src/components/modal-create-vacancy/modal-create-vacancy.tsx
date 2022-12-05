@@ -1,6 +1,6 @@
 import '../modal-edit-vacancy/modal-edit-vacancy.scss';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
 import {ExpectedExperience, ExpectedExperienceNameString, expectedExperienceShortVersion, SortingVacancyTypes, TypeRequestVacancyModal} from '../../const';
 import {createVacancy, getVacanciesForEmployer} from '../../service/async-actions/async-actions-vacancy';
 import {DepartmentsShortVersions, setIsEditorVacancyFlag, setIsOpenCreateVacancyModal, setIsStartRequestChangeVacancy} from '../../features/vacancy/vacancy-slice';
@@ -26,8 +26,8 @@ function ModalCreateVacancy() {
   const [isPublishStatus, setIsPublishStatus] = useState(isPublishedVacancy);
   const [nameVacancy, setNameVacancy] = useState('');
   const [experience, setExperience] = useState<ExpectedExperience>(ExpectedExperience.NO_EXPERIENCE);
-  const [minSalary, setMinSalary] = useState<string>('0');
-  const [maxSalary, setMaxSalary] = useState<string>('0');
+  const [minSalary, setMinSalary] = useState<number | null>(null);
+  const [maxSalary, setMaxSalary] = useState<number | null>(null);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -38,8 +38,8 @@ function ModalCreateVacancy() {
         name: nameVacancy,
         description: isEditorVacancyText,
         expected_experience: experience,
-        salary_from: Number(minSalary),
-        salary_to: Number(maxSalary),
+        salary_from: minSalary,
+        salary_to: maxSalary,
         published: isPublishStatus,
         department_id: departmentID
       };
@@ -48,6 +48,7 @@ function ModalCreateVacancy() {
         .then(() => {
           dispatch(getVacanciesForEmployer({isPublished: isPublishedVacancy, idDepartment: departmentID, offset: 0}))
             .then(() => {
+              dispatch(setIsEditorVacancyFlag(false));
               setIsOpenCreateVacancy(false);
             });
         });
@@ -71,37 +72,42 @@ function ModalCreateVacancy() {
 
   const onHandlerChangeExpectedExperience = (e: SingleValue<DepartmentsShortVersions>) => {
     if (e?.label) {
-      const valueExp = Object.keys(ExpectedExperienceNameString).find((key) => ExpectedExperienceNameString[key] === e.label);
+      const valueExp = Object.keys(ExpectedExperienceNameString).find(key => ExpectedExperienceNameString[key] === e.label);
       if (valueExp) {
-        setExperience(valueExp);
+        setExperience(valueExp as ExpectedExperience);
       }
-      console.log(e.label, valueExp);
     }
   };
 
   const handleChangeMinSalary = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value) {
-      setMinSalary(e.target.value.toString());
+    const minValue = e.target.value;
+    if (minValue) {
+      setMinSalary(Number(minValue));
+    } else {
+      setMinSalary(null);
     }
   };
 
   const handleChangeMaxSalary = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value) {
-      setMaxSalary(e.target.value.toString());
+    const maxValue = e.target.value;
+    if (maxValue) {
+      setMaxSalary(Number(maxValue));
+    } else {
+      setMaxSalary(null);
     }
   };
 
-  const handlerClickCreateVacancy = (e: any) => {
-    if (nameVacancy.length > 0 && !(Number(maxSalary) !== 0 && Number(maxSalary) <= Number(minSalary))) {
-      dispatch(setIsEditorVacancyFlag());
+  const handlerClickCreateVacancy = () => {
+    if (nameVacancy.length > 0 && !(maxSalary !== null && minSalary !== null && maxSalary <= minSalary)) {
+      dispatch(setIsEditorVacancyFlag(true));
     }
-    //e.preventDefault();
   };
 
   const handleUndoAction = (e: any) => {
     e.preventDefault();
     setIsOpenCreateVacancy(false);
   };
+
 
   return (
     <Modal
@@ -156,7 +162,6 @@ function ModalCreateVacancy() {
                 className="text-field-salary-input"
                 type="number"
                 min="0"
-                value={minSalary}
                 onChange={handleChangeMinSalary}
                 placeholder="min"
               />
@@ -166,7 +171,6 @@ function ModalCreateVacancy() {
                 className="text-field-salary-input"
                 type="number"
                 min="0"
-                value={maxSalary}
                 onChange={handleChangeMaxSalary}
                 placeholder="max"
               />
@@ -182,9 +186,7 @@ function ModalCreateVacancy() {
       </div>
       <div className="edit-modal-item edit-modal-item__nav">
         <GrayButton as="button" onClick={handleUndoAction}>Отмена</GrayButton>
-        <BlueButton as="button"
-                    className={cl({'disabledBlueBtn': nameVacancy.length <= 0 || (Number(maxSalary) !== 0 && Number(maxSalary) <= Number(minSalary))})}
-                    onClick={handlerClickCreateVacancy}>
+        <BlueButton as="button" className={cl({'disabledBlueBtn': nameVacancy.length <= 0 || (maxSalary !== null && minSalary !== null && maxSalary <= minSalary)})} onClick={handlerClickCreateVacancy}>
           Создать вакансию
         </BlueButton>
       </div>

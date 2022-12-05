@@ -1,9 +1,9 @@
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 
-import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import {useAppDispatch} from '../../app/hooks';
 import {ButtonVacancyCard, TabInHeader, TypeRequestVacancyModal} from '../../const';
 import bannerMyVacancyScreen from '../../assets/img/header/bunner-my-vacancy.svg';
-import {setIsGetVacanciesEmployer, setIsOpenCreateVacancyModal, setIsPublishedVacancy, setStateEditVacancy, setTypeRequestModalVacancy, setVacancyByID} from '../../features/vacancy/vacancy-slice';
+import {setIsGetVacanciesEmployer, setIsOpenCreateVacancyModal,  setTypeRequestModalVacancy, setVacancyByID} from '../../features/vacancy/vacancy-slice';
 import VacancyListEmployerMyVacancy from '../../components/vacancy-list-employer-my-vacancy/vacancy-list-employer-my-vacancy';
 import './employer-my-vacancy-screen.scss';
 import {changeActiveTabInHeader, changeButtonVacancyCard} from '../../features/page/page-slice';
@@ -25,8 +25,8 @@ function EmployerMyVacancyScreen() {
 
   const handlerClickCreateVacancy = (e: any) => {
     e.stopPropagation();
-    dispatch(setTypeRequestModalVacancy(TypeRequestVacancyModal.CREATE));
     dispatch(setIsOpenCreateVacancyModal(true));
+    dispatch(setTypeRequestModalVacancy(TypeRequestVacancyModal.CREATE));
   };
 
   return (

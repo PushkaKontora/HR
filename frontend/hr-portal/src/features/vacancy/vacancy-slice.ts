@@ -4,7 +4,7 @@ import {Vacancy} from '../../types/vacancy';
 import {Department} from '../../types/department';
 import {createDepartmentShortVision, getMaxPagesVacancies, makeViewDataExperience, setNewParamDepartment, setNewParamExperience, setNewParamOffset, setNewParamSalaryMax, setNewParamSalaryMin, setNewParamSearchLine, setNewParamSortBy} from './vacancy.actions';
 import {DEFAULT_ELEMENT_DEPARTMENT, SortingVacancyTypes, TypeRequestVacancyModal} from '../../const';
-import {getVacancies, getVacanciesForEmployer, patchStatusVacancyUnpublish} from '../../service/async-actions/async-actions-vacancy';
+import {getVacancies, getVacanciesForEmployer, getVacancyByID, patchStatusVacancyUnpublish} from '../../service/async-actions/async-actions-vacancy';
 import {toast} from 'react-toastify';
 
 export type VacanciesApi = {
@@ -47,7 +47,8 @@ interface VacancyState {
   isOpenCreateVacancyModal: boolean,
   typeRequestModalVacancy: TypeRequestVacancyModal;
 
-  isHiddenToolbar: boolean
+  isHiddenToolbar: boolean,
+  prevDescriptionVacancyBYid: string
 }
 
 const initialState: VacancyState = {
@@ -73,14 +74,15 @@ const initialState: VacancyState = {
   isOpenUnpublishVacancyModal: false,
   isOpenEditVacancyModal: false,
   editorTextVacancy: '',
-  isEditorVacancyFlag: true,
+  isEditorVacancyFlag: false,
   isStartRequestChangeVacancy: false,
   isOpenPublishVacancyModal: false,
 
   isOpenCreateVacancyModal: false,
   typeRequestModalVacancy: TypeRequestVacancyModal.CHANGE,
 
-  isHiddenToolbar: true
+  isHiddenToolbar: true,
+  prevDescriptionVacancyBYid: ''
 };
 
 const vacancySlice = createSlice({
@@ -88,7 +90,13 @@ const vacancySlice = createSlice({
   initialState,
   reducers: {
     setEditorTextVacancy(state, action) {
-      state.editorTextVacancy = action.payload;
+      if (action.payload === state.prevDescriptionVacancyBYid) {
+        return;
+      } else {
+        state.editorTextVacancy = action.payload;
+        state.isEditorVacancyFlag = false;
+        state.isStartRequestChangeVacancy = true;
+      }
     },
     setTypeRequestModalVacancy(state, action) {
       state.typeRequestModalVacancy = action.payload;
@@ -104,14 +112,15 @@ const vacancySlice = createSlice({
     setIsStartRequestChangeVacancy(state, action) {
       state.isStartRequestChangeVacancy = action.payload;
     },
-    setIsEditorVacancyFlag(state) {
-      state.isEditorVacancyFlag = !state.isEditorVacancyFlag;
+    setIsEditorVacancyFlag(state, action) {
+      state.isEditorVacancyFlag = action.payload;
     },
     setIsGetVacanciesEmployer(state, action) {
       state.isGetVacanciesEmployer = action.payload;
     },
     setVacancyByID(state, action) {
       state.vacancyByID = action.payload;
+      state.prevDescriptionVacancyBYid = action.payload.description;
     },
     setIsPublishedVacancy(state, action) {
       state.isPublishedVacancy = action.payload;
@@ -204,6 +213,9 @@ const vacancySlice = createSlice({
       })
       .addCase(patchStatusVacancyUnpublish.fulfilled, (state, action) => {
         toast.dark('Вакансия успешно снята с публикации');
+      })
+      .addCase(getVacancyByID.fulfilled, (state, action) => {
+        state.vacancyByID = action.payload;
       });
   }
 });

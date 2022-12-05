@@ -1,5 +1,5 @@
 import '../../init';
-import React, {Dispatch, SetStateAction, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ContentState, EditorState} from 'draft-js';
 import {convertFromHTML, convertToHTML} from 'draft-convert';
 import {Editor} from 'react-draft-wysiwyg';
@@ -8,7 +8,7 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import './employer-creating-new-vacancy.scss';
 
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
-import {setEditorTextVacancy, setIsStartRequestChangeVacancy} from '../../features/vacancy/vacancy-slice';
+import {setEditorTextVacancy} from '../../features/vacancy/vacancy-slice';
 import {TypeRequestVacancyModal} from '../../const';
 
 type EmployerCreatingNewVacancyProps = {
@@ -27,9 +27,10 @@ function EmployerCreatingNewVacancy(props: EmployerCreatingNewVacancyProps) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const currentContentAsHTML = convertToHTML(editorState.getCurrentContent());
-    dispatch(setEditorTextVacancy(currentContentAsHTML));
-    dispatch(setIsStartRequestChangeVacancy(true));
+    if (isEditorVacancyFlag) {
+      const currentContentAsHTML = convertToHTML(editorState.getCurrentContent());
+      dispatch(setEditorTextVacancy(currentContentAsHTML));
+    }
   }, [isEditorVacancyFlag]);
 
   useEffect(() => {

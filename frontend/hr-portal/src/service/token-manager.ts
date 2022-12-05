@@ -1,9 +1,5 @@
 import {AccessTokenPayload} from '../types/token_payload';
-import jwtDecode, {InvalidTokenError} from 'jwt-decode';
-import {Exception} from 'sass';
-import {redirect} from 'react-router-dom';
-import {processErrorHandle} from './error-handle';
-import {useAppDispatch} from '../app/hooks';
+import jwtDecode from 'jwt-decode';
 import {getAuthUser} from './async-actions/async-actions-user';
 import {AppDispatch} from '../app/store';
 import {indicateStatus} from '../features/general/general-slice';

@@ -4,11 +4,13 @@ import {ButtonVacancyCard, TabInHeader} from '../../const';
 interface PageSlice {
   buttonVacancyCard: ButtonVacancyCard;
   activeTabInHeader: TabInHeader | null;
+  isRefreshPageDetailsScreen: boolean;
 }
 
 const initialState: PageSlice = {
   buttonVacancyCard: ButtonVacancyCard.vacancies,
-  activeTabInHeader: TabInHeader.vacancies
+  activeTabInHeader: TabInHeader.vacancies,
+  isRefreshPageDetailsScreen: false
 };
 
 const pageSlice = createSlice({
@@ -20,13 +22,17 @@ const pageSlice = createSlice({
     },
     changeActiveTabInHeader(state, action) {
       state.activeTabInHeader = action.payload;
+    },
+    refreshPageDetailsScreen(state, action) {
+      state.isRefreshPageDetailsScreen = action.payload;
     }
   }
 });
 
 export const {
   changeButtonVacancyCard,
-  changeActiveTabInHeader
+  changeActiveTabInHeader,
+  refreshPageDetailsScreen,
 } = pageSlice.actions;
 
 export default pageSlice.reducer;

@@ -13,31 +13,31 @@ import {GrayButton} from '../styled/buttons/gray-button';
 import {VacancyPutChangeParams} from '../../types/vacancy-put-change-params';
 import {getVacanciesForEmployer, putVacancyChanges} from '../../service/async-actions/async-actions-vacancy';
 import ModalBtnStatusVacancy from '../modal-btn-status-vacancy/modal-btn-status-vacancy';
+import {refreshPageDetailsScreen} from '../../features/page/page-slice';
 
 function ModalEditVacancy() {
   const typeRequestModalVacancy = useAppSelector((state) => state.vacancy.typeRequestModalVacancy);
   const vacancyByID = useAppSelector((state) => state.vacancy.vacancyByID);
   const isPublishedVacancy = useAppSelector((state) => state.vacancy.isPublishedVacancy);
   const isOpenEditVacancyModalState = useAppSelector((state) => state.vacancy.isOpenEditVacancyModal);
-  const isEditorVacancyText = useAppSelector((state) => state.vacancy.editorTextVacancy);
-  const isEditorVacancyFlag = useAppSelector((state) => state.vacancy.isEditorVacancyFlag);
+  const editorVacancyText = useAppSelector((state) => state.vacancy.editorTextVacancy);
   const isStartRequestChangeVacancy = useAppSelector((state) => state.vacancy.isStartRequestChangeVacancy);
   const [isOpenEditVacancy, setIsOpenEditVacancy] = useState(isOpenEditVacancyModalState);
   const [isPublishStatus, setIsPublishStatus] = useState(isPublishedVacancy);
   const [nameVacancy, setNameVacancy] = useState('');
   const [experience, setExperience] = useState<ExpectedExperience>(ExpectedExperience.NO_EXPERIENCE);
-  const [minSalary, setMinSalary] = useState<string>('0');
-  const [maxSalary, setMaxSalary] = useState<string>('0');
+  const [minSalary, setMinSalary] = useState<number | null>(null);
+  const [maxSalary, setMaxSalary] = useState<number | null>(null);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (isStartRequestChangeVacancy === true && typeRequestModalVacancy === TypeRequestVacancyModal.CHANGE) {
       const vacancyBody: VacancyPutChangeParams = {
         name: nameVacancy,
-        description: isEditorVacancyText,
+        description: editorVacancyText,
         expected_experience: experience,
-        salary_from: Number(minSalary),
-        salary_to: Number(maxSalary),
+        salary_from: minSalary,
+        salary_to: maxSalary,
         published: isPublishStatus
       };
       console.log(vacancyBody);
@@ -46,29 +46,34 @@ function ModalEditVacancy() {
           .then(() => {
             dispatch(getVacanciesForEmployer({isPublished: isPublishedVacancy, idDepartment: vacancyByID.department.id, offset: 0}))
               .then(() => {
+                dispatch(refreshPageDetailsScreen(true));
                 setIsOpenEditVacancy(false);
               });
           });
       }
       dispatch(setIsStartRequestChangeVacancy(false));
     }
-  }, [isEditorVacancyText, isEditorVacancyFlag]);
+  }, [isStartRequestChangeVacancy, editorVacancyText]);
 
 
   useEffect(() => {
     if (vacancyByID) {
       setNameVacancy(vacancyByID.name);
       if (vacancyByID?.salary_to) {
-        vacancyByID?.salary_to !== 0 ? setMaxSalary(vacancyByID?.salary_to.toString()) : setMaxSalary('0');
+        setMaxSalary(vacancyByID?.salary_to);
+      } else {
+        setMaxSalary(null);
       }
       if (vacancyByID?.salary_from) {
-        vacancyByID?.salary_from !== 0 ? setMinSalary(vacancyByID?.salary_from.toString()) : setMinSalary('0');
+        setMinSalary(vacancyByID?.salary_from);
+      } else {
+        setMinSalary(null);
       }
       if (vacancyByID?.expected_experience) {
         //setExperience(ExpectedExperience[vacancyByID?.expected_experience as ExpectedExperienceNameString]);
       }
     }
-  }, [vacancyByID]);
+  }, [vacancyByID, isOpenEditVacancyModalState]);
 
 
   useEffect(() => {
@@ -87,28 +92,32 @@ function ModalEditVacancy() {
     if (e?.label) {
       const valueExp = Object.keys(ExpectedExperienceNameString).find(key => ExpectedExperienceNameString[key] === e.label);
       if (valueExp) {
-        setExperience(valueExp);
+        setExperience(valueExp as ExpectedExperience);
       }
-      console.log(e.label, valueExp);
     }
   };
 
   const handleChangeMinSalary = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value) {
-      setMinSalary(e.target.value.toString());
+    const minValue = e.target.value;
+    if (minValue) {
+      setMinSalary(Number(minValue));
+    } else {
+      setMinSalary(null);
     }
   };
 
   const handleChangeMaxSalary = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value) {
-      setMaxSalary(e.target.value.toString());
+    const maxValue = e.target.value;
+    if (maxValue) {
+      setMaxSalary(Number(maxValue));
+    } else {
+      setMaxSalary(null);
     }
   };
 
-  const putNewDescriptionVacancy = (e: any) => {
-    //e.preventDefault();
-    if (nameVacancy.length > 0 && !(Number(maxSalary) !== 0 && Number(maxSalary) <= Number(minSalary))) {
-      dispatch(setIsEditorVacancyFlag());
+  const putNewDescriptionVacancy = () => {
+    if (nameVacancy.length > 0 && !(maxSalary !== null && minSalary !== null && maxSalary <= minSalary)) {
+      dispatch(setIsEditorVacancyFlag(true));
     }
   };
 
@@ -169,7 +178,6 @@ function ModalEditVacancy() {
                 className="text-field-salary-input"
                 type="number"
                 min="0"
-                value={minSalary}
                 onChange={handleChangeMinSalary}
                 placeholder="min"
               />
@@ -179,7 +187,6 @@ function ModalEditVacancy() {
                 className="text-field-salary-input"
                 type="number"
                 min="0"
-                value={maxSalary}
                 onChange={handleChangeMaxSalary}
                 placeholder="max"
               />
@@ -195,10 +202,7 @@ function ModalEditVacancy() {
       </div>
       <div className="edit-modal-item edit-modal-item__nav">
         <GrayButton as="button" onClick={handleUndoAction}>Отмена</GrayButton>
-        <BlueButton as="button"
-                    className={cl({'disabledBlueBtn': nameVacancy.length <= 0 || (Number(maxSalary) !== 0 && Number(maxSalary) <= Number(minSalary))})}
-                    onClick={putNewDescriptionVacancy}
-        >
+        <BlueButton as="button" className={cl({'disabledBlueBtn': nameVacancy.length <= 0 || (maxSalary !== null && minSalary !== null && maxSalary <= minSalary)})} onClick={putNewDescriptionVacancy}>
           Сохранить изменения
         </BlueButton>
       </div>

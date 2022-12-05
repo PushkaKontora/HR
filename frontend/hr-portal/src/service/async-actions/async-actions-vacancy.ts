@@ -5,7 +5,7 @@ import {VacancyRoutes} from '../../const/api-routes/api-vacancy-routes';
 import {LIMIT_ELEMENTS_ON_PAGE, SortingVacancyTypes} from '../../const';
 import {Department} from '../../types/department';
 import {Generics} from '../../types/generics';
-import {setDepartments, VacanciesApi} from '../../features/vacancy/vacancy-slice';
+import {setDepartments, setVacancyByID, VacanciesApi} from '../../features/vacancy/vacancy-slice';
 import {DepartmentsRoutes} from '../../const/api-routes/api-departments-routes';
 import {getParamsRequestVacancy, initialParamsVacancyRequest} from '../../features/vacancy/vacancy.actions';
 import {VacancyPutChangeParams} from '../../types/vacancy-put-change-params';
@@ -103,7 +103,15 @@ export const putVacancyChanges = createAsyncThunk<void, { idVacancy: number, dat
 
 export const createVacancy = createAsyncThunk<void, { data: CreateVacancyParams }, Generics>(
   'vacancy/createVacancy',
-  async ({ data}, {dispatch, extra: api}) => {
+  async ({data}, {dispatch, extra: api}) => {
     await api.post(VacancyRoutes.getVacancy, data);
+  },
+);
+
+export const getVacancyByID = createAsyncThunk<Vacancy, number, Generics>(
+  'vacancy/getVacancyByID',
+  async (vacancyID, {dispatch, extra: api}) => {
+    const {data} = await api.get<Vacancy>(VacancyRoutes.vacancyWithID(vacancyID));
+    return data;
   },
 );
