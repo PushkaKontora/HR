@@ -1,21 +1,14 @@
 import {Vacancy} from '../../types/vacancy';
-import moneyIcon from '../../assets/img/vacancy-card/money.svg';
 import experienceIcon from '../../assets/img/vacancy-card/experience.svg';
-import likesIcon from '../../assets/img/vacancy-card/no_like.svg';
 import './vacancy-card.scss';
 import {ExpectedExperienceNameString} from '../../const';
 import {useAppDispatch} from '../../app/hooks';
-import {setStateRespondModal, setVacancyByID} from '../../features/vacancy/vacancy-slice';
+import {setVacancyByID} from '../../features/vacancy/vacancy-slice';
 import {useNavigate} from 'react-router-dom';
-import {NoAuthRoutes} from '../../const/app-routes';
-import moneyRUSIcon from '../../assets/img/job-seach/₽.svg';
 import ButtonActionVacancyCard from '../button-action-vacancy-card/button-action-vacancy-card';
 import UseEditor from '../../reused-components/text-editor/useEditor';
 import {useEffect, useState} from 'react';
 import TabsSalary from '../tabs-salary/tabs-salary';
-import {LikeButton} from '../../reused-components/like-button/like-button';
-import {addToVacancyWishlist} from '../../service/async-actions/async-actions-vacancy';
-import {toast} from 'react-toastify';
 
 type VacancyCardProps = {
   vacancy: Vacancy
@@ -50,21 +43,6 @@ function VacancyCard(props: VacancyCardProps) {
     }
   }, [vacancy]);
 
-  const like = () => {
-    if (vacancy) {
-      dispatch(addToVacancyWishlist(vacancy.id))
-        .then(() => {
-          toast.success('Вакансия добавлена в избранное');
-        });
-    }
-  };
-
-  const handlerClickRespond = (e: any) => {
-    dispatch(setVacancyByID(vacancy));
-    e.stopPropagation();
-    dispatch(setStateRespondModal(true));
-  };
-
 
   return (
     <div className="vacancyCardWrapper" onClick={handleClickVacancyCard}>
@@ -93,13 +71,7 @@ function VacancyCard(props: VacancyCardProps) {
           <span>{vacancy.department.name}</span> {vacancy.department.leader.name} {vacancy.department.leader.surname}
         </div>
         <div className="actionItem navTabs">
-          <LikeButton onLike={like}/>
-          <button
-            className="navTabs-btnItem navTabs-btnItem__respond"
-            onClick={handlerClickRespond}
-          >
-            Откликнуться
-          </button>
+          <ButtonActionVacancyCard vacancy={vacancy}/>
         </div>
       </div>
     </div>

@@ -3,8 +3,6 @@ import {useEffect, useLayoutEffect, useRef, useState} from 'react';
 
 import './vacancy-list.scss';
 import PaginationCustom from '../pagination-custom/paginationCustom';
-import {useAppSelector} from '../../app/hooks';
-import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 import ModalRespondRequest from '../modal-respond-request/modal-respond-request';
 import {Vacancy} from '../../types/vacancy';
 

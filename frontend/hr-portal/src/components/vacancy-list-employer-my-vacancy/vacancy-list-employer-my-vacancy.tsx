@@ -11,6 +11,7 @@ function VacancyListEmployerMyVacancy() {
   const isPublished = useAppSelector((state) => state.vacancy.isPublishedVacancy);
   const idDepartment = useAppSelector((state) => state.general.user?.department.id);
   const offset = useAppSelector((state) => state.vacancy.paramsForGetVacancies.offset);
+  const vacancies = useAppSelector((state) => state.vacancy.vacancies);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -25,7 +26,7 @@ function VacancyListEmployerMyVacancy() {
       <ModalCreateVacancy/>
       <ModalMakeUnpublishVacancy/>
       <ModalMakePublishVacancy/>
-      <VacancyList/>
+      <VacancyList showPagination vacancies={vacancies.items}/>
     </>
   );
 }

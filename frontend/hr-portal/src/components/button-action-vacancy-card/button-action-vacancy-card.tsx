@@ -1,8 +1,10 @@
-import likesIcon from '../../assets/img/vacancy-card/yes_like.svg';
 import {setStateUnpublishedVacancy, setStateRespondModal, setVacancyByID, setStatePublishedVacancy, setTypeRequestModalVacancy, setIsOpenEditVacancyModal} from '../../features/vacancy/vacancy-slice';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {Vacancy} from '../../types/vacancy';
 import {ButtonVacancyCard, TypeRequestVacancyModal} from '../../const';
+import {LikeButton} from '../../reused-components/like-button/like-button';
+import {addToVacancyWishlist} from '../../service/async-actions/async-actions-vacancy';
+import {toast} from 'react-toastify';
 
 type ButtonActionVacancyCardProps = {
   vacancy: Vacancy
@@ -39,13 +41,20 @@ function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
     dispatch(setIsOpenEditVacancyModal(true));
   };
 
+  const like = () => {
+    if (vacancy) {
+      dispatch(addToVacancyWishlist(vacancy.id))
+        .then(() => {
+          toast.success('Вакансия добавлена в избранное');
+        });
+    }
+  };
+
   return (
     <>
       {buttonView === ButtonVacancyCard.vacancies
       && (<>
-        <button className="navTabs-btnItem">
-          <img src={likesIcon} alt="likes icon"/>
-        </button>
+        <LikeButton onLike={like}/>
         <button
           className="navTabs-btnItem navTabs-btnItem__respond"
           onClick={handlerClickRespond}
