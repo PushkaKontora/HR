@@ -12,13 +12,21 @@ import HeaderNav from '../header-nav/header-nav';
 import './header.scss';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {logout} from '../../service/async-actions/async-actions-user';
+import browserHistory from '../../service/browser-history';
+import {UserStatus} from '../../types/user-status';
+import {indicateStatus, setUser} from '../../features/general/general-slice';
 
 function Header() {
   const isLoading = useAppSelector((state) => state.general.loading);
   const dispatch = useAppDispatch();
 
   const handlerClickLogout = () => {
-    dispatch(logout());
+    dispatch(logout())
+      .then(() => {
+        browserHistory.push('/login');
+        dispatch(setUser(null));
+        dispatch(indicateStatus(UserStatus.noAuth))
+      });
   };
 
   return (
@@ -34,7 +42,7 @@ function Header() {
           <div className="header-nav-personal"><LikeIcon className="likes-icon"/></div>
           <div className="header-nav-personal"><PersonalIcon className="personal-icon"/></div>
           <div
-            className='header-nav-personal header-nav-personal__exit'
+            className="header-nav-personal header-nav-personal__exit"
             onClick={handlerClickLogout}
           >
             <button className={cl('btn-exit', {'btn-exit__load': isLoading})}>
