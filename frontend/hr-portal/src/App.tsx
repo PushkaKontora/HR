@@ -13,11 +13,10 @@ import React, {useEffect} from 'react';
 import {checkToken} from './service/token-manager';
 import JobSearchScreen from './pages/job-search-screen/job-search-screen';
 import JobSearchDetailsScreen from './pages/job-search-details-screen/job-search-details-screen';
-import EmployerCreatingNewVacancy from './components/employer-creating-new-vacancy/employer-creating-new-vacancy';
 import ProfilePage from './pages/profile-page/profile-page';
 import {ToastWrapper} from './components/toast-wrapper/toast-wrapper';
-import browserHistory from './service/browser-history';
 import {FavoritePage} from './pages/favorite-page/favorite-page';
+import EmployerMyVacancyScreen from './pages/employer-my-vacancy-screen/employer-my-vacancy-screen';
 
 function App() {
   const status = useAppSelector((state) => state.general.statusUser);
@@ -28,10 +27,6 @@ function App() {
 
     if (isMounted) {
       checkToken(dispatch);
-      /*console.log(browserHistory.location);
-      if (status !== UserStatus.noAuth) {
-        browserHistory.go(-2);
-      }*/
     }
 
     return () => {
@@ -44,9 +39,13 @@ function App() {
       <Routes>
         <Route path={'/'} element={<DefaultLayout/>}>
           <Route index element={
-            <PrivateRoute requiredUserStatus={'anyLoggedIn'}>
-              <JobSearchScreen/>
-            </PrivateRoute>
+            status === UserStatus.user
+              ? <PrivateRoute requiredUserStatus={UserStatus.user}>
+                <JobSearchScreen/>
+              </PrivateRoute>
+              : <PrivateRoute requiredUserStatus={UserStatus.employer}>
+                <EmployerMyVacancyScreen/>
+              </PrivateRoute>
           }/>
           <Route path={':id'} element={
             <PrivateRoute requiredUserStatus={'anyLoggedIn'}>
@@ -65,9 +64,6 @@ function App() {
           }/>
           <Route path={NoAuthRoutes.Login} element={<LoginPage/>}/>
           <Route path={NoAuthRoutes.SignUp} element={<SignUpPage/>}/>
-          <Route path={NoAuthRoutes.Vacancy} element={<JobSearchScreen/>}/>
-          <Route path={'/empl'} element={<EmployerCreatingNewVacancy/>}/>
-          <Route path={`${NoAuthRoutes.Vacancy}/:id`} element={<JobSearchDetailsScreen/>}/>
         </Route>
       </Routes>
       <ToastWrapper/>

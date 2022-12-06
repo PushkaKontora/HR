@@ -6,13 +6,17 @@ import './pagination-custom.scss';
 import arrowLeftPagination from '../../assets/img/job-seach/ArrowLeft-pagination.svg';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {setOffsetParam} from '../../features/vacancy/vacancy-slice';
-import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
+import {getVacancies, getVacanciesForEmployer} from '../../service/async-actions/async-actions-vacancy';
 
 
 function PaginationCustom() {
   const currentPage =  useAppSelector((state) => state.vacancy.currentPage);
   const maxPageCount = useAppSelector((state) => state.vacancy.maxPagesVacancies);
   const vacancies = useAppSelector((state) => state.vacancy.vacancies);
+  const isGetVacanciesEmployer = useAppSelector((state) => state.vacancy.vacancies);
+  const departmentId = useAppSelector((state) => state.general?.user?.department?.id);
+  const offset = useAppSelector((state) => state.vacancy.paramsForGetVacancies.offset);
+  const isPublished = useAppSelector((state) => state.vacancy.isPublishedVacancy);
   const dispatch = useAppDispatch();
   const firstUpdate = useRef(true);
 
@@ -23,7 +27,13 @@ function PaginationCustom() {
     }
   });
   useEffect(() => {
-    dispatch(getVacancies());
+    if(isGetVacanciesEmployer){
+      if (departmentId) {
+        dispatch(getVacanciesForEmployer({isPublished, idDepartment: departmentId, offset}));
+      }
+    }else{
+      dispatch(getVacancies());
+    }
   }, [currentPage]);
 
 

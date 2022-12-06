@@ -1,4 +1,4 @@
-export const LIMIT_ELEMENTS_ON_PAGE = 5;
+export const LIMIT_ELEMENTS_ON_PAGE = 10;
 export const PRODUCT_VERSION_FOR_ROUTES = '/v1';
 
 export const DEFAULT_ELEMENT_DEPARTMENT = {label: 'Выбрать элемент', value: 0};
@@ -23,6 +23,13 @@ export const ExpectedExperienceNameString = {
   [ExpectedExperience.MORE_THAN_SIX_YEARS]: 'Больше 6 лет'
 };
 
+export const ExpectedExperienceNameStringInBackend = {
+  [ExpectedExperience.NO_EXPERIENCE]: 'Нет опыта',
+  [ExpectedExperience.FROM_ONE_TO_THREE_YEARS]: 'От 1 года до 3 лет',
+  [ExpectedExperience.FROM_THREE_TO_SIX_YEARS]: 'От 3 до 6 лет',
+  [ExpectedExperience.MORE_THAN_SIX_YEARS]: 'Больше 6 лет'
+};
+
 export enum SortingVacancyTypes {
   BY_NAME = 'name_asc',
   PUBLISHED_DATE = 'published_at_desc',
@@ -37,8 +44,37 @@ export const SelectFilterCard = {
   [SortingVacancyTypes.SALARY_ASC]: 'По возрастанию зарплаты'
 };
 
+export enum TabInHeader {
+  vacancies = 'vacancies',
+  resume = 'resume',
+  myVacancy = 'myVacancy'
+}
 
-export enum TypesFilters {
-  DEFAULT = 'default',
-  SALARY_MIN = 'salaryMin',
+export enum ButtonVacancyCard {
+  vacancies = 'vacancies',
+  empMyVacancy = 'empMyVacancy',
+}
+
+export const expectedExperienceShortVersion = [
+  {
+    'value': 1,
+    'label': ExpectedExperienceNameString[ExpectedExperience.NO_EXPERIENCE]
+  },
+  {
+    'value': 2,
+    'label': ExpectedExperienceNameString[ExpectedExperience.FROM_ONE_TO_THREE_YEARS]
+  },
+  {
+    'value': 3,
+    'label': ExpectedExperienceNameString[ExpectedExperience.FROM_THREE_TO_SIX_YEARS]
+  },
+  {
+    'value': 4,
+    'label': ExpectedExperienceNameString[ExpectedExperience.MORE_THAN_SIX_YEARS]
+  },
+];
+
+export enum TypeRequestVacancyModal {
+  CREATE = 'create',
+  CHANGE = 'change'
 }

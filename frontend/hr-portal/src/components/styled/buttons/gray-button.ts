@@ -1,15 +1,17 @@
 import styled from 'styled-components';
-import {LargeMedium} from '../fonts/large';
+import {ButtonGeneralSize} from '../form-view/button-general-size';
 
-export const GrayButton = styled(LargeMedium)`
-  background-color: #EDECEA;
-  color: black;
-  padding: 16px 32px;
-  
-  border-radius: 10px;
-  
-  &:disabled {
-    background-color: #F6F5F3;
-    color: #9C9C9C;
+export const GrayButton = styled(ButtonGeneralSize)`
+  color: #9C9C9C;
+  background: #F6F5F3;
+
+  &:hover {
+    background: #EDECEA;
+    color: #000000;
+  }
+
+  &:active {
+    background: #EDECEA;
+    color: #000000;
   }
 `;

@@ -1,5 +1,12 @@
-import {createSlice, isPending} from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
 import {ResumeUser} from '../../types/resume';
+import {TabInHeader} from '../../const';
+import {deleteUserPhoto, loadUserPhoto, resetPassword, updateEmailAction, updateName} from '../../service/async-actions/async-actions-profile';
+import {getCompetenciesAction} from '../../service/async-actions/async-actions-competencies';
+import {deleteUser} from '../../service/async-actions/async-actions-delete-user';
+import {UserStatus} from '../../types/user-status';
+import {logout} from '../../service/async-actions/async-actions-user';
+import browserHistory from '../../service/browser-history';
 import {createResumeAction, getResumeWishlist} from '../../service/async-actions/async-actions-resume';
 import {Vacancy} from '../../types/vacancy';
 import {getVacancyWishlist} from '../../service/async-actions/async-actions-vacancy';
@@ -9,6 +16,7 @@ interface UserState {
   favoriteVacancies: Vacancy[],
   favoriteResumes: ResumeUser[]
 }
+
 
 const initialState: UserState = {
   resumeUser: null,
@@ -35,6 +43,8 @@ const userSlice = createSlice({
   }
 });
 
-export const {setResumeUser} = userSlice.actions;
+export const {
+  setResumeUser,
+} = userSlice.actions;
 
 export default userSlice.reducer;

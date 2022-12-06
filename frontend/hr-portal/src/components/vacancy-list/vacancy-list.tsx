@@ -1,8 +1,7 @@
+import VacancyCard from '../vacancy-card/vacancy-card';
 import {useEffect, useLayoutEffect, useRef, useState} from 'react';
 
 import './vacancy-list.scss';
-import VacancyCard from '../vacancy-card/vacancy-card';
-import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import PaginationCustom from '../pagination-custom/paginationCustom';
 import {
   getVacancies,
@@ -11,6 +10,7 @@ import {
 } from '../../service/async-actions/async-actions-vacancy';
 import ModalRespondRequest from '../modal-respond-request/modal-respond-request';
 import {Vacancy} from '../../types/vacancy';
+import {useAppDispatch} from '../../app/hooks';
 
 type VacancyListProps = {
   vacancies: Vacancy[],
@@ -47,5 +47,3 @@ function VacancyList(props: VacancyListProps) {
 }
 
 export default VacancyList;
-
-//todo: доделать формат выводимого файла (резюме)

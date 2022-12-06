@@ -1,7 +1,7 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
+
 import {indicateStatus, reset, setError, setLoading, setUser} from '../../features/general/general-slice';
-import {AppDispatch, RootState, store} from '../../app/store';
-import {AxiosInstance} from 'axios';
+import {store} from '../../app/store';
 import {decodeToken, dropToken, saveToken} from '../token-manager';
 import {UsersRoutes} from '../../const/api-routes/api-users-routes';
 import {User} from '../../types/user';
@@ -9,11 +9,12 @@ import {TIMEOUT_SHOW_ERROR} from '../../const/errors';
 import {SignInData} from '../../types/sign-in-data';
 import {StatusCodes} from 'http-status-codes';
 import {Generics} from '../../types/generics';
-import {useAppSelector} from '../../app/hooks';
 import {ResumeRoutes} from '../../const/api-routes/api-resume-routes';
 import {setResumeUser} from '../../features/user/user-slice';
-import {ResumeUser} from '../../types/resume';
 import browserHistory from '../browser-history';
+import {UserStatus} from '../../types/user-status';
+import {TabInHeader} from '../../const';
+import {changeActiveTabInHeader} from '../../features/page/page-slice';
 
 export const getAuthUser = createAsyncThunk<void, number, Generics>(
   'users/getUser',
@@ -21,7 +22,12 @@ export const getAuthUser = createAsyncThunk<void, number, Generics>(
     dispatch(setLoading(true));
     const res = await api.get(UsersRoutes.byId(arg))
       .then((u) => {
-        dispatch(getResumeUser(u.data));
+        if (u.data.permission === UserStatus.user) {
+          dispatch(getResumeUser(u.data));
+        }
+        if (u.data.permission === UserStatus.employer) {
+          dispatch(changeActiveTabInHeader(TabInHeader.myVacancy));
+        }
         return u;
       });
     const user: User = res.data;
@@ -65,6 +71,7 @@ export const logout = createAsyncThunk<void, undefined, Generics>(
   async (_arg, {dispatch, extra: api}) => {
     dispatch(setLoading(true));
     dropToken();
+    //browserHistory.go(-2);
     // drop refresh token from cookie
     dispatch(reset());
     dispatch(setLoading(false));

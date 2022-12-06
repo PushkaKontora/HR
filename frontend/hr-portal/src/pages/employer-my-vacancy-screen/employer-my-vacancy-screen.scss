@@ -1,0 +1,44 @@
+.employerMyVacancyScreen-wrapper {
+  width: 1412px;
+  margin: 0 auto 52px;
+
+  .jobSearchScreen-item__banner {
+    padding-bottom: 24px;
+    border-bottom: 0.7px solid #000000;
+  }
+
+  .header-action {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+
+    .create-new-vacancy-btn {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      gap: 8px;
+      padding: 12px 20px;
+      background: #F6F5F3;
+      border-radius: 30px;
+
+      &:hover {
+        background: #EDECEA;
+        transition: 0.5s;
+      }
+
+      &:active {
+        background: #EDECEA;
+        transition: 0.5s;
+        box-shadow: inset 0px 1px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      .text-btn {
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 22px;
+        letter-spacing: 0.05em;
+      }
+    }
+  }
+}

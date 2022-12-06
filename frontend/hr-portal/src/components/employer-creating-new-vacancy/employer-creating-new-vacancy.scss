@@ -1,0 +1,103 @@
+
+.wrapper-employer-creating-new-vacancy {
+  width: 100%;
+
+  .wrapper-editor-text {
+    background: #FFFFFF;
+    border: 0.7px solid #000000;
+    border-radius: 10px;
+
+    .DraftEditor-editorContainer {
+      min-height: 100px;
+    }
+
+    .public-DraftEditorPlaceholder-root {
+      padding: 38px 28px;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 22px;
+      /* identical to box height, or 138% */
+
+      letter-spacing: 0.05em;
+
+      /* Default */
+
+      color: #9C9C9C;
+    }
+
+    .public-DraftEditor-content {
+      padding: 22px 28px;
+    }
+
+    .rdw-editor-toolbar {
+      padding: 8px 16px;
+      background: #F6F5F3;
+      border: 0.7px solid #000000;
+      border-radius: 10px;
+
+      margin: -1px -0.7px 0 -0.7px;
+
+      .rdw-inline-wrapper,
+      .rdw-list-wrapper {
+        margin: 0;
+
+      }
+    }
+
+    .icon-editor {
+      background: none;
+      border: none;
+      margin-right: 8px;
+      margin-left: 0;
+      padding: 6px;
+      box-shadow: none;
+      height: 30px;
+      width: 35px;
+
+      img {
+        background: #9C9C9C;
+        height: 24px;
+        width: 24px;
+        padding: 0;
+      }
+    }
+
+    .editor__bold {
+      img {
+        -webkit-mask-image: url(../../assets/img/editor-field/icon_for_text_edito-BOLDr.svg);
+        mask-image: url(../../assets/img/editor-field/icon_for_text_edito-BOLDr.svg);
+      }
+    }
+
+    .editor__italic {
+      img {
+        -webkit-mask-image: url(../../assets/img/editor-field/icon_for_text_editor-CURSIVE.svg);
+        mask-image: url(../../assets/img/editor-field/icon_for_text_editor-CURSIVE.svg);
+      }
+    }
+
+    .editor__unordered {
+      img {
+        -webkit-mask-image: url(../../assets/img/editor-field/icon_for_text_editor-ULLIST.svg);
+        mask-image: url(../../assets/img/editor-field/icon_for_text_editor-ULLIST.svg);
+      }
+    }
+
+    .editor__ordered {
+      img {
+        -webkit-mask-image: url(../../assets/img/editor-field/icon_for_text_editor-OLLIST.svg);
+        mask-image: url(../../assets/img/editor-field/icon_for_text_editor-OLLIST.svg);
+      }
+    }
+
+    .rdw-option-active {
+      background: #FFFFFF;
+      border-radius: 50%;
+      box-shadow: none;
+
+      img {
+        background: #333333;
+      }
+    }
+  }
+}

@@ -106,4 +106,10 @@ h5 {
     line-height: 16px;
 }
 
+.disable-scroll {
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+}
+
 /*--------------------*/

@@ -1,17 +1,19 @@
 import styled from 'styled-components';
-import {LargeMedium} from '../fonts/large';
+import {ButtonGeneralSize} from '../form-view/button-general-size';
 
-export const BlueButton = styled(LargeMedium)`
+export const BlueButton = styled(ButtonGeneralSize)`
   background-color: #C7DBFF;
-  border-radius: 10px;
-  padding: 16px 32px;
-  
+
   &:hover {
     background-color: #E3EDFF;
   }
-  
+
   &:active {
     background-color: #E3EDFF;
-    box-shadow: inset 0px 2px 10px rgba(0, 0, 0, 0.05);
   }
+
+  classname {
+    background-color: #42041b;
+  }
+
 `;
