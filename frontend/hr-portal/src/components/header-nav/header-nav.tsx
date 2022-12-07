@@ -4,6 +4,7 @@ import {UserStatus} from '../../types/user-status';
 import cl from 'classnames';
 import {useAppSelector} from '../../app/hooks';
 import {TabInHeader} from '../../const';
+import {AuthRoutes} from '../../const/app-routes';
 
 function HeaderNav() {
   const statusUser = useAppSelector((state) => state.general.statusUser);
@@ -23,9 +24,9 @@ function HeaderNav() {
               <div className={cl('header-navItem', {'header-navItem__active': activeTab === TabInHeader.vacancies})}>
                 Вакансии
               </div>
-              <div className={cl('header-navItem', {'header-navItem__active': activeTab === TabInHeader.resume})}>
+              <Link to={AuthRoutes.Resume} className={cl('header-navItem', {'header-navItem__active': activeTab === TabInHeader.resume})}>
                 Резюме
-              </div>
+              </Link>
               <Link to="/" className={cl('header-navItem', {'header-navItem__active': activeTab === TabInHeader.myVacancy})}>
                 Мои вакансии
               </Link>

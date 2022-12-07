@@ -1,0 +1,85 @@
+
+.search-item {
+  margin-top: 1.3rem;
+  width: 100%;
+
+  .formField {
+    display: flex;
+    align-items: center;
+
+    .text-field-label {
+      display: flex;
+      align-items: center;
+      background-color: #EDECEA;
+      border-radius: 10px 0 0 10px;
+      padding: 0.75rem 1.4rem;
+      position: relative;
+      width: 100%;
+
+      &:focus-within {
+        background-color: #F6F5F3;
+      }
+
+      .text-field__icon {
+        width: 100%;
+
+        &::before {
+          content: '';
+          color: #bdbdbd;
+          position: absolute;
+          display: flex;
+          align-items: center;
+          bottom: 0;
+          left: 0.85rem;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 21px;
+          background-image: url('../../assets/img/job-seach/magnifier-icon.svg');
+          background-repeat: no-repeat;
+          background-position: center;
+          cursor: pointer;
+        }
+
+        .text-field__input {
+          background-color: #EDECEA;
+          padding: 0 2rem;
+          width: 100%;
+
+          &::placeholder {
+            color: #000000;
+            line-height: 16px;
+            letter-spacing: 0.05em;
+          }
+
+          &:focus {
+            background-color: #F6F5F3;
+          }
+        }
+      }
+
+      .deleteIcon {
+        cursor: pointer;
+      }
+    }
+
+    .text-field-submit {
+      background-color: #D0DBFF;
+      border-radius: 10px;
+      padding: 1rem 2.3rem;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 16px;
+      letter-spacing: 0.05em;
+      color: #000000;
+      margin-left: -10px;
+      z-index: 3;
+
+      white-space: nowrap;
+
+      &:active {
+        box-shadow: inset 0px 2px 10px rgba(0, 0, 0, 0.05);
+        background: #E3EDFF;
+      }
+    }
+  }
+}

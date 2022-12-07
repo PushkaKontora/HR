@@ -1,34 +1,25 @@
-import React, {ChangeEvent, FormEvent, useLayoutEffect, useRef} from 'react';
-
 import deleteIcon from '../../assets/img/job-seach/delete-icon.svg';
+import React, {ChangeEvent, FormEvent} from 'react';
+import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {setSearchLineParam} from '../../features/vacancy/vacancy-slice';
-import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 
-function VacancySearchField() {
+function ResumeSearchField() {
   const pageSearch = useAppSelector((state) => state.vacancy.paramsForGetVacancies.searchLine);
   const dispatch = useAppDispatch();
-  const firstUpdate = useRef(true);
-
-  useLayoutEffect(() => {
-    if (firstUpdate.current) {
-      firstUpdate.current = false;
-      return;
-    }
-  });
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    dispatch(getVacancies());
+    //dispatch(getVacancies());
+  };
+
+  const handleEraseSearch = () => {
+    //dispatch(setSearchLineParam(''));
+    //dispatch(getVacancies());
   };
 
   const handleSearchVacancy = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch(setSearchLineParam(e.target.value));
-  };
-
-  const handleEraseSearch = () => {
-    dispatch(setSearchLineParam(''));
-    dispatch(getVacancies());
   };
 
   return (
@@ -41,9 +32,9 @@ function VacancySearchField() {
           <img src={deleteIcon} alt="delete icon" className="erase-icon"/>
         </div>
       </label>
-      <button type="submit" className="text-field-submit">Найти вакансию</button>
+      <button type="submit" className="text-field-submit">Найти резюме</button>
     </form>
   );
 }
 
-export default VacancySearchField;
+export default ResumeSearchField;

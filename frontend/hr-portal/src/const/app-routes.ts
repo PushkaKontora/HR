@@ -7,7 +7,8 @@ enum NoAuthRoutes {
 enum AuthRoutes {
   Logout = '/logout',
   Profile = '/profile',
-  Favorite = '/favorites'
+  Favorite = '/favorites',
+  Resume = '/resume',
 }
 
 export {NoAuthRoutes, AuthRoutes};

@@ -61,10 +61,12 @@ button::-moz-focus-inner {
 
 a, a:visited {
     text-decoration: none;
+    color: #000000;
 }
 
 a:hover {
     text-decoration: none;
+    color: #000000;
 }
 
 ul li {

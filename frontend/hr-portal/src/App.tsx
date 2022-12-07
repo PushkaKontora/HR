@@ -17,6 +17,7 @@ import ProfilePage from './pages/profile-page/profile-page';
 import {ToastWrapper} from './components/toast-wrapper/toast-wrapper';
 import {FavoritePage} from './pages/favorite-page/favorite-page';
 import EmployerMyVacancyScreen from './pages/employer-my-vacancy-screen/employer-my-vacancy-screen';
+import EmployerResumeScreen from './pages/employer-resume-screen/employer-resume-screen';
 
 function App() {
   const status = useAppSelector((state) => state.general.statusUser);
@@ -60,6 +61,11 @@ function App() {
           <Route path={AuthRoutes.Favorite} element={
             <PrivateRoute requiredUserStatus={'anyLoggedIn'}>
               <FavoritePage/>
+            </PrivateRoute>
+          }/>
+          <Route path={AuthRoutes.Resume} element={
+            <PrivateRoute requiredUserStatus={UserStatus.employer}>
+              <EmployerResumeScreen/>
             </PrivateRoute>
           }/>
           <Route path={NoAuthRoutes.Login} element={<LoginPage/>}/>

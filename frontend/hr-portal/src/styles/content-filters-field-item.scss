@@ -1,0 +1,145 @@
+.content-filters-field-wrapper {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  gap: 4rem;
+  margin: 2.9rem 0 4.6rem 0;
+  border-top: 0.7px solid #000000;
+  padding-top: 3.6rem;
+
+  .contentItem {
+    &__filters {
+      .filterItem {
+        padding-bottom: 2.6rem;
+
+        &:not(:last-child) {
+          border-bottom: 0.7px solid #000000;
+        }
+
+        &:not(:first-child) {
+          margin-top: 2.6rem;
+        }
+
+        .filterItem-title {
+          font-weight: 600;
+          font-size: 16px;
+          line-height: 16px;
+          letter-spacing: 0.05em;
+          margin-bottom: 1.7rem;
+        }
+
+        .radio-wrapper {
+          margin-bottom: 1rem;
+          font-size: 16px;
+          line-height: 18px;
+          letter-spacing: 0.05em;
+        }
+
+        &__departments {
+        }
+
+        &__salary {
+
+          .salaryInput-wrapper {
+            display: flex;
+            align-items: center;
+            width: 100%;
+
+            .text-field-salary {
+              position: relative;
+              padding: 1rem 1.1rem;
+
+
+              .text-field-salary-input {
+                width: 100%;
+                padding: 0 1.5rem;
+
+                &::placeholder {
+                  color: #9C9C9C;
+                  font-size: 14px;
+                  line-height: 14px;
+                  letter-spacing: 0.05em;
+                }
+              }
+
+              &::before {
+                color: #000000;
+                content: '';
+                position: absolute;
+                display: flex;
+                align-items: center;
+                bottom: 0;
+                left: 1.1rem;
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: pointer;
+                letter-spacing: 0.05em;
+              }
+
+              &::after {
+                content: '';
+                color: white;
+                position: absolute;
+                display: flex;
+                align-items: center;
+                bottom: 0;
+                right: 1.1rem;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 28px;
+                background-image: url('../assets/img/job-seach/₽.svg');
+                background-repeat: no-repeat;
+                background-position: center;
+                cursor: pointer;
+              }
+
+              &__min {
+                border: 0.5px solid #000000;
+                border-radius: 10px 0px 0px 10px;
+                margin-right: -0.25px;
+
+                &::before {
+                  content: 'От';
+                }
+              }
+
+              &__max {
+                border: 0.5px solid #000000;
+                border-radius: 0px 10px 10px 0px;
+                margin-left: -0.25px;
+
+                &::before {
+                  content: 'До';
+                }
+              }
+            }
+          }
+        }
+
+        .filterItem-title__clearForm {
+          color: #9C9C9C;
+          font-weight: 600;
+          font-size: 16px;
+          line-height: 16px;
+          letter-spacing: 0.05em;
+          cursor: pointer;
+        }
+      }
+    }
+
+    &__vacancies {
+      .cardVacancy-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .title {
+          font-weight: 600;
+          font-size: 2.9rem;
+          line-height: 2.9rem;
+          color: #000000;
+        }
+      }
+    }
+  }
+}

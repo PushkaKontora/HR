@@ -29,10 +29,10 @@ function VacancyContent() {
 
   return (
     <>
-      <div className="jobSearchScreen-item jobSearchScreen-item__searchField">
+      <div className="jobSearchScreen-item search-item">
         <VacancySearchField/>
       </div>
-      <div className="jobSearchScreen-item jobSearchScreen-item__content">
+      <div className="jobSearchScreen-item content-filters-field-wrapper">
         <div className="contentItem contentItem__filters">
           <VacancyFilterOnDepartment/>
           <VacancyFilterOnExperience/>
