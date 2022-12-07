@@ -5,7 +5,7 @@ interface BtnWrapperProps {
 }
 
 export const XLargeRegular = styled.div.attrs<BtnWrapperProps>((props) => ({
-  width: (props.width || '100%'),
+  width: (props.width || 'auto'),
 }))<BtnWrapperProps>`
   font-weight: 400;
   font-size: 18px;

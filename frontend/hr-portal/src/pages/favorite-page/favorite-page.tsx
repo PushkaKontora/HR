@@ -22,6 +22,9 @@ export function FavoritePage() {
   const favoriteVacancies = useAppSelector((state) => state.user.favoriteVacancies);
   const favoriteResume = useAppSelector((state) => state.user.favoriteResumes);
 
+  const [dataLength, setDataLength] = useState(favoriteVacancies.length);
+  const [currentTabIndex, setCurrentTabIndex] = useState(0);
+
   useEffect(() => {
     let mounted = true;
 
@@ -31,16 +34,24 @@ export function FavoritePage() {
       if (user?.permission === UserStatus.employer) {
         dispatch(getResumeWishlist(ResumeWishListSortBy.added_at_desc));
       }
+
+      if (currentTabIndex === 0)
+        setDataLength(favoriteVacancies.length);
+      else if (currentTabIndex === 1)
+        setDataLength(favoriteResume.length);
     }
 
     return () => {
       mounted = false;
     };
-  }, [user]);
+  }, [user, favoriteVacancies, favoriteResume]);
 
-  const [currentTabIndex, setCurrentTabIndex] = useState(0);
   const onTabChange = (index: number) => {
     setCurrentTabIndex(index);
+    if (index === 0)
+      setDataLength(favoriteVacancies.length);
+    else if (index === 1)
+      setDataLength(favoriteResume.length);
   };
 
   return (
@@ -52,10 +63,10 @@ export function FavoritePage() {
           <FavoriteTabManager
             tabNames={getTabsByUserStatus(user?.permission)}
             clickHandler={onTabChange}/>
-          <h3 style={{flex: 1, textAlign: 'right'}}>
-            Добавлено&nbsp;
-            {currentTabIndex == 0 && `${favoriteVacancies?.length || 0} вакансий`}
-            {currentTabIndex == 1 && `${favoriteResume?.length || 0} резюме`}
+          <h3 style={{flexGrow: 1, textAlign: 'right', whiteSpace: 'nowrap'}}>
+            Добавлено {dataLength}&nbsp;
+            {currentTabIndex == 0 && 'вакансий'}
+            {currentTabIndex == 1 && 'резюме'}
           </h3>
         </SubHeader>
         {

@@ -119,6 +119,10 @@
     display: flex;
     margin-top: 40px;
     gap: 20px;
+
+    button {
+      flex: 1;
+    }
   }
 }
 

@@ -59,6 +59,7 @@ export const addToResumeWishlist = createAsyncThunk<void, number, Generics>(
   'resume/addToWishlist',
   async (resumeId, {dispatch, extra: api}) => {
     await api.post(ResumeRoutes.modifyWishlist(resumeId));
+    await api.get(ResumeRoutes.wishlist(ResumeWishListSortBy.added_at_desc));
   }
 );
 
@@ -66,5 +67,6 @@ export const deleteToResumeWishlist = createAsyncThunk<void, number, Generics>(
   'resume/deleteToWishlist',
   async (resumeId, {dispatch, extra: api}) => {
     await api.delete(ResumeRoutes.modifyWishlist(resumeId));
+    await api.get(ResumeRoutes.wishlist(ResumeWishListSortBy.added_at_desc));
   }
 );

@@ -22,7 +22,8 @@ export const getAuthUser = createAsyncThunk<void, number, Generics>(
     dispatch(setLoading(true));
     const res = await api.get(UsersRoutes.byId(arg))
       .then((u) => {
-        if (u.data.permission === UserStatus.user) {
+        if (u.data.permission === UserStatus.user ||
+          u.data.permission === UserStatus.employer) {
           dispatch(getResumeUser(u.data));
         }
         if (u.data.permission === UserStatus.employer) {

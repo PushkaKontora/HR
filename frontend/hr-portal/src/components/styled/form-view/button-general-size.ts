@@ -8,7 +8,7 @@ interface BtnProps {
 
 export const ButtonGeneralSize = styled(LargeMedium).attrs<BtnProps>((props) => ({
   padding: (props.padding || '16px 32px'),
-  width: (props.width || '100%'),
+  width: (props.width || 'auto'),
 }))<BtnProps>`
   padding: ${({padding}) => padding};
   width: ${({width}) => width};

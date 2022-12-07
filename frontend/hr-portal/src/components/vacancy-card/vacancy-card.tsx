@@ -24,7 +24,7 @@ function VacancyCard(props: VacancyCardProps) {
   const vacancyExperience = ExpectedExperienceNameString[vacancy.expected_experience as keyof typeof ExpectedExperienceNameString];
   const handleClickVacancyCard = () => {
     dispatch(setVacancyByID(vacancy));
-    navigate(`${vacancy.id}`);
+    navigate(`/${vacancy.id}`);
   };
 
   const createMarkup = (html: any) => {
