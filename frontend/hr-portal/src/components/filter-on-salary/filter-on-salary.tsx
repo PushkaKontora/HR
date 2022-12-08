@@ -1,10 +1,20 @@
 import React, {ChangeEvent, useEffect, useLayoutEffect, useRef} from 'react';
+import {AsyncThunkAction} from '@reduxjs/toolkit';
+
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {setSalaryMax, setSalaryMin} from '../../features/vacancy/vacancy-slice';
 import {timeoutCollection} from 'time-events-manager/src/timeout/timeout-decorator';
-import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
+import {Vacancy} from '../../types/vacancy';
+import {Generics} from '../../types/generics';
 
-function VacancyFilterOnSalary() {
+type FilterOnSalaryProps = {
+  salaryMax?: string,
+  salaryMin?: string,
+  callAction: AsyncThunkAction<{ items: Vacancy[]; count: number; }, undefined, Generics>
+};
+
+function FilterOnSalary(props: FilterOnSalaryProps) {
+  const {callAction} = props;
   const salaryMax = useAppSelector((state) => state.vacancy.paramsForGetVacancies.salaryMax);
   const salaryMin = useAppSelector((state) => state.vacancy.paramsForGetVacancies.salaryMin);
   const dispatch = useAppDispatch();
@@ -19,7 +29,7 @@ function VacancyFilterOnSalary() {
 
   useEffect(() => {
     timeoutCollection.removeAll();
-    setTimeout(() => dispatch(getVacancies()), 800);
+    setTimeout(() => dispatch(callAction), 800);
   }, [salaryMin, salaryMax]);
 
 
@@ -46,4 +56,4 @@ function VacancyFilterOnSalary() {
   );
 }
 
-export default VacancyFilterOnSalary;
+export default FilterOnSalary;

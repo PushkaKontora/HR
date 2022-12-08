@@ -1,3 +1,5 @@
+@import "src/styles/salary-inputs-field.scss";
+
 .content-filters-field-wrapper {
   width: 100%;
   display: grid;
@@ -36,84 +38,6 @@
         }
 
         &__departments {
-        }
-
-        &__salary {
-
-          .salaryInput-wrapper {
-            display: flex;
-            align-items: center;
-            width: 100%;
-
-            .text-field-salary {
-              position: relative;
-              padding: 1rem 1.1rem;
-
-
-              .text-field-salary-input {
-                width: 100%;
-                padding: 0 1.5rem;
-
-                &::placeholder {
-                  color: #9C9C9C;
-                  font-size: 14px;
-                  line-height: 14px;
-                  letter-spacing: 0.05em;
-                }
-              }
-
-              &::before {
-                color: #000000;
-                content: '';
-                position: absolute;
-                display: flex;
-                align-items: center;
-                bottom: 0;
-                left: 1.1rem;
-                top: 50%;
-                transform: translateY(-50%);
-                cursor: pointer;
-                letter-spacing: 0.05em;
-              }
-
-              &::after {
-                content: '';
-                color: white;
-                position: absolute;
-                display: flex;
-                align-items: center;
-                bottom: 0;
-                right: 1.1rem;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 28px;
-                background-image: url('../assets/img/job-seach/₽.svg');
-                background-repeat: no-repeat;
-                background-position: center;
-                cursor: pointer;
-              }
-
-              &__min {
-                border: 0.5px solid #000000;
-                border-radius: 10px 0px 0px 10px;
-                margin-right: -0.25px;
-
-                &::before {
-                  content: 'От';
-                }
-              }
-
-              &__max {
-                border: 0.5px solid #000000;
-                border-radius: 0px 10px 10px 0px;
-                margin-left: -0.25px;
-
-                &::before {
-                  content: 'До';
-                }
-              }
-            }
-          }
         }
 
         .filterItem-title__clearForm {

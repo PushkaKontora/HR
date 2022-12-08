@@ -22,7 +22,6 @@ function VacancyFilterOnDepartment() {
 
   useEffect(() => {
     dispatch(getVacancies());
-    console.log('VacancyFilterOnDepartment');
   }, [department]);
 
   const onHandlerFilterDepartment = (e: SingleValue<DepartmentsShortVersions>) => {

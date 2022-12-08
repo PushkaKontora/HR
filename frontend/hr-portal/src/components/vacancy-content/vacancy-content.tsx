@@ -1,7 +1,7 @@
 import VacancySearchField from '../vacancy-search-field/vacancy-search-field';
 import VacancyFilterOnDepartment from '../vacancy-filter-on-department/vacancy-filter-on-department';
 import VacancyFilterOnExperience from '../vacancy-filter-on-experience/vacancy-filter-on-experience';
-import VacancyFilterOnSalary from '../vacancy-filter-on-salary/vacancy-filter-on-salary';
+import FilterOnSalary from '../filter-on-salary/filter-on-salary';
 import CardSorting from '../card-sorting/card-sorting';
 import VacancyListVacanciesPage from '../vacancy-list-vacancies-page/vacancy-list-vacancies-page';
 import {setDepartmentParam, setExperienceParam, setSalaryMax, setSalaryMin} from '../../features/vacancy/vacancy-slice';
@@ -36,7 +36,7 @@ function VacancyContent() {
         <div className="contentItem contentItem__filters">
           <VacancyFilterOnDepartment/>
           <VacancyFilterOnExperience/>
-          <VacancyFilterOnSalary/>
+          <FilterOnSalary callAction={getVacancies()}/>
           <div className="filterItem" onClick={handlerClearFilters}>
             <div className="filterItem-title filterItem-title__clearForm">Сбросить фильтр</div>
           </div>

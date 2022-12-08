@@ -31,7 +31,9 @@ interface VacancyState {
     department: string,
     searchLine: string,
     sortedItem: string,
-    offset: number
+    offset: number,
+
+    competencies: string[],
   },
   maxPagesVacancies: number,
   currentPage: number,
@@ -66,6 +68,8 @@ const initialState: VacancyState = {
     searchLine: '',
     sortedItem: SortingVacancyTypes.BY_NAME,
     offset: 0,
+
+    competencies: []
   },
   maxPagesVacancies: 1,
   currentPage: 1,
@@ -97,6 +101,13 @@ const vacancySlice = createSlice({
         state.isEditorVacancyFlag = false;
         state.isStartRequestChangeVacancy = true;
       }
+    },
+    setCompetencies(state, action) {
+      state.paramsForGetVacancies.competencies = action.payload;
+      // setNewParamSearchLine(action.payload);
+      state.paramsForGetVacancies.offset = 0;
+      state.currentPage = 1;
+      setNewParamOffset(0);
     },
     setTypeRequestModalVacancy(state, action) {
       state.typeRequestModalVacancy = action.payload;
@@ -241,7 +252,8 @@ export const {
   setDepartments,
   setIsGetVacanciesEmployer,
   setIsPublishedVacancy,
-  setTypeRequestModalVacancy
+  setTypeRequestModalVacancy,
+  setCompetencies
 } = vacancySlice.actions;
 
 export default vacancySlice.reducer;
