@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
+from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from ninja import UploadedFile
@@ -52,7 +53,11 @@ class EmailNotifier(IVacancyRequestNotifier):
         }
         html = render_to_string(self.TEMPLATE_NAME, context)
 
-        email = EmailMultiAlternatives(to=[employer.email])
+        email = EmailMultiAlternatives(
+            subject=settings.VACANCY_REQUEST_EMAIL_SUBJECT,
+            from_email=settings.SUPPORT_EMAIL_ADDRESS,
+            to=[employer.email],
+        )
         email.attach_alternative(html, "text/html")
 
         if resume:
