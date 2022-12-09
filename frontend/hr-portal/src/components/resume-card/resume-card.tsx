@@ -13,7 +13,11 @@ import {useState} from 'react';
 import {isFavorite} from '../../utils/favorite';
 import {addToVacancyWishlist, deleteFromVacancyWishlist} from '../../service/async-actions/async-actions-vacancy';
 import {toast} from 'react-toastify';
-import {addToResumeWishlist, deleteToResumeWishlist} from '../../service/async-actions/async-actions-resume';
+import {
+  addToResumeWishlist,
+  deleteToResumeWishlist,
+  getResumeWishlist, ResumeWishListSortBy
+} from '../../service/async-actions/async-actions-resume';
 import {LikeButton} from '../../reused-components/like-button/like-button';
 
 type VacancyCard = {
@@ -38,6 +42,7 @@ function ResumeCard({resume}: VacancyCard) {
         .then(() => {
           toast.success('Резюме добавлено в избранное');
           setLiked(true);
+          dispatch(getResumeWishlist(ResumeWishListSortBy.added_at_desc));
         });
     }
   };
@@ -48,6 +53,7 @@ function ResumeCard({resume}: VacancyCard) {
         .then(() => {
           toast.error('Резюме удалено из избранного');
           setLiked(false);
+          dispatch(getResumeWishlist(ResumeWishListSortBy.added_at_desc));
         });
     }
   };

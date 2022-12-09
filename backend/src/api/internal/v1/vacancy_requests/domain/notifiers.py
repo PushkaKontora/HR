@@ -41,6 +41,7 @@ class EmailNotifier(IVacancyRequestNotifier):
                 "surname": sender.surname,
                 "name": sender.name,
                 "patronymic": sender.patronymic,
+                "email": sender.email
             },
             "employer": {
                 "id": employer.id,

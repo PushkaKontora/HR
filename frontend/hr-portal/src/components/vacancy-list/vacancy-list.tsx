@@ -24,7 +24,7 @@ function VacancyList(props: VacancyListProps) {
   useLayoutEffect(() => {
     if (firstUpdate.current) {
       firstUpdate.current = false;
-      dispatch(getVacancyWishlist(VacancyWishListSortBy.added_at_desc));
+      //dispatch(getVacancyWishlist(VacancyWishListSortBy.added_at_desc));
       return;
     }
   });
