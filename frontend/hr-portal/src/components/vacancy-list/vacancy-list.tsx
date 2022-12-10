@@ -10,7 +10,7 @@ import {
 } from '../../service/async-actions/async-actions-vacancy';
 import ModalRespondRequest from '../modal-respond-request/modal-respond-request';
 import {Vacancy} from '../../types/vacancy';
-import {useAppDispatch} from '../../app/hooks';
+import {useAppDispatch, useAppSelector} from '../../app/hooks';
 
 type VacancyListProps = {
   vacancies: Vacancy[],
@@ -19,6 +19,7 @@ type VacancyListProps = {
 
 function VacancyList(props: VacancyListProps) {
   const firstUpdate = useRef(true);
+  const vacancies = useAppSelector((state) => state.vacancy.vacancies);
   const dispatch = useAppDispatch();
 
   useLayoutEffect(() => {
@@ -40,7 +41,7 @@ function VacancyList(props: VacancyListProps) {
             })
           }
         </div>
-        {props.showPagination && <PaginationCustom/>}
+        {props.showPagination && <PaginationCustom itemList={vacancies.items}/>}
       </div>
     </>
   );

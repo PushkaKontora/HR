@@ -1,7 +1,8 @@
 .custom-multiselect {
   &__control,
   &__control--menu-is-open,
-  &__control--is-focused{
+  &__control--is-focused {
+    z-index: 201 !important;
     padding: 8px 8px 6px 16px !important;
 
     background: #FFFFFF !important;
@@ -17,6 +18,10 @@
 
     align-content: center !important;
     box-shadow: none !important;
+
+    &:hover {
+      color: #000000;
+    }
   }
 
   &__multi-value {
@@ -33,14 +38,84 @@
     color: black !important;
   }
 
-  &__placeholder{
+  &__placeholder {
     color: black !important;
 
     font-weight: 300 !important;
     letter-spacing: 0.05em !important;
   }
 
-  &__menu{
+  &__menu {
+    margin-top: -10px !important;
+    padding-top: 10px !important;
+    z-index: 200 !important;
+    background: #FFFFFF !important;
+    border: 0.5px solid #000000 !important;
+    border-radius: 0px 0px 10px 10px !important;
+  }
 
+  &__menu-list {
+    max-height: 182px !important;
+
+    &::-webkit-scrollbar-thumb {
+      width: 2px !important;
+      background: #000000 !important;
+      border-radius: 2.5px !important;
+    }
+
+    &::-webkit-scrollbar {
+      width: 2px !important;
+      background: #FFFFFF !important;
+      padding-right: 3px !important;
+      transition: 0.3ms !important;
+    }
+  }
+
+  &__option {
+    font-weight: 300 !important;
+    font-size: 14px !important;
+    line-height: 14px !important;
+    letter-spacing: 0.05em !important;
+    color: #000000 !important;
+
+    &:hover {
+      color: #000000 !important;
+      box-shadow: none !important;
+      cursor: default !important;
+      display: block !important;
+      background-color: #FFFFFF !important;
+      font-weight: bold !important;
+    }
+  }
+}
+
+.selected-competence {
+  margin-top: 20px;
+  margin-left: 18px;
+
+  .selected-item-wrapper {
+    height: 16px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .name-competence {
+      font-weight: 300;
+      font-size: 14px;
+      line-height: 14px;
+      letter-spacing: 0.05em;
+
+      color: #000000;
+    }
+
+    .checked-img {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .selected-item-wrapper:not(:last-child) {
+    margin-bottom: 18px;
   }
 }

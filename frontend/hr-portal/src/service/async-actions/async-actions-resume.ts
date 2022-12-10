@@ -3,6 +3,11 @@ import {Generics} from '../../types/generics';
 import {ResumeRoutes} from '../../const/api-routes/api-resume-routes';
 import {ResumeUser} from '../../types/resume';
 import {Vacancy} from '../../types/vacancy';
+import {CompetenciesOption} from '../../features/resume/resume-slice';
+import {ResumeList} from '../../types/resume-list';
+import {getParamsRequestVacancy, initialParamsVacancyRequest} from '../../features/vacancy/vacancy.actions';
+import {VacancyRoutes} from '../../const/api-routes/api-vacancy-routes';
+import {LIMIT_ELEMENTS_ON_PAGE} from '../../const';
 
 export const ResumeWishListSortBy = {
   published_at_desc: 'published_at_desc',
@@ -10,7 +15,7 @@ export const ResumeWishListSortBy = {
   added_at_desc: 'added_at_desc'
 };
 
-export const createResumeAction = createAsyncThunk<void, {user_id: number, data: FormData}, Generics>(
+export const createResumeAction = createAsyncThunk<void, { user_id: number, data: FormData }, Generics>(
   'resume/create',
   async (arg, {dispatch, extra: api}) => {
     arg.data.append('user_id', arg.user_id.toString());
@@ -18,14 +23,14 @@ export const createResumeAction = createAsyncThunk<void, {user_id: number, data:
   }
 );
 
-export const updateResumeAction = createAsyncThunk<void, {resume_id: number, data: FormData}, Generics>(
+export const updateResumeAction = createAsyncThunk<void, { resume_id: number, data: FormData }, Generics>(
   'resume/update',
   async (arg, {dispatch, extra: api}) => {
     await api.post(ResumeRoutes.resumeByID(arg.resume_id), arg.data);
   }
 );
 
-export const publishResumeAction = createAsyncThunk<string, {resume_id: number}, Generics>(
+export const publishResumeAction = createAsyncThunk<string, { resume_id: number }, Generics>(
   'resume/publish',
   async (arg, {dispatch, extra: api}) => {
     const res = await api.patch(ResumeRoutes.publish(arg.resume_id));
@@ -33,7 +38,7 @@ export const publishResumeAction = createAsyncThunk<string, {resume_id: number},
   }
 );
 
-export const unpublishResumeAction = createAsyncThunk<void, {resume_id: number}, Generics>(
+export const unpublishResumeAction = createAsyncThunk<void, { resume_id: number }, Generics>(
   'resume/unpublish',
   async (arg, {dispatch, extra: api}) => {
     await api.patch(ResumeRoutes.unpublish(arg.resume_id));
@@ -68,5 +73,25 @@ export const deleteToResumeWishlist = createAsyncThunk<void, number, Generics>(
   async (resumeId, {dispatch, extra: api}) => {
     await api.delete(ResumeRoutes.modifyWishlist(resumeId));
     await api.get(ResumeRoutes.wishlist(ResumeWishListSortBy.added_at_desc));
+  }
+);
+
+export const getResumeList = createAsyncThunk<ResumeList, undefined, Generics>(
+  'resume/getResumeList',
+  async (__arg, {extra: api}) => {
+    const paramsURL = getParamsRequestVacancy();
+    let lineWithNewParameters = '';
+
+    Object.entries(paramsURL).map(([key, value]) => {
+      if (key !== '&offset=' && key !== '?sort_by=' && key !== '&department_id=' && value !== initialParamsVacancyRequest[key]) {
+        lineWithNewParameters += `${key}${value}`;
+      }
+    });
+
+    const lineUrl = `${ResumeRoutes.resume}?published=true&limit=${LIMIT_ELEMENTS_ON_PAGE}&offset=${paramsURL['&offset=']}${lineWithNewParameters}`;
+    console.log(lineUrl);
+    const {data} = await api.get<ResumeList>(ResumeRoutes.resume);
+    console.log(data, 'data');
+    return data;
   }
 );

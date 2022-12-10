@@ -36,32 +36,10 @@ export const getVacancies = createAsyncThunk<{ items: Vacancy[], count: number }
     let lineWithNewParameters = '';
 
     Object.entries(paramsURL).map(([key, value]) => {
-      if (key !== '&offset=' && key !== '?sort_by=' && value !== initialParamsVacancyRequest[key]) {
+      if (key !== '&offset=' && key !== '?sort_by=' && key !== '&competencies=' && value !== initialParamsVacancyRequest[key]) {
         lineWithNewParameters += `${key}${value}`;
       }
     });
-    // const {dataState, departmentListShort} = arg;
-    // let lineWithNewParameters = '';
-
-    // if (dataState.salaryMin !== '') {
-    //   lineWithNewParameters += `&salary_from=${dataState.salaryMin}`;
-    // }
-    // if (dataState.salaryMax !== '') {
-    //   lineWithNewParameters += `&salary_to=${dataState.salaryMax}`;
-    // }
-    // if (dataState.experience !== 'Любой') {
-    //   const experienceData = Object.entries(ExpectedExperienceNameString).filter(e => e[1] === dataState.experience);
-    //   lineWithNewParameters += `&experience=${experienceData[0][0]}`;
-    // }
-    // if (dataState.department !== (DEFAULT_ELEMENT_DEPARTMENT.label || '')) {
-    //   const elementWithLabel = departmentListShort.find((el: DepartmentsShortVersions) => el.label === dataState.department);
-    //   if (elementWithLabel) {
-    //     lineWithNewParameters += `&department_id=${elementWithLabel.value}`;
-    //   }
-    // }
-    // if (dataState.searchLine !== '') {
-    //   lineWithNewParameters += `&search=${dataState.searchLine}`;
-    // }
 
     const lineUrl = `${VacancyRoutes.getVacancy}?sort_by=${paramsURL['?sort_by=']}&published=true&limit=${LIMIT_ELEMENTS_ON_PAGE}&offset=${paramsURL['&offset=']}${lineWithNewParameters}`;
     console.log(lineUrl);

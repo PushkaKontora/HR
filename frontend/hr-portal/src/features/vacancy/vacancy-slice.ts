@@ -2,10 +2,11 @@ import {createSlice} from '@reduxjs/toolkit';
 
 import {Vacancy} from '../../types/vacancy';
 import {Department} from '../../types/department';
-import {createDepartmentShortVision, getMaxPagesVacancies, makeViewDataExperience, setNewParamDepartment, setNewParamExperience, setNewParamOffset, setNewParamSalaryMax, setNewParamSalaryMin, setNewParamSearchLine, setNewParamSortBy} from './vacancy.actions';
-import {DEFAULT_ELEMENT_DEPARTMENT, SortingVacancyTypes, TypeRequestVacancyModal} from '../../const';
+import {createDepartmentShortVision, getMaxPagesForPagination, makeViewDataExperience, setNewParamDepartment, setNewParamExperience, setNewParamOffset, setNewParamSalaryMax, setNewParamSalaryMin, setNewParamSearchLine, setNewParamSortBy} from './vacancy.actions';
+import {DEFAULT_ELEMENT_DEPARTMENT, SortingVacancyTypes, TypeActionPagination, TypeRequestVacancyModal} from '../../const';
 import {getVacancies, getVacanciesForEmployer, getVacancyByID, patchStatusVacancyUnpublish} from '../../service/async-actions/async-actions-vacancy';
 import {toast} from 'react-toastify';
+import {getResumeList} from '../../service/async-actions/async-actions-resume';
 
 export type VacanciesApi = {
   items: Vacancy[],
@@ -35,9 +36,9 @@ interface VacancyState {
 
     competencies: string[],
   },
-  maxPagesVacancies: number,
+  maxPagesItemsForPagination: number,
   currentPage: number,
-  isGetVacanciesEmployer: boolean,
+  typeActionPagination: TypeActionPagination,
   isPublishedVacancy: boolean,
   isOpenUnpublishVacancyModal: boolean;
   isOpenEditVacancyModal: boolean;
@@ -71,9 +72,9 @@ const initialState: VacancyState = {
 
     competencies: []
   },
-  maxPagesVacancies: 1,
+  maxPagesItemsForPagination: 1,
   currentPage: 1,
-  isGetVacanciesEmployer: false,
+  typeActionPagination: TypeActionPagination.VACANCY,
   isPublishedVacancy: true,
   isOpenUnpublishVacancyModal: false,
   isOpenEditVacancyModal: false,
@@ -126,8 +127,8 @@ const vacancySlice = createSlice({
     setIsEditorVacancyFlag(state, action) {
       state.isEditorVacancyFlag = action.payload;
     },
-    setIsGetVacanciesEmployer(state, action) {
-      state.isGetVacanciesEmployer = action.payload;
+    setTypeActionPagination(state, action) {
+      state.typeActionPagination = action.payload;
     },
     setVacancyByID(state, action) {
       state.vacancyByID = action.payload;
@@ -216,17 +217,21 @@ const vacancySlice = createSlice({
     builder
       .addCase(getVacancies.fulfilled, (state, action) => {
         state.vacancies = action.payload;
-        state.maxPagesVacancies = getMaxPagesVacancies(action.payload.count);
+        state.maxPagesItemsForPagination = getMaxPagesForPagination(action.payload.count);
       })
       .addCase(getVacanciesForEmployer.fulfilled, (state, action) => {
         state.vacancies = action.payload;
-        state.maxPagesVacancies = getMaxPagesVacancies(action.payload.count);
+        state.maxPagesItemsForPagination = getMaxPagesForPagination(action.payload.count);
       })
       .addCase(patchStatusVacancyUnpublish.fulfilled, (state, action) => {
         toast.dark('Вакансия успешно снята с публикации');
       })
       .addCase(getVacancyByID.fulfilled, (state, action) => {
         state.vacancyByID = action.payload;
+      })
+      .addCase(getResumeList.fulfilled, (state, action) => {
+        state.maxPagesItemsForPagination = getMaxPagesForPagination(action.payload.count);
+        console.log(state.maxPagesItemsForPagination);
       });
   }
 });
@@ -250,7 +255,7 @@ export const {
   setParamsForGetVacanciesDefault,
   setOffsetParam,
   setDepartments,
-  setIsGetVacanciesEmployer,
+  setTypeActionPagination,
   setIsPublishedVacancy,
   setTypeRequestModalVacancy,
   setCompetencies

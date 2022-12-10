@@ -4,13 +4,11 @@ import {AsyncThunkAction} from '@reduxjs/toolkit';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {setSalaryMax, setSalaryMin} from '../../features/vacancy/vacancy-slice';
 import {timeoutCollection} from 'time-events-manager/src/timeout/timeout-decorator';
-import {Vacancy} from '../../types/vacancy';
-import {Generics} from '../../types/generics';
 
 type FilterOnSalaryProps = {
   salaryMax?: string,
   salaryMin?: string,
-  callAction: AsyncThunkAction<{ items: Vacancy[]; count: number; }, undefined, Generics>
+  callAction: any,
 };
 
 function FilterOnSalary(props: FilterOnSalaryProps) {

@@ -78,3 +78,9 @@ export enum TypeRequestVacancyModal {
   CREATE = 'create',
   CHANGE = 'change'
 }
+
+export enum TypeActionPagination {
+  VACANCY = 'vacancy',
+  VACANCY_EMPLOYER = 'vacancyEmployer',
+  RESUME_EMPLOYER = 'resumeEmployer'
+}

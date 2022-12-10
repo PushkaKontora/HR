@@ -16,6 +16,7 @@ export const initialParamsVacancyRequest: { [index: string]: any } = {
   '&search=': '',
   '?sort_by=': SortingVacancyTypes.BY_NAME,
   '&offset=': 0,
+  '&competencies=': []
 };
 
 const paramsVacancyRequest = Object.assign({}, initialParamsVacancyRequest);
@@ -63,8 +64,12 @@ export function makeViewDataExperience(action: string): string {
   return valueExp;
 }
 
-export function getMaxPagesVacancies(countVac: number): number {
-  return Math.ceil(countVac / LIMIT_ELEMENTS_ON_PAGE);
+export function getMaxPagesForPagination(countItems: number): number {
+  return Math.ceil(countItems / LIMIT_ELEMENTS_ON_PAGE);
+}
+
+export function setCompetencies(competencies: string[]) {
+  paramsVacancyRequest['&competencies='] = competencies;
 }
 
 

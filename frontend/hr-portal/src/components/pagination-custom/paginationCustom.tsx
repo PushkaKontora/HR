@@ -7,13 +7,18 @@ import arrowLeftPagination from '../../assets/img/job-seach/ArrowLeft-pagination
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {setOffsetParam} from '../../features/vacancy/vacancy-slice';
 import {getVacancies, getVacanciesForEmployer} from '../../service/async-actions/async-actions-vacancy';
+import {TypeActionPagination} from '../../const';
+import {getResumeList} from '../../service/async-actions/async-actions-resume';
 
+type PaginationCustomProps = {
+  itemList: any[]
+};
 
-function PaginationCustom() {
-  const currentPage =  useAppSelector((state) => state.vacancy.currentPage);
-  const maxPageCount = useAppSelector((state) => state.vacancy.maxPagesVacancies);
-  const vacancies = useAppSelector((state) => state.vacancy.vacancies);
-  const isGetVacanciesEmployer = useAppSelector((state) => state.vacancy.vacancies);
+function PaginationCustom(props: PaginationCustomProps) {
+  const {itemList} = props;
+  const currentPage = useAppSelector((state) => state.vacancy.currentPage);
+  const maxPageCount = useAppSelector((state) => state.vacancy.maxPagesItemsForPagination);
+  const typeActionPagination = useAppSelector((state) => state.vacancy.typeActionPagination);
   const departmentId = useAppSelector((state) => state.general?.user?.department?.id);
   const offset = useAppSelector((state) => state.vacancy.paramsForGetVacancies.offset);
   const isPublished = useAppSelector((state) => state.vacancy.isPublishedVacancy);
@@ -27,12 +32,14 @@ function PaginationCustom() {
     }
   });
   useEffect(() => {
-    if(isGetVacanciesEmployer){
+    if (typeActionPagination === TypeActionPagination.VACANCY_EMPLOYER) {
       if (departmentId) {
         dispatch(getVacanciesForEmployer({isPublished, idDepartment: departmentId, offset}));
       }
-    }else{
+    } else if (typeActionPagination === TypeActionPagination.VACANCY) {
       dispatch(getVacancies());
+    } else if (typeActionPagination === TypeActionPagination.RESUME_EMPLOYER) {
+      dispatch(getResumeList());
     }
   }, [currentPage]);
 
@@ -40,7 +47,7 @@ function PaginationCustom() {
   return (
     <div className="vacancyListPagination">
       {
-        vacancies.items.length !== 0 && (
+        itemList.length !== 0 && (
           <Pagination
             count={maxPageCount}
             page={currentPage}
@@ -60,31 +67,6 @@ function PaginationCustom() {
           />
         )
       }
-      {/*{maxPage !== 0 && (*/}
-      {/*  <div className="vacancyListItem vacancyListItem__pagination">*/}
-      {/*    <div className="paginationItem">*/}
-      {/*      <img src={ArrowPagination} alt="arrow pagination-custom"/>*/}
-      {/*    </div>*/}
-      {/*    {*/}
-      {/*      maxPage < 6 ? (*/}
-      {/*        [...Array(maxPage)].map((item, index) => (*/}
-      {/*          <div className={cl('paginationItem', {'activePage': index + 1 === currentPage})} key={index}>*/}
-      {/*            {index + 1}*/}
-      {/*          </div>*/}
-      {/*        ))*/}
-      {/*      ) : (*/}
-      {/*        [...Array(maxPage)].map((item, index) => (*/}
-      {/*          <div className={cl('paginationItem', {'activePage': index + 1 === currentPage})} key={index}>*/}
-      {/*            {index + 1}*/}
-      {/*          </div>*/}
-      {/*        ))*/}
-      {/*      )*/}
-      {/*    }*/}
-      {/*    <div className="paginationItem">*/}
-      {/*      <img src={ArrowPagination} alt="arrow pagination-custom" className="arrow-right"/>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*)}*/}
     </div>
   );
 }

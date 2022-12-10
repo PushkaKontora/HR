@@ -1,9 +1,9 @@
 import {useEffect} from 'react';
 
 import {useAppDispatch} from '../../app/hooks';
-import {ButtonVacancyCard, TabInHeader, TypeRequestVacancyModal} from '../../const';
+import {ButtonVacancyCard, TabInHeader, TypeActionPagination, TypeRequestVacancyModal} from '../../const';
 import bannerMyVacancyScreen from '../../assets/img/header/bunner-my-vacancy.svg';
-import {setIsGetVacanciesEmployer, setIsOpenCreateVacancyModal,  setTypeRequestModalVacancy, setVacancyByID} from '../../features/vacancy/vacancy-slice';
+import {setIsOpenCreateVacancyModal, setTypeActionPagination, setTypeRequestModalVacancy, setVacancyByID} from '../../features/vacancy/vacancy-slice';
 import VacancyListEmployerMyVacancy from '../../components/vacancy-list-employer-my-vacancy/vacancy-list-employer-my-vacancy';
 import './employer-my-vacancy-screen.scss';
 import {changeActiveTabInHeader, changeButtonVacancyCard} from '../../features/page/page-slice';
@@ -17,9 +17,9 @@ function EmployerMyVacancyScreen() {
   useEffect(() => {
     dispatch(changeActiveTabInHeader(TabInHeader.myVacancy));
     dispatch(changeButtonVacancyCard(ButtonVacancyCard.empMyVacancy));
-    dispatch(setIsGetVacanciesEmployer(true));
+    dispatch(setTypeActionPagination(TypeActionPagination.VACANCY_EMPLOYER));
     return () => {
-      dispatch(setIsGetVacanciesEmployer(false));
+      dispatch(setTypeActionPagination(TypeActionPagination.VACANCY));
     };
   }, []);
 

@@ -1,13 +1,15 @@
 import React, {ChangeEvent, useEffect, useLayoutEffect, useRef} from 'react';
 import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
-import {ExpectedExperienceNameString} from '../../const';
+import {ExpectedExperienceNameString, TypeActionPagination} from '../../const';
 import {setExperienceParam} from '../../features/vacancy/vacancy-slice';
+import {getResumeList} from '../../service/async-actions/async-actions-resume';
 
 const radioInput = ['Любой'].concat(Object.values(ExpectedExperienceNameString));
 
 function VacancyFilterOnExperience() {
   const experience = useAppSelector((state) => state.vacancy.paramsForGetVacancies.experience);
+  const typeActionPagination = useAppSelector((state) => state.vacancy.typeActionPagination);
   const dispatch = useAppDispatch();
   const firstUpdate = useRef(true);
 
@@ -19,7 +21,11 @@ function VacancyFilterOnExperience() {
   });
 
   useEffect(() => {
-    dispatch(getVacancies());
+    if(typeActionPagination === TypeActionPagination.VACANCY){
+      dispatch(getVacancies());
+    }else if(typeActionPagination === TypeActionPagination.RESUME_EMPLOYER){
+      dispatch(getResumeList());
+    }
   }, [experience]);
 
   const onHandlerClickRadio = (el: ChangeEvent<HTMLInputElement>) => {

@@ -1,7 +1,7 @@
-import deleteIcon from '../../assets/img/job-seach/delete-icon.svg';
 import React, {ChangeEvent, FormEvent} from 'react';
-import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
+
+import deleteIcon from '../../assets/img/job-seach/delete-icon.svg';
 import {setSearchLineParam} from '../../features/vacancy/vacancy-slice';
 
 function ResumeSearchField() {
