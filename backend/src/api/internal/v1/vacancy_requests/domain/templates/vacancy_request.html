@@ -1,102 +1,120 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 
 <head>
     <title></title>
-    <meta charset="utf-8" />
-    <base href="http://127.0.0.1:5173/" />
+    <meta charset="utf-8"/>
+    <base href="http://127.0.0.1:5173/"/> <!-- Поменять на URL сервера, когда он будет -->
 </head>
 
 <body style="font-family: Verdana, Geneva, sans-serif; background-color: #F5F5F5; padding-top: 40px; -webkit-text-size-adjust: none;">
 <table border=0 cellpadding=0 cellspacing=0 style="margin: 0 auto; padding: 0; width: 840px">
     <tr>
         <td colspan=2 style="padding-bottom: 20px">
-            <img src="https://storage.yandexcloud.net/pushka.hr-portal/static/email_header.png" alt="InResume: новый отклик на вакансию" title="InResume: новый отклик на вакансию" width='840px' height='450px' border="0" style="display: block" image />
+            <img src="https://storage.yandexcloud.net/pushka.hr-portal/static/email_header.png"
+                 alt="InResume: новый отклик на вакансию" title="InResume: новый отклик на вакансию" width='840px'
+                 height='450px' border="0" style="display: block" image/>
         </td>
     </tr>
     <tr>
         <td colspan=2>
-            <table border=0 cellpadding=0 cellspacing=0 style="margin: 0; padding: 0; margin-bottom: 20px; border-radius: 20px; background-color: #FFFFFF; padding: 40px; width: 100%">
-    <tr>
-        <td colspan=2 style="font-size: 14px">
-            <div style="display: inline-block; border-radius: 30px; background-color: #F6F5F3; padding: 12px 24px; margin-bottom: 25px">
-                <b>{{sender.surname}} {{sender.name}}</b>
-            </div>
-            заинтересовался(ась) вашей вакансией.
+            <table border=0 cellpadding=0 cellspacing=0
+                   style="margin: 0; margin-bottom: 20px; border-radius: 20px; background-color: #FFFFFF; padding: 40px; width: 100%">
+                <tr>
+                    <td colspan=2 style="font-size: 14px">
+                        <div style="display: inline-block; border-radius: 30px; background-color: #F6F5F3; padding: 12px 24px; margin-bottom: 25px">
+                            <b>{{sender.surname}} {{sender.name}}</b>
+                        </div>
+                        заинтересовался(ась) вашей вакансией.
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=2>
+                        <hr style="border: 1px solid black; margin-bottom: 25px"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-bottom: 25px; width: 15%">Вакансия</td>
+                    <td style="display: inline-block; border-radius: 30px; background-color: #F6F5F3; padding: 12px 24px; margin-bottom: 16px">
+                        {{vacancy.name}}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-bottom: 25px">Email</td>
+                    <td style="display: inline-block; border-radius: 30px; background-color: #F6F5F3; padding: 12px 24px; margin-bottom: 25px">
+                        {{sender.email}}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=2>
+                        <hr style="border: 1px solid black"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=2 style="padding-top: 25px; margin-bottom: 46px">
+                        <a target="_blank"
+                           style="display: inline-block; background-color: #E3EDFF; text-decoration: none; padding: 16px 24px; border-radius: 30px; color: black; margin-right: 12px"
+                           href={{vacancy.id}}>
+                            <b>Посмотреть страницу вакансии</b>
+                        </a>
+                        <a target="_blank"
+                           style="display: inline-block; background-color: #F6F5F3; text-decoration: none; color: black; padding: 16px 24px; border-radius: 30px;"
+                           href={{vacancy.id}}>
+                            Другие вакансии
+                        </a>
+                    </td>
+                </tr>
+            </table>
         </td>
     </tr>
     <tr>
         <td colspan=2>
-            <hr style="border: 1px solid black; margin-bottom: 25px" />
+            <table border=0 cellpadding=0 cellspacing=0
+                   style="background-color: #E3EDFF; border-radius: 20px; width:100%; margin: 0; margin-bottom: 20px; padding: 40px;">
+                <tr>
+                    <td width="615px">
+                        <a href="/" target="_blank">
+                            <img src="https://storage.yandexcloud.net/pushka.hr-portal/static/InResume.png" alt="Главная страница InResume"
+                                 title="Главная страница InResume" width='190px' height='30px' border="0" style="display: block"/>
+                        </a>
+                    </td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td>
+                                    <a href="https://www.interesnee.ru/" class="icon" target="_blank">
+                                        <img src="https://storage.yandexcloud.net/pushka.hr-portal/static/logo.png"
+                                             alt="Сайт 'Очень интересно'" title="Сайт 'Очень интересно'" width='38px' height='38px' border="0"
+                                             style="display: block; margin-right: 15px"/>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="https://vk.com/interesnee_ru" class="icon" target="_blank">
+                                        <img src="https://storage.yandexcloud.net/pushka.hr-portal/static/vk.png"
+                                             alt="Наш ВК" title="Наш ВК" width='38px' height='38px' border="0"
+                                             style="display: block; margin-right: 15px"/>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="https://www.linkedin.com/company/interesnee-ru/" class="icon" target="_blank" style="margin-right: 0;">
+                                        <img src="https://storage.yandexcloud.net/pushka.hr-portal/static/linked_in.png"
+                                             alt="Наш Linked In" title="Наш Linked In" width='38px' height='38px' border="0"
+                                             style="display: block"/>
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=2>
+                        <div style="font-size: 14px; margin-top: 12px">©2022 «Pushka»</div>
+                    </td>
+                </tr>
+            </table>
         </td>
     </tr>
-    <tr>
-        <td style="width: 15%">Вакансия</td>
-        <td style="display: inline-block; border-radius: 30px; background-color: #F6F5F3; padding: 12px 24px; margin-bottom: 16px">{{vacancy.name}}</td>
-    </tr>
-    <tr>
-        <td>Email</td>
-        <td style="display: inline-block; border-radius: 30px; background-color: #F6F5F3; padding: 12px 24px; margin-bottom: 16px">{{sender.email}}</td>
-    </tr>
-    <tr>
-        <td>Резюме</td>
-        <td style="display: inline-block; border-radius: 30px; background-color: #F6F5F3; padding: 12px 24px;">resume_placeholder</td>
-    </tr>
-    <tr>
-        <td colspan=2>
-            <hr style="border: 1px solid black" />
-        </td>
-    </tr>
-    <tr>
-        <td colspan=2 style="padding-top: 25px; margin-bottom: 46px">
-            <a target="_blank" style="display: inline-block; background-color: #C7DBFF; text-decoration: none; padding: 16px 24px; border-radius: 30px; color: black; margin-right: 12px" href={{vacancy.id}}>
-                <b>Посмотреть страницу вакансии</b>
-            </a>
-            <a target="_blank" style="display: inline-block; background-color: #F6F5F3; text-decoration: none; color: black; padding: 16px 24px; border-radius: 30px;" href={{vacancy.id}}>
-                Другие вакансии
-            </a>
-        </td>
-    </tr>
-</table>
-</td>
-</tr>
-<tr>
-    <td colspan=2>
-        <table border=0 cellpadding=0 cellspacing=0 style="background-color: #C7DBFF; border-radius: 20px; width:100%; margin: 0; padding: 20px;">
-            <tr>
-                <td width="700px">
-                    <img src="https://storage.yandexcloud.net/pushka.hr-portal/static/InResume.png" alt="InResume" title="InResume" width='190px' height='30px' border="0" style="display: block" />
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <td>
-                                <a href="" class="icon" target="_blank">
-                                    <img src="https://storage.yandexcloud.net/pushka.hr-portal/static/logo.png" alt="main page" title="main page" width='38px' height='38px' border="0" style="display: block" />
-                                </a>
-                            </td>
-                            <td>
-                                <a href="" class="icon" target="_blank">
-                                    <img src="https://storage.yandexcloud.net/pushka.hr-portal/static/vk.png" alt="vk" title="vk" width='38px' height='38px' border="0" style="display: block" />
-                                </a>
-                            </td>
-                            <td>
-                                <a href="" class="icon" target="_blank" style="margin-right: 0;">
-                                    <img src="https://storage.yandexcloud.net/pushka.hr-portal/static/linked_in.png" alt="linked_in" title="linked_in" width='38px' height='38px' border="0" style="display: block" />
-                                </a>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td colspan=2>
-                    <div style="font-size: 14px; margin-top: 12px">©2022 «Pushka»</div>
-                </td>
-            </tr>
-        </table>
-    </td>
-</tr>
 </table>
 </body>
 

@@ -2,7 +2,6 @@ import './job-search-details-screen.scss';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import experienceIcon from '../../assets/img/vacancy-card/experience.svg';
 import {ExpectedExperienceNameString} from '../../const';
-import likesIcon from '../../assets/img/vacancy-card/no_like.svg';
 import departmentLogoIcon from '../../assets/img/vacancy-card/departments-icon.svg';
 import UseEditor from '../../reused-components/text-editor/useEditor';
 import TabsSalary from '../../components/tabs-salary/tabs-salary';
@@ -13,6 +12,8 @@ import {getVacancyByID} from '../../service/async-actions/async-actions-vacancy'
 import {UserStatus} from '../../types/user-status';
 import ModalEditVacancy from '../../components/modal-edit-vacancy/modal-edit-vacancy';
 import {refreshPageDetailsScreen} from '../../features/page/page-slice';
+import clockIcon from '../../assets/img/vacancy-card/clock.svg';
+import {getBackTimestampRussian} from '../../utils/times';
 
 function JobSearchDetailsScreen() {
   const params = useParams();
@@ -63,15 +64,27 @@ function JobSearchDetailsScreen() {
           <div className="cardSide-item cardSide-item__criteria">
             <div className="name-vacancy">{vacancy?.name}</div>
             <div className="tabsInfo">
-              <TabsSalary/>
+
               <div className="tabsItem">
                 <div className="tabs-image">
-                  <img src={experienceIcon} alt="money icon"/>
+                  <img src={clockIcon} alt="created"/>
+                </div>
+                <div className="tabs-text">
+                  {getBackTimestampRussian(vacancy?.published_at)}
+                </div>
+              </div>
+
+              <TabsSalary salary_from={vacancy?.salary_from} salary_to={vacancy?.salary_to} />
+
+              <div className="tabsItem">
+                <div className="tabs-image">
+                  <img src={experienceIcon} alt="experience"/>
                 </div>
                 <div className="tabs-text">
                   {vacancyExperience}
                 </div>
               </div>
+
             </div>
             <TabsRespondEditVacancy/>
           </div>

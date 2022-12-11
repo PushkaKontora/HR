@@ -17,6 +17,7 @@ function EmployerMyVacancyScreen() {
   useEffect(() => {
     dispatch(changeActiveTabInHeader(TabInHeader.myVacancy));
     dispatch(changeButtonVacancyCard(ButtonVacancyCard.empMyVacancy));
+
     dispatch(setIsGetVacanciesEmployer(true));
     return () => {
       dispatch(setIsGetVacanciesEmployer(false));

@@ -24,14 +24,24 @@ function VacancyList(props: VacancyListProps) {
   useLayoutEffect(() => {
     if (firstUpdate.current) {
       firstUpdate.current = false;
-      //dispatch(getVacancyWishlist(VacancyWishListSortBy.added_at_desc));
       return;
     }
   });
 
+  useEffect(() => {
+    let mounted = true;
+
+    if (mounted) {
+      dispatch(getVacancyWishlist(VacancyWishListSortBy.added_at_desc));
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <>
-      <ModalRespondRequest/>
       <div className="vacancyListWrapper">
         <div className="vacancyListItem vacancyListItem__list">
           {

@@ -15,6 +15,7 @@ import {UserStatus} from '../../types/user-status';
 import {getResumeWishlist, ResumeWishListSortBy} from '../../service/async-actions/async-actions-resume';
 import VacancyList from '../../components/vacancy-list/vacancy-list';
 import banner from '../../assets/img/favorites/banner.svg';
+import ModalRespondRequest from '../../components/modal-respond-request/modal-respond-request';
 
 export function FavoritePage() {
   const dispatch = useAppDispatch();
@@ -66,6 +67,7 @@ export function FavoritePage() {
 
   return (
     <div>
+      <ModalRespondRequest/>
       <Content>
         <img src={banner} style={{marginBottom: '24px'}}/>
         <HorizontalLine/>

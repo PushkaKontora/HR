@@ -10,7 +10,7 @@ import {
 } from '../../service/async-actions/async-actions-vacancy';
 import {toast} from 'react-toastify';
 import {isFavorite} from '../../utils/favorite';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 
 type ButtonActionVacancyCardProps = {
   vacancy: Vacancy
@@ -50,6 +50,19 @@ function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
   const favoriteVacancies = useAppSelector((state) => state.user.favoriteVacancies);
 
   const [liked, setLiked] = useState(isFavorite(vacancy, favoriteVacancies));
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (mounted) {
+      setLiked(isFavorite(vacancy, favoriteVacancies));
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [favoriteVacancies]);
+
 
   const like = () => {
     if (vacancy) {

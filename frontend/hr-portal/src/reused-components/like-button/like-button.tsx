@@ -14,13 +14,15 @@ type LikeButtonProps = {
 export function LikeButton(props: LikeButtonProps) {
   const [icon, setIcon] = useState(noLikeIcon);
   const [liked, setLiked] = useState(props.liked);
+  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
     let mounted = true;
 
     if (mounted) {
       setLiked(props.liked);
-      setIcon(props.liked ? yesLikeIcon : noLikeIcon);
+      //setIcon(props.liked ? yesLikeIcon : noLikeIcon);
+      chooseIcon();
     }
 
     return () => {
@@ -28,28 +30,45 @@ export function LikeButton(props: LikeButtonProps) {
     };
   }, [props.liked]);
 
+  useEffect(() => {
+    let mounted = true;
+
+    if (mounted) {
+      chooseIcon();
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [hovered]);
+
+
+  const chooseIcon = () => {
+    if (liked) {
+      setIcon(hovered ? whiteLikeIcon : yesLikeIcon);
+    } else {
+      setIcon(hovered ? redLikeIcon : noLikeIcon);
+    }
+  };
+
   return (
     <button
       type='button'
       className={`navTabs-btnItem__like navTabs-btnItem__like${liked ? '_yes' : ''}`}
       onClick={(evt) => {
         evt.stopPropagation();
-        if (!liked)
+        if (!liked) {
           props.onLike();
-        else
+        }
+        else {
           props.onDislike();
+        }
       }}
       onMouseEnter={() => {
-        if (liked)
-          setIcon(whiteLikeIcon);
-        else
-          setIcon(redLikeIcon);
+        setHovered(true);
       }}
       onMouseLeave={() => {
-        if (liked)
-          setIcon(yesLikeIcon);
-        else
-          setIcon(noLikeIcon);
+        setHovered(false);
       }}>
       <img
         src={icon}
