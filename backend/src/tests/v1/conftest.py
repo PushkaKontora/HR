@@ -55,7 +55,7 @@ def another_user_with_password(another_user: User) -> User:
 
 @pytest.fixture
 def department(employer: User) -> Department:
-    return Department.objects.create(leader=employer, name="123")
+    return Department.objects.create(leader=employer, name="123", description="Interesting work")
 
 
 @pytest.fixture
