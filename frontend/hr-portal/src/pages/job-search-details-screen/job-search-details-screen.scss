@@ -27,6 +27,22 @@
           display: flex;
           flex-direction: column;
 
+          .cardSide-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+
+            .cardSide-item__requestDate {
+              font-size: 12px;
+
+              background-color: #E3EDFF;
+              padding: 6px 10px;
+              font-weight: 500;
+              border-radius: 30px;
+            }
+          }
+
           .name-vacancy {
             font-weight: 600;
             font-size: 40px;
@@ -69,19 +85,16 @@
           }
 
           .departmentInfo-content {
-
-            display: -webkit-box;
             margin: 20px 0;
             font-weight: 400;
             font-size: 14px;
-            line-height: 18px;
+            line-height: 22px;
             letter-spacing: 0.05em;
             width: 372px;
+            height: 65px;
 
-            -webkit-line-clamp: 8;
-            -webkit-box-orient: vertical;
             overflow: hidden;
-            text-overflow: ellipsis;
+            text-overflow: clip;
           }
 
           .departmentInfo-viewAllVacancies {
@@ -95,6 +108,29 @@
       margin: 66px 0;
       width: 63rem;
       z-index: 50;
+
+      ol {
+        margin-bottom: 20px;
+
+        li {
+          margin-left: 20px;
+        }
+      }
+
+      ul {
+        margin-bottom: 20px;
+
+        li:before {
+          content: '‧';
+          font-size: 24px;
+          font-weight: bold;
+          padding-right: 12px;
+        }
+      }
+
+      p {
+        margin-bottom: 20px;
+      }
     }
   }
 }

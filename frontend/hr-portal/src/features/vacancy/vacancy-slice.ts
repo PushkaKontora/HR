@@ -4,7 +4,13 @@ import {Vacancy} from '../../types/vacancy';
 import {Department} from '../../types/department';
 import {createDepartmentShortVision, getMaxPagesVacancies, makeViewDataExperience, setNewParamDepartment, setNewParamExperience, setNewParamOffset, setNewParamSalaryMax, setNewParamSalaryMin, setNewParamSearchLine, setNewParamSortBy} from './vacancy.actions';
 import {DEFAULT_ELEMENT_DEPARTMENT, SortingVacancyTypes, TypeRequestVacancyModal} from '../../const';
-import {getVacancies, getVacanciesForEmployer, getVacancyByID, patchStatusVacancyUnpublish} from '../../service/async-actions/async-actions-vacancy';
+import {
+  getLastVacancyRequest,
+  getVacancies,
+  getVacanciesForEmployer,
+  getVacancyByID,
+  patchStatusVacancyUnpublish
+} from '../../service/async-actions/async-actions-vacancy';
 import {toast} from 'react-toastify';
 
 export type VacanciesApi = {
@@ -49,6 +55,8 @@ interface VacancyState {
 
   isHiddenToolbar: boolean,
   prevDescriptionVacancyBYid: string
+
+  requestDate: Date | null
 }
 
 const initialState: VacancyState = {
@@ -82,7 +90,9 @@ const initialState: VacancyState = {
   typeRequestModalVacancy: TypeRequestVacancyModal.CHANGE,
 
   isHiddenToolbar: true,
-  prevDescriptionVacancyBYid: ''
+  prevDescriptionVacancyBYid: '',
+
+  requestDate: null
 };
 
 const vacancySlice = createSlice({
@@ -216,6 +226,9 @@ const vacancySlice = createSlice({
       })
       .addCase(getVacancyByID.fulfilled, (state, action) => {
         state.vacancyByID = action.payload;
+      })
+      .addCase(getLastVacancyRequest.fulfilled, (state, action) => {
+        state.requestDate = action.payload;
       });
   }
 });

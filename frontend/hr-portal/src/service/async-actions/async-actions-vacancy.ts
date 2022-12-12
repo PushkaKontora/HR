@@ -85,6 +85,14 @@ export const postVacancyRequests = createAsyncThunk<void, FormData, Generics>(
   },
 );
 
+export const getLastVacancyRequest = createAsyncThunk<Date, number, Generics>(
+  'vacancy/lastRequest',
+  async (vacancyId, {dispatch, extra: api}) => {
+    const {data} = await api.get(VacancyRoutes.lastVacancyRequest(vacancyId));
+    return data.created_at;
+  }
+);
+
 export const patchStatusVacancyUnpublish = createAsyncThunk<void, number, Generics>(
   'vacancy/setStatusVacancyUnpublish',
   async (idVacancy, {dispatch, extra: api}) => {

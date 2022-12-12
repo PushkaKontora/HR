@@ -49,6 +49,7 @@ function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
 
   const favoriteVacancies = useAppSelector((state) => state.user.favoriteVacancies);
 
+  //const [vacancyState, setVacancyState] = useState();
   const [liked, setLiked] = useState(isFavorite(vacancy, favoriteVacancies));
 
   useEffect(() => {

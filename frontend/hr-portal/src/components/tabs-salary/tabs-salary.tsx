@@ -16,7 +16,7 @@ function TabsSalary(props: TabsSalaryProps) {
             <img src={moneyIcon} alt="experience icon"/>
           </div>
           {
-            (salary_to !== 0 && salary_from === 0) &&
+            (salary_to && !salary_from) &&
             (
               <>
                 <div className="tabs-text">до {salary_to}</div>
@@ -27,7 +27,7 @@ function TabsSalary(props: TabsSalaryProps) {
             )
           }
           {
-            salary_to === 0 && salary_from !== 0 &&
+            !salary_to && salary_from &&
             (
               <>
                 <div className="tabs-text">от {salary_from}</div>
@@ -38,7 +38,7 @@ function TabsSalary(props: TabsSalaryProps) {
             )
           }
           {
-            salary_to !== 0 && salary_from !== 0 &&
+            salary_to && salary_from &&
             (
               <>
                 <div className="tabs-text">

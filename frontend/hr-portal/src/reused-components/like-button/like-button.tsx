@@ -40,7 +40,7 @@ export function LikeButton(props: LikeButtonProps) {
     return () => {
       mounted = false;
     };
-  }, [hovered]);
+  }, [liked, hovered]);
 
 
   const chooseIcon = () => {

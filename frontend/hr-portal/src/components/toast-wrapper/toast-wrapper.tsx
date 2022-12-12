@@ -14,7 +14,7 @@ export function ToastWrapper() {
       rtl={false}
       pauseOnFocusLoss
       draggable
-      toastStyle={{backgroundColor: '#000', color: '#fff'}}
+      toastStyle={{backgroundColor: '#242424', color: '#fff'}}
       theme="colored"/>
   );
 }
