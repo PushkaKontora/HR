@@ -5,7 +5,7 @@ import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {setCompetencies} from '../../features/vacancy/vacancy-slice';
 import './competencies-field.scss';
 import CheckBoxImg from '../../assets/img/resume-page/Check_box.svg';
-import {CompetenciesOption} from '../../features/resume/resume-slice';
+import {CompetenciesOption, setIsClearFilters} from '../../features/resume/resume-slice';
 import {getResumeList} from '../../service/async-actions/async-actions-resume';
 
 
@@ -13,7 +13,17 @@ function CompetenciesField() {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const competenceList = useAppSelector((state) => state.resume.competenciesApi);
   const competencies = useAppSelector((state) => state.vacancy.paramsForGetVacancies.competencies);
+  const isClearFilters = useAppSelector((state) => state.resume.isClearFilters);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (isClearFilters) {
+      selectedOptions.map((value: string) => {
+        handlerDeleteOnSelectedItem(value);
+      });
+      dispatch(setIsClearFilters(false));
+    }
+  }, [isClearFilters]);
 
   useEffect(() => {
     dispatch(getResumeList());

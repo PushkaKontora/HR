@@ -68,7 +68,7 @@ export function getMaxPagesForPagination(countItems: number): number {
   return Math.ceil(countItems / LIMIT_ELEMENTS_ON_PAGE);
 }
 
-export function setCompetencies(competencies: string[]) {
+export function setCompetenciesForResume(competencies: string[]) {
   paramsVacancyRequest['&competencies='] = competencies;
 }
 

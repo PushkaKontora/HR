@@ -3,6 +3,7 @@ import {useAppDispatch, useAppSelector} from '../../app/hooks';
 
 import deleteIcon from '../../assets/img/job-seach/delete-icon.svg';
 import {setSearchLineParam} from '../../features/vacancy/vacancy-slice';
+import {getResumeList} from '../../service/async-actions/async-actions-resume';
 
 function ResumeSearchField() {
   const pageSearch = useAppSelector((state) => state.vacancy.paramsForGetVacancies.searchLine);
@@ -10,12 +11,12 @@ function ResumeSearchField() {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    //dispatch(getVacancies());
+    dispatch(getResumeList());
   };
 
   const handleEraseSearch = () => {
-    //dispatch(setSearchLineParam(''));
-    //dispatch(getVacancies());
+    dispatch(setSearchLineParam(''));
+    dispatch(getResumeList());
   };
 
   const handleSearchVacancy = (e: ChangeEvent<HTMLInputElement>) => {

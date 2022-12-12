@@ -5,7 +5,7 @@ import {Competency} from '../../types/competency';
 
 export const getCompetenciesAction = createAsyncThunk<Array<Competency>, undefined, Generics>(
   'competencies/all',
-  async (_arg, {dispatch, extra: api}) => {
+  async (_arg, {extra: api}) => {
     const result = await api.get(CompetenciesRoutes.all);
     return result.data;
   }

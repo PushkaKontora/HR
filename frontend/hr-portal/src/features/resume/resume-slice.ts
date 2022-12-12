@@ -12,17 +12,23 @@ export interface CompetenciesOption {
 interface ResumeState {
   competenciesApi: CompetenciesOption[];
   resumeList: ResumeList | null;
+  isClearFilters: boolean;
 }
 
 const initialState: ResumeState = {
   competenciesApi: [],
   resumeList: null,
+  isClearFilters: false,
 };
 
 const resumeSlice = createSlice({
   name: 'resume-slice',
   initialState,
-  reducers: {},
+  reducers: {
+    setIsClearFilters(state, action) {
+      state.isClearFilters = action.payload;
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(getCompetenciesAction.fulfilled, (state, action) => {
@@ -34,11 +40,10 @@ const resumeSlice = createSlice({
       .addCase(getResumeList.fulfilled, (state, action) => {
         state.resumeList = action.payload;
         console.log(action.payload, 'action.payload');
-        console.log(action.payload, 'action.payload');
       });
   }
 });
 
-// export const {} = resumeSlice.actions;
+export const {setIsClearFilters} = resumeSlice.actions;
 
 export default resumeSlice.reducer;

@@ -2,7 +2,7 @@ import {createSlice} from '@reduxjs/toolkit';
 
 import {Vacancy} from '../../types/vacancy';
 import {Department} from '../../types/department';
-import {createDepartmentShortVision, getMaxPagesForPagination, makeViewDataExperience, setNewParamDepartment, setNewParamExperience, setNewParamOffset, setNewParamSalaryMax, setNewParamSalaryMin, setNewParamSearchLine, setNewParamSortBy} from './vacancy.actions';
+import {createDepartmentShortVision, getMaxPagesForPagination, makeViewDataExperience, setCompetenciesForResume, setNewParamDepartment, setNewParamExperience, setNewParamOffset, setNewParamSalaryMax, setNewParamSalaryMin, setNewParamSearchLine, setNewParamSortBy} from './vacancy.actions';
 import {DEFAULT_ELEMENT_DEPARTMENT, SortingVacancyTypes, TypeActionPagination, TypeRequestVacancyModal} from '../../const';
 import {getVacancies, getVacanciesForEmployer, getVacancyByID, patchStatusVacancyUnpublish} from '../../service/async-actions/async-actions-vacancy';
 import {toast} from 'react-toastify';
@@ -105,7 +105,7 @@ const vacancySlice = createSlice({
     },
     setCompetencies(state, action) {
       state.paramsForGetVacancies.competencies = action.payload;
-      // setNewParamSearchLine(action.payload);
+      setCompetenciesForResume(action.payload);
       state.paramsForGetVacancies.offset = 0;
       state.currentPage = 1;
       setNewParamOffset(0);

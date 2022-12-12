@@ -84,13 +84,19 @@ export const getResumeList = createAsyncThunk<ResumeList, undefined, Generics>(
 
     Object.entries(paramsURL).map(([key, value]) => {
       if (key !== '&offset=' && key !== '?sort_by=' && key !== '&department_id=' && value !== initialParamsVacancyRequest[key]) {
-        lineWithNewParameters += `${key}${value}`;
+        if (key === '&competencies=') {
+          value.map((item: string) => {
+            lineWithNewParameters += `${key}${item}`;
+          });
+        } else {
+          lineWithNewParameters += `${key}${value}`;
+        }
       }
     });
 
     const lineUrl = `${ResumeRoutes.resume}?published=true&limit=${LIMIT_ELEMENTS_ON_PAGE}&offset=${paramsURL['&offset=']}${lineWithNewParameters}`;
     console.log(lineUrl);
-    const {data} = await api.get<ResumeList>(ResumeRoutes.resume);
+    const {data} = await api.get<ResumeList>(lineUrl);
     console.log(data, 'data');
     return data;
   }
