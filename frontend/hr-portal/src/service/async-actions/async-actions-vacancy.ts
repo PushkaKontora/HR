@@ -63,6 +63,14 @@ export const postVacancyRequests = createAsyncThunk<void, FormData, Generics>(
   },
 );
 
+export const getLastVacancyRequest = createAsyncThunk<Date, number, Generics>(
+  'vacancy/lastRequest',
+  async (vacancyId, {dispatch, extra: api}) => {
+    const {data} = await api.get(VacancyRoutes.lastVacancyRequest(vacancyId));
+    return data.created_at;
+  }
+);
+
 export const patchStatusVacancyUnpublish = createAsyncThunk<void, number, Generics>(
   'vacancy/setStatusVacancyUnpublish',
   async (idVacancy, {dispatch, extra: api}) => {
@@ -110,7 +118,6 @@ export const addToVacancyWishlist = createAsyncThunk<void, number, Generics>(
   'vacancy/addToWishlist',
   async (vacancyId, {dispatch, extra: api}) => {
     await api.post(VacancyRoutes.modifyWishlist(vacancyId));
-    await getVacancyWishlist(VacancyWishListSortBy.added_at_desc);
   }
 );
 
@@ -118,6 +125,5 @@ export const deleteFromVacancyWishlist = createAsyncThunk<void, number, Generics
   'vacancy/deleteFromWishlist',
   async (vacancyId, {dispatch, extra: api}) => {
     await api.delete(VacancyRoutes.modifyWishlist(vacancyId));
-    await getVacancyWishlist(VacancyWishListSortBy.added_at_desc);
   }
 );

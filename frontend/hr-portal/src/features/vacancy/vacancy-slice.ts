@@ -5,6 +5,15 @@ import {Department} from '../../types/department';
 import {createDepartmentShortVision, getMaxPagesForPagination, makeViewDataExperience, setCompetenciesForResume, setNewParamDepartment, setNewParamExperience, setNewParamOffset, setNewParamSalaryMax, setNewParamSalaryMin, setNewParamSearchLine, setNewParamSortBy} from './vacancy.actions';
 import {DEFAULT_ELEMENT_DEPARTMENT, SortingVacancyTypes, TypeActionPagination, TypeRequestVacancyModal} from '../../const';
 import {getVacancies, getVacanciesForEmployer, getVacancyByID, patchStatusVacancyUnpublish} from '../../service/async-actions/async-actions-vacancy';
+import {createDepartmentShortVision, getMaxPagesVacancies, makeViewDataExperience, setNewParamDepartment, setNewParamExperience, setNewParamOffset, setNewParamSalaryMax, setNewParamSalaryMin, setNewParamSearchLine, setNewParamSortBy} from './vacancy.actions';
+import {DEFAULT_ELEMENT_DEPARTMENT, SortingVacancyTypes, TypeRequestVacancyModal} from '../../const';
+import {
+  getLastVacancyRequest,
+  getVacancies,
+  getVacanciesForEmployer,
+  getVacancyByID,
+  patchStatusVacancyUnpublish
+} from '../../service/async-actions/async-actions-vacancy';
 import {toast} from 'react-toastify';
 import {getResumeList} from '../../service/async-actions/async-actions-resume';
 
@@ -52,6 +61,8 @@ interface VacancyState {
 
   isHiddenToolbar: boolean,
   prevDescriptionVacancyBYid: string
+
+  requestDate: Date | null
 }
 
 const initialState: VacancyState = {
@@ -87,7 +98,9 @@ const initialState: VacancyState = {
   typeRequestModalVacancy: TypeRequestVacancyModal.CHANGE,
 
   isHiddenToolbar: true,
-  prevDescriptionVacancyBYid: ''
+  prevDescriptionVacancyBYid: '',
+
+  requestDate: null
 };
 
 const vacancySlice = createSlice({
@@ -232,6 +245,9 @@ const vacancySlice = createSlice({
       .addCase(getResumeList.fulfilled, (state, action) => {
         state.maxPagesItemsForPagination = getMaxPagesForPagination(action.payload.count);
         console.log(state.maxPagesItemsForPagination);
+      })
+      .addCase(getLastVacancyRequest.fulfilled, (state, action) => {
+        state.requestDate = action.payload;
       });
   }
 });

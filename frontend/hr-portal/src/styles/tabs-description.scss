@@ -5,8 +5,8 @@
   letter-spacing: 0.05em;
 
   padding: 6px 16px;
-  background: #FFFFFF;
   border-radius: 30px;
+  background-color: #FFFFFF;
 
   .tabs-image-rus {
     height: 12.5px;
@@ -16,11 +16,21 @@
     display: flex;
     align-items: center;
     gap: 6px;
+    white-space: nowrap;
   }
 
   .tabs-flex {
     display: flex;
     align-items: center;
     gap: 4px;
+  }
+
+  &__department {
+    background-color: #C7DBFF;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 16px;
+    letter-spacing: 0.05em;
+    padding: 12px 20px;
   }
 }

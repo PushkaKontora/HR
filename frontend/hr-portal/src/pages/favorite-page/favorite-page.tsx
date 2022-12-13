@@ -15,6 +15,7 @@ import {UserStatus} from '../../types/user-status';
 import {getResumeWishlist, ResumeWishListSortBy} from '../../service/async-actions/async-actions-resume';
 import VacancyList from '../../components/vacancy-list/vacancy-list';
 import banner from '../../assets/img/favorites/banner.svg';
+import ModalRespondRequest from '../../components/modal-respond-request/modal-respond-request';
 
 export function FavoritePage() {
   const dispatch = useAppDispatch();
@@ -22,7 +23,8 @@ export function FavoritePage() {
   const favoriteVacancies = useAppSelector((state) => state.user.favoriteVacancies);
   const favoriteResume = useAppSelector((state) => state.user.favoriteResumes);
 
-  const [dataLength, setDataLength] = useState(favoriteVacancies.length);
+  const [vacancyLength, setVacancyLength] = useState(favoriteVacancies.length);
+  const [resumeLength, setResumeLength] = useState(favoriteResume.length);
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
 
   useEffect(() => {
@@ -30,32 +32,42 @@ export function FavoritePage() {
 
     if (mounted) {
       dispatch(getVacancyWishlist(VacancyWishListSortBy.added_at_desc));
+      //.then(() => setVacancyLength(favoriteVacancies.length));
 
       if (user?.permission === UserStatus.employer) {
         dispatch(getResumeWishlist(ResumeWishListSortBy.added_at_desc));
+        //.then(() => setResumeLength(favoriteResume.length));
       }
-
-      if (currentTabIndex === 0)
-        setDataLength(favoriteVacancies.length);
-      else if (currentTabIndex === 1)
-        setDataLength(favoriteResume.length);
     }
 
     return () => {
       mounted = false;
     };
-  }, [user, favoriteVacancies, favoriteResume]);
+  }, [user]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (mounted) {
+      if (favoriteVacancies)
+        setVacancyLength(favoriteVacancies.length);
+
+      if (favoriteResume)
+        setResumeLength(favoriteResume.length);
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [favoriteResume, favoriteVacancies]);
 
   const onTabChange = (index: number) => {
     setCurrentTabIndex(index);
-    if (index === 0)
-      setDataLength(favoriteVacancies.length);
-    else if (index === 1)
-      setDataLength(favoriteResume.length);
   };
 
   return (
     <div>
+      <ModalRespondRequest/>
       <Content>
         <img src={banner} style={{marginBottom: '24px'}}/>
         <HorizontalLine/>
@@ -64,9 +76,9 @@ export function FavoritePage() {
             tabNames={getTabsByUserStatus(user?.permission)}
             clickHandler={onTabChange}/>
           <h3 style={{flexGrow: 1, textAlign: 'right', whiteSpace: 'nowrap'}}>
-            Добавлено {dataLength}&nbsp;
-            {currentTabIndex == 0 && 'вакансий'}
-            {currentTabIndex == 1 && 'резюме'}
+            Добавлено&nbsp;
+            {currentTabIndex == 0 && `${vacancyLength} вакансий`}
+            {currentTabIndex == 1 && `${resumeLength} резюме`}
           </h3>
         </SubHeader>
         {

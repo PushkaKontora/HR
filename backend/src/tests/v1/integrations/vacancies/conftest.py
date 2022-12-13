@@ -23,6 +23,7 @@ def vacancy_out(vacancy: Vacancy) -> dict:
         "department": {
             "id": department.id,
             "name": department.name,
+            "description": department.description,
             "leader": {
                 "id": leader.id,
                 "surname": leader.surname,

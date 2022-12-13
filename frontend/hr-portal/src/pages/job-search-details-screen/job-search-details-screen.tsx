@@ -2,17 +2,24 @@ import './job-search-details-screen.scss';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import experienceIcon from '../../assets/img/vacancy-card/experience.svg';
 import {ExpectedExperienceNameString} from '../../const';
-import likesIcon from '../../assets/img/vacancy-card/no_like.svg';
 import departmentLogoIcon from '../../assets/img/vacancy-card/departments-icon.svg';
 import UseEditor from '../../reused-components/text-editor/useEditor';
 import TabsSalary from '../../components/tabs-salary/tabs-salary';
 import {useEffect, useState} from 'react';
 import TabsRespondEditVacancy from '../../components/tabs-respond-edit-vacancy/tabs-respond-edit-vacancy';
-import {useParams} from 'react-router-dom';
-import {getVacancyByID} from '../../service/async-actions/async-actions-vacancy';
+import {Link, useParams} from 'react-router-dom';
+import {
+  getLastVacancyRequest,
+  getVacancyByID,
+  getVacancyWishlist,
+  VacancyWishListSortBy
+} from '../../service/async-actions/async-actions-vacancy';
 import {UserStatus} from '../../types/user-status';
 import ModalEditVacancy from '../../components/modal-edit-vacancy/modal-edit-vacancy';
 import {refreshPageDetailsScreen} from '../../features/page/page-slice';
+import clockIcon from '../../assets/img/vacancy-card/clock.svg';
+import {getBackTimestampRussian} from '../../utils/times';
+import ModalRespondRequest from '../../components/modal-respond-request/modal-respond-request';
 
 function JobSearchDetailsScreen() {
   const params = useParams();
@@ -20,6 +27,7 @@ function JobSearchDetailsScreen() {
   const vacancy = useAppSelector((state) => state.vacancy.vacancyByID);
   const user = useAppSelector((state) => state.general.user);
   const refreshPage = useAppSelector((state) => state.page.isRefreshPageDetailsScreen);
+  const requestDate = useAppSelector((state) => state.vacancy.requestDate);
   const vacancyExperience = ExpectedExperienceNameString[vacancy?.expected_experience as keyof typeof ExpectedExperienceNameString];
   const [convertedContent, setConvertedContent] = useState('');
   const dispatch = useAppDispatch();
@@ -27,6 +35,7 @@ function JobSearchDetailsScreen() {
   useEffect(() => {
     if (prodId && vacancy === null) {
       dispatch(getVacancyByID(Number(prodId)));
+      dispatch(getVacancyWishlist(VacancyWishListSortBy.added_at_desc));
       console.log('refreshed');
     }
   }, []);
@@ -41,6 +50,10 @@ function JobSearchDetailsScreen() {
 
 
   useEffect(() => {
+    if (vacancy) {
+      dispatch(getLastVacancyRequest(vacancy.id));
+    }
+
     if (vacancy && vacancy.description) {
       setConvertedContent(vacancy.description);
     } else {
@@ -58,21 +71,45 @@ function JobSearchDetailsScreen() {
         user?.permission === UserStatus.employer
         && (<ModalEditVacancy/>)
       }
+      <ModalRespondRequest/>
+
       <div className="jobSearchDetails-wrapper">
         <div className="jobSearchDetails-item jobSearchDetails-item__card">
           <div className="cardSide-item cardSide-item__criteria">
-            <div className="name-vacancy">{vacancy?.name}</div>
+            <div className="cardSide-header">
+              <div className="name-vacancy">{vacancy?.name}</div>
+              {
+                requestDate &&
+                  <div className='cardSide-item__requestDate'>
+                    Отклик отправлен&nbsp;
+                    {(new Date(requestDate)).toLocaleDateString(undefined, {day: 'numeric', year: 'numeric', month: 'numeric'})}
+                  </div>
+              }
+            </div>
             <div className="tabsInfo">
-              <TabsSalary/>
+
               <div className="tabsItem">
                 <div className="tabs-image">
-                  <img src={experienceIcon} alt="money icon"/>
+                  <img src={clockIcon} alt="created"/>
+                </div>
+                <div className="tabs-text">
+                  {getBackTimestampRussian(vacancy?.published_at)}
+                </div>
+              </div>
+
+              <TabsSalary salary_from={vacancy?.salary_from} salary_to={vacancy?.salary_to} />
+
+              <div className="tabsItem">
+                <div className="tabs-image">
+                  <img src={experienceIcon} alt="experience"/>
                 </div>
                 <div className="tabs-text">
                   {vacancyExperience}
                 </div>
               </div>
+
             </div>
+
             <TabsRespondEditVacancy/>
           </div>
           <div className="cardSide-item cardSide-item__departmentInfo">
@@ -93,9 +130,9 @@ function JobSearchDetailsScreen() {
               </div>
             </div>
             <div className="departmentInfo-viewAllVacancies navTabs">
-              <button className="navTabs-btnItem navTabs-btnItem__department navTabs-btnItem__respond">
+              <Link to={'/'} className="navTabs-btnItem navTabs-btnItem__department navTabs-btnItem__respond">
                 Посмотреть вакансии
-              </button>
+              </Link>
             </div>
           </div>
         </div>

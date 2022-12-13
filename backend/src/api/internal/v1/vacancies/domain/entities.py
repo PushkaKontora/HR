@@ -8,7 +8,7 @@ from ninja import Schema
 from pydantic import Field, validator
 
 from api.internal.pagination import paginate_page_with_limit
-from api.models import Experience, Vacancy
+from api.models import Department, Experience, Vacancy
 
 
 class VacanciesSortBy(Enum):
@@ -49,7 +49,21 @@ class DepartmentLeaderOut(Schema):
 class VacancyDepartmentOut(Schema):
     id: int
     name: str
+    description: Optional[str]
     leader: DepartmentLeaderOut
+
+    @staticmethod
+    def from_department(department: Department) -> "VacancyDepartmentOut":
+        leader = department.leader
+
+        return VacancyDepartmentOut(
+            id=department.id,
+            name=department.name,
+            description=department.description,
+            leader=DepartmentLeaderOut(
+                id=leader.id, surname=leader.surname, name=leader.name, patronymic=leader.patronymic
+            ),
+        )
 
 
 class VacancyOut(Schema):
@@ -64,8 +78,6 @@ class VacancyOut(Schema):
 
     @staticmethod
     def from_vacancy(vacancy: Vacancy) -> "VacancyOut":
-        department = vacancy.department
-        leader = department.leader
 
         return VacancyOut(
             id=vacancy.id,
@@ -74,13 +86,7 @@ class VacancyOut(Schema):
             expected_experience=vacancy.expected_experience,
             salary_from=vacancy.salary_from,
             salary_to=vacancy.salary_to,
-            department=VacancyDepartmentOut(
-                id=department.id,
-                name=department.name,
-                leader=DepartmentLeaderOut(
-                    id=leader.id, surname=leader.surname, name=leader.name, patronymic=leader.patronymic
-                ),
-            ),
+            department=VacancyDepartmentOut.from_department(vacancy.department),
             published_at=vacancy.published_at,
         )
 

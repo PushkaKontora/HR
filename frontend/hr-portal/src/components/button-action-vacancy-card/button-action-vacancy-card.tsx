@@ -3,10 +3,14 @@ import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {Vacancy} from '../../types/vacancy';
 import {ButtonVacancyCard, TypeRequestVacancyModal} from '../../const';
 import {LikeButton} from '../../reused-components/like-button/like-button';
-import {addToVacancyWishlist, deleteFromVacancyWishlist} from '../../service/async-actions/async-actions-vacancy';
+import {
+  addToVacancyWishlist,
+  deleteFromVacancyWishlist,
+  getVacancyWishlist, VacancyWishListSortBy
+} from '../../service/async-actions/async-actions-vacancy';
 import {toast} from 'react-toastify';
 import {isFavorite} from '../../utils/favorite';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 
 type ButtonActionVacancyCardProps = {
   vacancy: Vacancy
@@ -45,7 +49,21 @@ function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
 
   const favoriteVacancies = useAppSelector((state) => state.user.favoriteVacancies);
 
+  //const [vacancyState, setVacancyState] = useState();
   const [liked, setLiked] = useState(isFavorite(vacancy, favoriteVacancies));
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (mounted) {
+      setLiked(isFavorite(vacancy, favoriteVacancies));
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [favoriteVacancies]);
+
 
   const like = () => {
     if (vacancy) {
@@ -53,6 +71,7 @@ function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
         .then(() => {
           toast.success('Вакансия добавлена в избранное');
           setLiked(true);
+          dispatch(getVacancyWishlist(VacancyWishListSortBy.added_at_desc));
         });
     }
   };
@@ -63,6 +82,7 @@ function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
         .then(() => {
           toast.error('Вакансия удалена из избранного');
           setLiked(false);
+          dispatch(getVacancyWishlist(VacancyWishListSortBy.added_at_desc));
         });
     }
   };

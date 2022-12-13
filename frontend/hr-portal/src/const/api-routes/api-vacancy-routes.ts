@@ -5,6 +5,7 @@ const VACANCY = `${PRODUCT_VERSION_FOR_ROUTES}/vacancies`;
 export const VacancyRoutes = {
   getVacancy: VACANCY,
   postVacancyRequest: `${PRODUCT_VERSION_FOR_ROUTES}/vacancy-requests`,
+  lastVacancyRequest: (vacancyId: number) => `${PRODUCT_VERSION_FOR_ROUTES}/vacancy-requests/last?vacancy_id=${vacancyId}`,
   vacancyWithID: (id: number) =>  `${VACANCY}/${id}`,
   patchStatusVacancyUnpublish: (id: number) =>  `${VACANCY}/${id}/unpublish`,
   patchStatusVacancyPublish: (id: number) =>  `${VACANCY}/${id}/publish`,
