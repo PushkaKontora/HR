@@ -18,10 +18,6 @@ function EmployerMyVacancyScreen() {
     dispatch(changeActiveTabInHeader(TabInHeader.myVacancy));
     dispatch(changeButtonVacancyCard(ButtonVacancyCard.empMyVacancy));
     dispatch(setTypeActionPagination(TypeActionPagination.VACANCY_EMPLOYER));
-
-    return () => {
-      dispatch(setTypeActionPagination(TypeActionPagination.VACANCY));
-    };
   }, []);
 
   const handlerClickCreateVacancy = (e: any) => {

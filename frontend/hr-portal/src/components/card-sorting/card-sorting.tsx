@@ -33,17 +33,6 @@ function CardSorting() {
     dispatch(getVacancies());
   }, [sortItem]);
 
-  // useEffect(() => {
-  //   const handleClickOutside = (e: any) => {
-  //     if (!refModal.current) return;
-  //     if (refModal && !refModal.current.contains(e.target)) {
-  //       setIsOpenFilterCard(false);
-  //     }
-  //   };
-  //   document.addEventListener('onmousedown', (e) => handleClickOutside(e));
-  //   return () => document.removeEventListener('onmousedown', (e) => handleClickOutside(e));
-  // }, []);
-
   const onToggleSelect = () => {
     setIsOpenFilterCard(!isOpenFilterCard);
   };

@@ -29,25 +29,7 @@ function VacancyCard(props: VacancyCardProps) {
 
   const createMarkup = (html: any) => {
     return UseEditor(html).fromHtml();
-
-    // return {
-    //   __html: DOMPurify.sanitize(html)
-    // };
   };
-
-  /*
-  const favoriteVacancies = useAppSelector((state) => state.user.favoriteVacancies);
-
-  const [liked, setLiked] = useState(isFavorite(vacancy, favoriteVacancies));
-
-  const like = () => {
-    if (vacancy) {
-      dispatch(addToVacancyWishlist(vacancy.id))
-        .then(() => {
-          toast.success('Вакансия добавлена в избранное');
-          setLiked(true);
-        });
-        */
 
   useEffect(() => {
     if (vacancy.description) {
@@ -76,7 +58,7 @@ function VacancyCard(props: VacancyCardProps) {
               {vacancyExperience}
             </div>
           </div>
-          <TabsSalary/>
+          <TabsSalary salary_to={vacancy?.salary_to} salary_from={vacancy?.salary_from}/>
         </div>
       </div>
       <div className="resumeCardItem vacancyCardItem__action">

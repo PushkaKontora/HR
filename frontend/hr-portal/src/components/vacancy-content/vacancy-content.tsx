@@ -24,7 +24,6 @@ function VacancyContent() {
 
   useEffect(() => {
     dispatch(getVacancies());
-    console.log('VacancyList');
   }, []);
 
   return (

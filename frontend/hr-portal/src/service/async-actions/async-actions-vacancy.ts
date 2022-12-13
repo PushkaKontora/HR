@@ -28,7 +28,7 @@ export const VacancyWishListSortBy = {
 };
 
 export const getVacancies = createAsyncThunk<{ items: Vacancy[], count: number }, undefined, Generics>(
-  'vacancy/getVacancy',
+  'vacancy/getVacancies',
   async (arg, {extra: api}) => {
 
     const paramsURL = getParamsRequestVacancy();
@@ -42,7 +42,6 @@ export const getVacancies = createAsyncThunk<{ items: Vacancy[], count: number }
     });
 
     const lineUrl = `${VacancyRoutes.getVacancy}?sort_by=${paramsURL['?sort_by=']}&published=true&limit=${LIMIT_ELEMENTS_ON_PAGE}&offset=${paramsURL['&offset=']}${lineWithNewParameters}`;
-    console.log(lineUrl);
     const {data} = await api.get<{ items: Vacancy[], count: number }>(lineUrl);
     return data;
   },

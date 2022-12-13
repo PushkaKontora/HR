@@ -39,9 +39,11 @@
         &__description {
           font-weight: 400;
           letter-spacing: 0.05em;
+          font-size: 16px;
+          line-height: 22px;
 
           margin: 0; /* Убираем внешний отступ */
-          -webkit-line-clamp: 2; /* Число отображаемых строк */
+          -webkit-line-clamp: 3; /* Число отображаемых строк */
           display: -webkit-box; /* Включаем флексбоксы */
           -webkit-box-orient: vertical; /* Вертикальная ориентация */
           overflow: hidden; /* Обрезаем всё за пределами блока */

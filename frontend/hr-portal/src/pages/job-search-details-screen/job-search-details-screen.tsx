@@ -36,13 +36,11 @@ function JobSearchDetailsScreen() {
     if (prodId && vacancy === null) {
       dispatch(getVacancyByID(Number(prodId)));
       dispatch(getVacancyWishlist(VacancyWishListSortBy.added_at_desc));
-      console.log('refreshed');
     }
   }, []);
 
   useEffect(() => {
     if (prodId && refreshPage) {
-      console.log('refresh');
       dispatch(getVacancyByID(Number(prodId)));
       dispatch(refreshPageDetailsScreen(false));
     }
