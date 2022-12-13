@@ -33,17 +33,25 @@
           font-weight: 600;
           font-size: 24px;
           line-height: 26px;
+          margin-bottom: 16px;
         }
 
         &__description {
           font-weight: 400;
           letter-spacing: 0.05em;
-          padding: 16px 0;
+
+          margin: 0; /* Убираем внешний отступ */
+          -webkit-line-clamp: 2; /* Число отображаемых строк */
+          display: -webkit-box; /* Включаем флексбоксы */
+          -webkit-box-orient: vertical; /* Вертикальная ориентация */
+          overflow: hidden; /* Обрезаем всё за пределами блока */
+
         }
 
         &__tabs {
           display: flex;
           gap: 8px;
+          margin-top: 16px;
         }
       }
     }

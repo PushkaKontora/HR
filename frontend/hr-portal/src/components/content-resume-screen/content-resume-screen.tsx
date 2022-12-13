@@ -1,4 +1,3 @@
-import React, {useEffect} from 'react';
 import VacancyFilterOnExperience from '../vacancy-filter-on-experience/vacancy-filter-on-experience';
 import FilterOnSalary from '../filter-on-salary/filter-on-salary';
 
@@ -24,7 +23,6 @@ function ContentResumeScreen() {
   return (
     <div className="jobSearchScreen-item content-filters-field-wrapper">
       <div className="contentItem contentItem__filters">
-        {/*<VacancyFilterOnDepartment/>*/}
         <VacancyFilterOnExperience/>
         <FilterOnSalary callAction={getResumeList()}/>
         <CompetenciesField/>

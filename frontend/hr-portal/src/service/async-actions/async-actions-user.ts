@@ -13,8 +13,6 @@ import {ResumeRoutes} from '../../const/api-routes/api-resume-routes';
 import {setResumeUser} from '../../features/user/user-slice';
 import browserHistory from '../browser-history';
 import {UserStatus} from '../../types/user-status';
-import {TabInHeader} from '../../const';
-import {changeActiveTabInHeader} from '../../features/page/page-slice';
 
 export const getAuthUser = createAsyncThunk<void, number, Generics>(
   'users/getUser',
@@ -25,9 +23,6 @@ export const getAuthUser = createAsyncThunk<void, number, Generics>(
         if (u.data.permission === UserStatus.user ||
           u.data.permission === UserStatus.employer) {
           dispatch(getResumeUser(u.data));
-        }
-        if (u.data.permission === UserStatus.employer) {
-          dispatch(changeActiveTabInHeader(TabInHeader.myVacancy));
         }
         return u;
       });

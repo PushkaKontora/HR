@@ -95,9 +95,7 @@ export const getResumeList = createAsyncThunk<ResumeList, undefined, Generics>(
     });
 
     const lineUrl = `${ResumeRoutes.resume}?published=true&limit=${LIMIT_ELEMENTS_ON_PAGE}&offset=${paramsURL['&offset=']}${lineWithNewParameters}`;
-    console.log(lineUrl);
     const {data} = await api.get<ResumeList>(lineUrl);
-    console.log(data, 'data');
     return data;
   }
 );
