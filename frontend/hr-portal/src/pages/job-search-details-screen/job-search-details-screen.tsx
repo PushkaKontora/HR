@@ -20,6 +20,7 @@ import {refreshPageDetailsScreen} from '../../features/page/page-slice';
 import clockIcon from '../../assets/img/vacancy-card/clock.svg';
 import {getBackTimestampRussian} from '../../utils/times';
 import ModalRespondRequest from '../../components/modal-respond-request/modal-respond-request';
+import {setRequestDate} from '../../features/vacancy/vacancy-slice';
 
 function JobSearchDetailsScreen() {
   const params = useParams();

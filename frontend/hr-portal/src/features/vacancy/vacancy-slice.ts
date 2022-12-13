@@ -218,6 +218,9 @@ const vacancySlice = createSlice({
       state.departments = action.payload;
       const shortVersions = createDepartmentShortVision(action.payload);
       state.departmentsShortVersions = [DEFAULT_ELEMENT_DEPARTMENT, ...shortVersions];
+    },
+    setRequestDate(state, action) {
+      state.requestDate = action.payload;
     }
   },
   extraReducers(builder) {
@@ -244,6 +247,9 @@ const vacancySlice = createSlice({
       })
       .addCase(postVacancyRequests.fulfilled, (state) => {
         toast.dark('Вы откликнулись на вакансию');
+      })
+      .addCase(getLastVacancyRequest.rejected, (state) => {
+        state.requestDate = null;
       });
   }
 });
@@ -270,7 +276,8 @@ export const {
   setTypeActionPagination,
   setIsPublishedVacancy,
   setTypeRequestModalVacancy,
-  setCompetencies
+  setCompetencies,
+  setRequestDate
 } = vacancySlice.actions;
 
 export default vacancySlice.reducer;
