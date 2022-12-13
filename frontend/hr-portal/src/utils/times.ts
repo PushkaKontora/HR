@@ -1,4 +1,5 @@
 import {TIMES_RU} from '../const/time-names';
+import {NAMES_FOUND_ENDINGS, NAMES_VACANCIES_ENDINGS} from '../const';
 
 function getAppropriateTimeName(names: string[], time: number) {
   const lastTwo = time % 100;
@@ -59,4 +60,9 @@ export function getBackTimestampRussian(date: Date | null | undefined) {
   }
 
   return `${num} ${timeName} ${TIMES_RU.back}`;
+}
+
+export function getCorrectEndingsInVacancies(countVacancies: number): string {
+  const lineResult = [getAppropriateTimeName(NAMES_FOUND_ENDINGS, countVacancies), countVacancies, getAppropriateTimeName(NAMES_VACANCIES_ENDINGS, countVacancies)].join(' ');
+  return lineResult;
 }

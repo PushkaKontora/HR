@@ -13,19 +13,18 @@ function TabStateMyVacancy() {
       {stateMyVacancyPublish
         ? (
           <>
-            <BlueButton as="button" width="293px" padding="24px 40px">Активные вакансии</BlueButton>
+            <BlueButton as="button" padding="24px 40px">Опубликованные вакансии</BlueButton>
             <GrayButton
               as="button"
-              width="293px"
               padding="24px 40px"
               onClick={() => dispatch(setIsPublishedVacancy(false))}
-            >Нективные вакансии
+            >Неопубликованные вакансии
             </GrayButton>
           </>
         ) : (
           <>
-            <GrayButton as="button" width="293px" padding="24px 40px" onClick={() => dispatch(setIsPublishedVacancy(true))}>Активные вакансии</GrayButton>
-            <BlueButton as="button" width="293px" padding="24px 40px">Нективные вакансии</BlueButton>
+            <GrayButton as="button" padding="24px 40px" onClick={() => dispatch(setIsPublishedVacancy(true))}>Опубликованные вакансии</GrayButton>
+            <BlueButton as="button" padding="24px 40px">Неопубликованные вакансии</BlueButton>
           </>
         )
       }

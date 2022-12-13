@@ -84,3 +84,6 @@ export enum TypeActionPagination {
   VACANCY_EMPLOYER = 'vacancyEmployer',
   RESUME_EMPLOYER = 'resumeEmployer'
 }
+
+export const NAMES_VACANCIES_ENDINGS = ['вакансия', 'вакансии', 'вакансий'];
+export const NAMES_FOUND_ENDINGS = ['Найдена', 'Найдено', 'Найдено'];

@@ -10,6 +10,7 @@ import '../../styles/custom-select.scss';
 
 import {useEffect} from 'react';
 import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
+import {getCorrectEndingsInVacancies} from '../../utils/times';
 
 function VacancyContent() {
   const vacancies = useAppSelector((state) => state.vacancy.vacancies);
@@ -42,7 +43,7 @@ function VacancyContent() {
         </div>
         <div className="contentItem contentItem__vacancies">
           <div className="cardVacancy-title">
-            <div className="title">Найдена {vacancies.count} вакансия</div>
+            <div className="title">{getCorrectEndingsInVacancies(vacancies.count)}</div>
             <CardSorting/>
           </div>
           <VacancyListVacanciesPage/>

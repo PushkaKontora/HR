@@ -5,6 +5,7 @@ import {useEffect, useRef, useState} from 'react';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import {postVacancyRequests} from '../../service/async-actions/async-actions-vacancy';
 import {setStateRespondModal} from '../../features/vacancy/vacancy-slice';
+import {extractFileNameFromYandex} from '../../utils/resume';
 
 function ModalRespondRequest() {
   const isOpenRespondModalState = useAppSelector((state) => state.vacancy.isOpenRespondModal);
@@ -20,7 +21,7 @@ function ModalRespondRequest() {
 
   useEffect(() => {
     if (resumeUser) {
-      const resumeName = resumeUser?.document.split('?')[0].split('/').reverse()[0];
+      const resumeName = extractFileNameFromYandex(resumeUser?.document);
       if (resumeName) {
         setSelectedFileName(resumeName);
       }

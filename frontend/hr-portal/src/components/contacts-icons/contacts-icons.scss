@@ -1,0 +1,7 @@
+.contact {
+  display: flex;
+
+  .footer-nav:not(:last-child) {
+    padding-right: 1rem;
+  }
+}
