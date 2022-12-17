@@ -9,7 +9,7 @@ import {Icon, UserIcon, ResumeField, Contacts, CompetencyItem} from './styled';
 import {ResumeTitle} from '../styled/resume/resume-title';
 import {LoadButton} from '../../reused-components/load-button/load-button';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {isFavorite} from '../../utils/favorite';
 import {addToVacancyWishlist, deleteFromVacancyWishlist} from '../../service/async-actions/async-actions-vacancy';
 import {toast} from 'react-toastify';
@@ -19,6 +19,7 @@ import {
   getResumeWishlist, ResumeWishListSortBy
 } from '../../service/async-actions/async-actions-resume';
 import {LikeButton} from '../../reused-components/like-button/like-button';
+import copyIcon from '../../assets/icons/copy.svg';
 
 type VacancyCard = {
   resume: ResumeUser
@@ -35,6 +36,18 @@ function ResumeCard({resume}: VacancyCard) {
 
   const [liked, setLiked] = useState(isFavorite(resume, favoriteResumes));
   const [showContacts, setShowContacts] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (mounted) {
+      setLiked(isFavorite(resume, favoriteResumes));
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [favoriteResumes]);
 
   const like = () => {
     if (resume) {
@@ -58,6 +71,11 @@ function ResumeCard({resume}: VacancyCard) {
     }
   };
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Скопировано');
+  };
+
   return (
     <div className="resumeCardWrapper" onClick={handleClickVacancyCard}>
       <div className='resumeCardBg'>
@@ -66,12 +84,15 @@ function ResumeCard({resume}: VacancyCard) {
             {resume.desired_job}
           </div>
           <div className="resumeCardInfo resumeCardInfo__description">
-            <ResumeField>
-              <Icon src={experienceIcon}/>
-              {getExperienceOptionByKey(resume.experience)}
-            </ResumeField>
             {
-              resume.desired_salary &&
+              resume.experience &&
+                <ResumeField>
+                  <Icon src={experienceIcon}/>
+                  {getExperienceOptionByKey(resume.experience)}
+                </ResumeField>
+            }
+            {
+              resume.desired_salary !== 0 &&
                 <ResumeField>
                   <Icon src={moneyIcon}/>
                   {resume.desired_salary} ₽
@@ -112,8 +133,9 @@ function ResumeCard({resume}: VacancyCard) {
           </button>
           {
             showContacts &&
-              <Contacts>
+              <Contacts onClick={() => copyToClipboard(resume?.owner.email)}>
                 {resume?.owner.email}
+                <img style={{marginLeft: '10px'}} src={copyIcon} alt={'копир.'}/>
               </Contacts>
           }
         </div>

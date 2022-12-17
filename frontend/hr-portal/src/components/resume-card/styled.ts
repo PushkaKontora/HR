@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import {XLargeRegular} from '../styled/fonts/x-large';
 import {MediumRegular} from '../styled/fonts/medium';
+import React from 'react';
 
 export const Icon = styled.img`
   width: 22px;
@@ -23,6 +24,9 @@ export const ResumeField = styled.div`
 `;
 
 export const Contacts = styled(XLargeRegular)`
+  display: flex;
+  align-items: center;
+  
   background-color: white;
   border-radius: 27px;
   padding: 18px 24px;

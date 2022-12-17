@@ -5,8 +5,8 @@ import './job-search-screen.scss';
 import {useAppDispatch} from '../../app/hooks';
 import {getDepartment} from '../../service/async-actions/async-actions-vacancy';
 import VacancyContent from '../../components/vacancy-content/vacancy-content';
-import {changeButtonVacancyCard} from '../../features/page/page-slice';
-import {ButtonVacancyCard} from '../../const';
+import {changeActiveTabInHeader, changeButtonVacancyCard} from '../../features/page/page-slice';
+import {ButtonVacancyCard, TabInHeader} from '../../const';
 
 
 function JobSearchScreen() {
@@ -15,6 +15,7 @@ function JobSearchScreen() {
   useEffect(() => {
     dispatch(getDepartment());
     dispatch(changeButtonVacancyCard(ButtonVacancyCard.vacancies));
+    dispatch(changeActiveTabInHeader(TabInHeader.vacancies));
   }, []);
 
   return (

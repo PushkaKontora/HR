@@ -3,7 +3,7 @@ import {Content} from '../../components/styled/markup/content';
 import {ProfileBlock, ProfileBlockProps} from '../../components/profile/profile-block/profile-block';
 import {ResumeTitle} from '../../components/styled/resume/resume-title';
 import {BlueButton} from '../../components/styled/buttons/blue-button';
-import {createRef, Fragment, ReactNode, useRef, useState} from 'react';
+import {createRef, Fragment, ReactNode, useEffect, useRef, useState} from 'react';
 import Modal from '../../reused-components/modal/modal';
 import {LargeRegular} from '../../components/styled/fonts/large';
 import {GrayButton} from '../../components/styled/buttons/gray-button';
@@ -20,6 +20,7 @@ import {ProfilePhoto} from '../../components/profile/profile-block/blocks/profil
 import {ProfileResume} from '../../components/profile/profile-block/blocks/profile-resume/profile-resume';
 import {deleteUser} from '../../service/async-actions/async-actions-delete-user';
 import {dropToken} from '../../service/token-manager';
+import {changeActiveTabInHeader} from '../../features/page/page-slice';
 
 function ProfilePage() {
   const [showingModal, setShowingModal] = useState(false);
@@ -33,6 +34,10 @@ function ProfilePage() {
       toScrollRef.current.scrollIntoView({behavior: 'smooth'});
     }
   };
+
+  useEffect(() => {
+    dispatch(changeActiveTabInHeader(null));
+  }, []);
 
   return (
     <>

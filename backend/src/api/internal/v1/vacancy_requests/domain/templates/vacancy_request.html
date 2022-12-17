@@ -6,6 +6,11 @@
     <title></title>
     <meta charset="utf-8"/>
     <base href="http://127.0.0.1:5173/"/> <!-- Поменять на URL сервера, когда он будет -->
+    <script type="text/javascript">
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+        }
+    </script>
 </head>
 
 <body style="font-family: Verdana, Geneva, sans-serif; background-color: #F5F5F5; padding-top: 40px; -webkit-text-size-adjust: none;">
@@ -45,6 +50,15 @@
                     <td style="display: inline-block; border-radius: 30px; background-color: #F6F5F3; padding: 12px 24px; margin-bottom: 25px">
                         {{sender.email}}
                     </td>
+                    <!--
+                    <td style="display: inline-block">
+                        <a onclick="copyToClipboard('{{sender.email}}')"
+                           style="display: inline-block; border-radius: 30px; background-color: #F6F5F3; padding: 10px; margin-bottom: 25px; margin-left: 8px; cursor: pointer">
+                            <img src="https://storage.yandexcloud.net/pushka.hr-portal/static/icon.png" alt="Копировать"
+                                 title="Копировать" width='20px' height='20px' border="0" style="display: block"/>
+                        </a>
+                    </td>
+                    -->
                 </tr>
                 <tr>
                     <td colspan=2>
@@ -60,7 +74,7 @@
                         </a>
                         <a target="_blank"
                            style="display: inline-block; background-color: #F6F5F3; text-decoration: none; color: black; padding: 16px 24px; border-radius: 30px;"
-                           href={{vacancy.id}}>
+                           href='/vacancies'>
                             Другие вакансии
                         </a>
                     </td>

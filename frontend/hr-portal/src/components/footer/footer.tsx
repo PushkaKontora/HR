@@ -2,14 +2,15 @@ import footerLogo from '../../assets/img/footer/logo-footer.svg';
 
 import './footer.scss';
 import ContactsIcons from '../contacts-icons/contacts-icons';
+import {Link} from 'react-router-dom';
 
 function Footer() {
   return (
     <div className="footer-wrapper">
       <div className="footer-content">
-        <div className="footer-side">
+        <Link to={'/'} className="footer-side">
           <img src={footerLogo} alt="logo-footer"/>
-        </div>
+        </Link>
         <ContactsIcons/>
       </div>
     </div>

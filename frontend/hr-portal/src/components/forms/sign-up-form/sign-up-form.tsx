@@ -10,6 +10,7 @@ import {SignInData} from '../../../types/sign-in-data';
 import {EMAIL_OPTIONS, PASSWORD_OPTIONS} from '../../../const/forms/input-options';
 import {UserStatus} from '../../../types/user-status';
 import {redirect, useLocation, useNavigate} from 'react-router-dom';
+import {AuthRoutes} from '../../../const/app-routes';
 
 function SignUpForm() {
   const {
@@ -82,12 +83,13 @@ function SignUpForm() {
 
     if (mounted) {
       if (userStatus !== UserStatus.noAuth) {
-        navigate('/');
+        if (userStatus === UserStatus.user) {
+          navigate(AuthRoutes.Vacancies);
+        }
+        else if (userStatus === UserStatus.employer) {
+          navigate('/');
+        }
       }
-      /*
-      if (userStatus !== UserStatus.noAuth) {
-        navigate(-1);
-      }*/
     }
 
     return () => {

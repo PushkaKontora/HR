@@ -1,5 +1,5 @@
 import {Vacancy} from '../../types/vacancy';
-import {ExpectedExperience} from '../../const';
+import {ExpectedExperience, TabInHeader} from '../../const';
 import VacancyCard from '../../components/vacancy-card/vacancy-card';
 import {Content} from '../../components/styled/markup/content';
 import {ResumeUser} from '../../types/resume';
@@ -16,6 +16,7 @@ import {getResumeWishlist, ResumeWishListSortBy} from '../../service/async-actio
 import VacancyList from '../../components/vacancy-list/vacancy-list';
 import banner from '../../assets/img/favorites/banner.svg';
 import ModalRespondRequest from '../../components/modal-respond-request/modal-respond-request';
+import {changeActiveTabInHeader} from '../../features/page/page-slice';
 
 export function FavoritePage() {
   const dispatch = useAppDispatch();
@@ -26,6 +27,10 @@ export function FavoritePage() {
   const [vacancyLength, setVacancyLength] = useState(favoriteVacancies.length);
   const [resumeLength, setResumeLength] = useState(favoriteResume.length);
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
+
+  useEffect(() => {
+    dispatch(changeActiveTabInHeader(null));
+  }, []);
 
   useEffect(() => {
     let mounted = true;

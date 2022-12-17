@@ -3,7 +3,7 @@ import EmailPlaneIcon from '../../assets/img/vacancy-card/image_email.png';
 import DownLoadIcon from '../../assets/img/job-seach/download.svg';
 import {useEffect, useRef, useState} from 'react';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
-import {postVacancyRequests} from '../../service/async-actions/async-actions-vacancy';
+import {getLastVacancyRequest, postVacancyRequests} from '../../service/async-actions/async-actions-vacancy';
 import {setStateRespondModal} from '../../features/vacancy/vacancy-slice';
 import {extractFileNameFromYandex} from '../../utils/resume';
 
@@ -58,11 +58,13 @@ function ModalRespondRequest() {
         const resumeFile = new FormData();
         resumeFile.append('vacancy_id', vacancyForRespond.id.toString());
         resumeFile.append('resume', selectedFile);
-        dispatch(postVacancyRequests(resumeFile));
+        dispatch(postVacancyRequests(resumeFile))
+          .then(() => dispatch(getLastVacancyRequest(vacancyForRespond.id)));
       } else {
         const resumeFile = new FormData();
         resumeFile.append('vacancy_id', vacancyForRespond.id.toString());
-        dispatch(postVacancyRequests(resumeFile));
+        dispatch(postVacancyRequests(resumeFile))
+          .then(() => dispatch(getLastVacancyRequest(vacancyForRespond.id)));
       }
       setRadioChecked(false);
       setIsOpenRespondModal(false);

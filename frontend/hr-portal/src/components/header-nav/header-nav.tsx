@@ -21,9 +21,9 @@ function HeaderNav() {
           }
           {statusUser === (UserStatus.employer || UserStatus.admin) && (
             <>
-              <div className={cl('header-navItem', {'header-navItem__active': activeTab === TabInHeader.vacancies})}>
+              <Link to={AuthRoutes.Vacancies} className={cl('header-navItem', {'header-navItem__active': activeTab === TabInHeader.vacancies})}>
                 Вакансии
-              </div>
+              </Link>
               <Link to={AuthRoutes.Resume} className={cl('header-navItem', {'header-navItem__active': activeTab === TabInHeader.resume})}>
                 Резюме
               </Link>

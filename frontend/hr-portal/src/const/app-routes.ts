@@ -9,6 +9,7 @@ enum AuthRoutes {
   Profile = '/profile',
   Favorite = '/favorites',
   Resume = '/resume',
+  Vacancies = '/vacancies'
 }
 
 export {NoAuthRoutes, AuthRoutes};

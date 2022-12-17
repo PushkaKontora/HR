@@ -12,6 +12,7 @@ import {Navigate, redirect, useLocation, useNavigate} from 'react-router-dom';
 import {decodeToken} from '../../../service/token-manager';
 import {EMAIL_OPTIONS} from '../../../const/forms/input-options';
 import browserHistory from '../../../service/browser-history';
+import {AuthRoutes} from '../../../const/app-routes';
 
 type LoginFormData = {
   email: string
@@ -39,10 +40,20 @@ function LoginForm() {
 
     if (mounted) {
       if (userStatus !== UserStatus.noAuth) {
-        if (location.state) {
-          navigate(location.state.prevLocation);
-        } else {
-          navigate('/');
+        if (userStatus === UserStatus.user) {
+          if (location.state
+            && location.state.prevLocation !== '/') {
+            navigate(location.state.prevLocation);
+          } else {
+            navigate(AuthRoutes.Vacancies);
+          }
+        }
+        else if (userStatus === UserStatus.employer) {
+          if (location.state) {
+            navigate(location.state.prevLocation);
+          } else {
+            navigate('/');
+          }
         }
       }
       /*

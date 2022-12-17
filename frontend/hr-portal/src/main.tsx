@@ -6,6 +6,7 @@ import {Provider} from 'react-redux';
 import {store} from './app/store';
 import HistoryRouter from './components/history-router/history-router';
 import browserHistory from './service/browser-history';
+import {ToastWrapper} from './components/toast-wrapper/toast-wrapper';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

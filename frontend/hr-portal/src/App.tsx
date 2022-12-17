@@ -1,7 +1,7 @@
 import './App.css';
 import '../src/init';
 import {useAppDispatch, useAppSelector} from './app/hooks';
-import {Route, Routes} from 'react-router-dom';
+import {Navigate, Route, Routes} from 'react-router-dom';
 import DefaultLayout from './components/layouts/default-layout/default-layout';
 
 import {NoAuthRoutes, AuthRoutes} from './const/app-routes';
@@ -18,6 +18,7 @@ import {ToastWrapper} from './components/toast-wrapper/toast-wrapper';
 import {FavoritePage} from './pages/favorite-page/favorite-page';
 import EmployerMyVacancyScreen from './pages/employer-my-vacancy-screen/employer-my-vacancy-screen';
 import EmployerResumeScreen from './pages/employer-resume-screen/employer-resume-screen';
+import {toast} from 'react-toastify';
 
 function App() {
   const status = useAppSelector((state) => state.general.statusUser);
@@ -40,13 +41,19 @@ function App() {
       <Routes>
         <Route path={'/'} element={<DefaultLayout/>}>
           <Route index element={
-            status === UserStatus.user
-              ? <PrivateRoute requiredUserStatus={UserStatus.user}>
-                <JobSearchScreen/>
-              </PrivateRoute>
-              : <PrivateRoute requiredUserStatus={UserStatus.employer}>
-                <EmployerMyVacancyScreen/>
-              </PrivateRoute>
+            <PrivateRoute requiredUserStatus={UserStatus.employer}>
+              <EmployerMyVacancyScreen/>
+            </PrivateRoute>
+          }/>
+          <Route index element={
+            <PrivateRoute requiredUserStatus={UserStatus.user}>
+              <Navigate to={AuthRoutes.Vacancies}/>
+            </PrivateRoute>
+          }/>
+          <Route path={AuthRoutes.Vacancies} element={
+            <PrivateRoute requiredUserStatus={'anyLoggedIn'}>
+              <JobSearchScreen/>
+            </PrivateRoute>
           }/>
           <Route path={':id'} element={
             <PrivateRoute requiredUserStatus={'anyLoggedIn'}>

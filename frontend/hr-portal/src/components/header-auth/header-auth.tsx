@@ -12,6 +12,8 @@ import browserHistory from '../../service/browser-history';
 import {indicateStatus, setUser} from '../../features/general/general-slice';
 import {UserStatus} from '../../types/user-status';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import {Link} from 'react-router-dom';
+import {AuthRoutes} from '../../const/app-routes';
 
 function HeaderAuth() {
   const isLoading = useAppSelector((state) => state.general.loading);
@@ -29,14 +31,14 @@ function HeaderAuth() {
   return (
     <div className="header-content">
       <div className="side-header side-header__leftSide">
-        <div className="logo-header-wrapper">
+        <Link to={'/'} className="logo-header-wrapper">
           <img src={logoHeader} alt="logo"/>
-        </div>
+        </Link>
         <HeaderNav/>
       </div>
       <div className="side-header">
-        <div className="header-nav-personal"><LikeIcon className="likes-icon"/></div>
-        <div className="header-nav-personal"><PersonalIcon className="personal-icon"/></div>
+        <Link to={AuthRoutes.Favorite} className="header-nav-personal"><LikeIcon className="likes-icon"/></Link>
+        <Link to={AuthRoutes.Profile} className="header-nav-personal"><PersonalIcon className="personal-icon"/></Link>
         <div
           className="header-nav-personal header-nav-personal__exit"
           onClick={handlerClickLogout}
