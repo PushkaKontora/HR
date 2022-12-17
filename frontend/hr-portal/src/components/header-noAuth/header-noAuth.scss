@@ -5,4 +5,70 @@
   justify-content: space-between;
   align-items: center;
   padding: 2.9rem 0;
+
+  .contact {
+    .logoVK,
+    .logoCompany {
+      transition: 0.5s;
+
+      path {
+        fill: #FFFFFF;
+        stroke: #FFFFFF;
+
+        &:first-child {
+          stroke: #FFFFFF;
+          box-shadow: none;
+          fill: #000000;
+        }
+      }
+
+      &:hover {
+        transition: 0.5s;
+
+        path {
+          &:first-child {
+            fill: #242424;
+          }
+        }
+      }
+
+      &:active {
+        transition: 0.5s;
+
+        path {
+          &:first-child {
+            fill: #242424;
+
+            box-shadow: inset 0px 6px 4px rgba(0, 0, 0, 0.25);
+          }
+        }
+      }
+    }
+
+    .logoLinkin {
+      transition: 0.5s;
+
+      circle {
+        stroke: #FFFFFF;
+        box-shadow: none;
+        fill: #000000;
+
+        &:hover {
+          transition: 0.5s;
+          fill: #242424;
+        }
+
+        &:active {
+          transition: 0.5s;
+          fill: #242424;
+          box-shadow: inset 0px 6px 4px rgba(0, 0, 0, 0.25);
+        }
+      }
+
+      path {
+        fill: #FFFFFF;
+        stroke: #FFFFFF;
+      }
+    }
+  }
 }
