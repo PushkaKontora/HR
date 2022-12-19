@@ -11,6 +11,8 @@ import {
 import ModalRespondRequest from '../modal-respond-request/modal-respond-request';
 import {Vacancy} from '../../types/vacancy';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
+import {TypeActionPagination} from '../../const';
+import {getResumeList} from '../../service/async-actions/async-actions-resume';
 
 type VacancyListProps = {
   vacancies: Vacancy[],
@@ -20,6 +22,7 @@ type VacancyListProps = {
 function VacancyList(props: VacancyListProps) {
   const firstUpdate = useRef(true);
   const vacancies = useAppSelector((state) => state.vacancy.vacancies);
+  const typeActionPagination = useAppSelector((state) => state.vacancy.typeActionPagination);
   const dispatch = useAppDispatch();
 
   useLayoutEffect(() => {
@@ -32,7 +35,7 @@ function VacancyList(props: VacancyListProps) {
   useEffect(() => {
     let mounted = true;
 
-    if (mounted) {
+    if (mounted && typeActionPagination === TypeActionPagination.RESUME_EMPLOYER) {
       dispatch(getVacancyWishlist(VacancyWishListSortBy.added_at_desc));
     }
 

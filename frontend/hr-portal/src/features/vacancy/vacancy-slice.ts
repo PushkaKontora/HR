@@ -4,7 +4,7 @@ import {Vacancy} from '../../types/vacancy';
 import {Department} from '../../types/department';
 import {createDepartmentShortVision, getMaxPagesForPagination, makeViewDataExperience, setCompetenciesForResume, setNewParamDepartment, setNewParamExperience, setNewParamOffset, setNewParamSalaryMax, setNewParamSalaryMin, setNewParamSearchLine, setNewParamSortBy} from './vacancy.actions';
 import {DEFAULT_ELEMENT_DEPARTMENT, SortingVacancyTypes, TypeActionPagination, TypeRequestVacancyModal} from '../../const';
-import {getVacancies, getVacanciesForEmployer, getVacancyByID, patchStatusVacancyUnpublish, postVacancyRequests} from '../../service/async-actions/async-actions-vacancy';
+import {addToVacancyWishlist, createVacancy, deleteFromVacancyWishlist, getVacancies, getVacanciesForEmployer, getVacancyByID, patchStatusVacancyUnpublish, postVacancyRequests, putVacancyChanges} from '../../service/async-actions/async-actions-vacancy';
 import {
   getLastVacancyRequest,
 } from '../../service/async-actions/async-actions-vacancy';
@@ -136,6 +136,9 @@ const vacancySlice = createSlice({
     },
     setTypeActionPagination(state, action) {
       state.typeActionPagination = action.payload;
+      state.paramsForGetVacancies.offset = 0;
+      state.currentPage = 1;
+      setNewParamOffset(0);
     },
     setVacancyByID(state, action) {
       state.vacancyByID = action.payload;
@@ -247,6 +250,18 @@ const vacancySlice = createSlice({
       })
       .addCase(postVacancyRequests.fulfilled, (state) => {
         toast.dark('Вы откликнулись на вакансию');
+      })
+      .addCase(addToVacancyWishlist.fulfilled, (state) => {
+        toast.dark('Вакансия добавлена в избранное');
+      })
+      .addCase(deleteFromVacancyWishlist.fulfilled, (state) => {
+        toast.dark('Вакансия удалена из избранного');
+      })
+      .addCase(createVacancy.fulfilled, (state) => {
+        toast.dark('Вы создали новую вакансию');
+      })
+      .addCase(putVacancyChanges.fulfilled, (state) => {
+        toast.dark('Вакансия отредактирована');
       })
       .addCase(getLastVacancyRequest.rejected, (state) => {
         state.requestDate = null;

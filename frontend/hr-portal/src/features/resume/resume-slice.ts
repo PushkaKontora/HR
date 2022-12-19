@@ -39,7 +39,6 @@ const resumeSlice = createSlice({
       })
       .addCase(getResumeList.fulfilled, (state, action) => {
         state.resumeList = action.payload;
-        console.log(action.payload, 'action.payload');
       });
   }
 });

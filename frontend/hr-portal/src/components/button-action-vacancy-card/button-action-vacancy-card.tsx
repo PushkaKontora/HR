@@ -19,6 +19,7 @@ type ButtonActionVacancyCardProps = {
 function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
   const {vacancy} = props;
   const buttonView = useAppSelector((state) => state.page.buttonVacancyCard);
+  const user = useAppSelector((state) => state.general.user);
   const isPublishedVacancy = useAppSelector((state) => state.vacancy.isPublishedVacancy);
   const dispatch = useAppDispatch();
 
@@ -53,6 +54,7 @@ function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
   const [liked, setLiked] = useState(isFavorite(vacancy, favoriteVacancies));
 
   useEffect(() => {
+    console.log(user, vacancy);
     let mounted = true;
 
     if (mounted) {
@@ -89,7 +91,7 @@ function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
 
   return (
     <>
-      {buttonView === ButtonVacancyCard.vacancies
+      {buttonView === ButtonVacancyCard.vacancies && user?.department.id !== vacancy.department.id
       && (<>
         <LikeButton
           onLike={like}
@@ -104,7 +106,7 @@ function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
         </button>
       </>)
       }
-      {buttonView === ButtonVacancyCard.empMyVacancy
+      {buttonView === ButtonVacancyCard.empMyVacancy || user?.department.id === vacancy.department.id
       && (<>
         {isPublishedVacancy
           ? (
