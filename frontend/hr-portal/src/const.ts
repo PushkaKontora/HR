@@ -53,6 +53,7 @@ export enum TabInHeader {
 export enum ButtonVacancyCard {
   vacancies = 'vacancies',
   empMyVacancy = 'empMyVacancy',
+  favorite = 'favorite'
 }
 
 export const expectedExperienceShortVersion = [

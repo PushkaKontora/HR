@@ -1,9 +1,5 @@
-import {Vacancy} from '../../types/vacancy';
-import {ExpectedExperience, TabInHeader} from '../../const';
-import VacancyCard from '../../components/vacancy-card/vacancy-card';
 import {Content} from '../../components/styled/markup/content';
-import {ResumeUser} from '../../types/resume';
-import {ExperienceOptions} from '../../types/experience-options';
+
 import ResumeCard from '../../components/resume-card/resume-card';
 import {FavoriteTabManager} from '../../components/favorite-tab-manager/favorite-tab-manager';
 import {useEffect, useState} from 'react';
@@ -16,7 +12,8 @@ import {getResumeWishlist, ResumeWishListSortBy} from '../../service/async-actio
 import VacancyList from '../../components/vacancy-list/vacancy-list';
 import banner from '../../assets/img/favorites/banner.svg';
 import ModalRespondRequest from '../../components/modal-respond-request/modal-respond-request';
-import {changeActiveTabInHeader} from '../../features/page/page-slice';
+import {changeActiveTabInHeader, changeButtonVacancyCard} from '../../features/page/page-slice';
+import {ButtonVacancyCard} from '../../const';
 
 export function FavoritePage() {
   const dispatch = useAppDispatch();
@@ -30,6 +27,7 @@ export function FavoritePage() {
 
   useEffect(() => {
     dispatch(changeActiveTabInHeader(null));
+    dispatch(changeButtonVacancyCard(ButtonVacancyCard.favorite));
   }, []);
 
   useEffect(() => {
@@ -87,10 +85,10 @@ export function FavoritePage() {
           </h3>
         </SubHeader>
         {
-          currentTabIndex == 0 && 
-            <section style={{marginBottom: '128px'}}>
+          currentTabIndex == 0 &&
+          <section style={{marginBottom: '128px'}}>
               <VacancyList vacancies={favoriteVacancies} showPagination={false}/>
-            </section>
+          </section>
         }
         {
           currentTabIndex == 1 &&

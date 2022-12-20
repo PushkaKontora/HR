@@ -248,15 +248,6 @@ const vacancySlice = createSlice({
       .addCase(getLastVacancyRequest.fulfilled, (state, action) => {
         state.requestDate = action.payload;
       })
-      .addCase(postVacancyRequests.fulfilled, (state) => {
-        toast.dark('Вы откликнулись на вакансию');
-      })
-      .addCase(addToVacancyWishlist.fulfilled, (state) => {
-        toast.dark('Вакансия добавлена в избранное');
-      })
-      .addCase(deleteFromVacancyWishlist.fulfilled, (state) => {
-        toast.dark('Вакансия удалена из избранного');
-      })
       .addCase(createVacancy.fulfilled, (state) => {
         toast.dark('Вы создали новую вакансию');
       })
