@@ -91,7 +91,7 @@ function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
 
   return (
     <>
-      {buttonView === ButtonVacancyCard.vacancies && user?.department.id !== vacancy.department.id
+      {buttonView === ButtonVacancyCard.vacancies
       && (<>
         <LikeButton
           onLike={like}
@@ -106,7 +106,7 @@ function ButtonActionVacancyCard(props: ButtonActionVacancyCardProps) {
         </button>
       </>)
       }
-      {buttonView === ButtonVacancyCard.empMyVacancy || user?.department.id === vacancy.department.id
+      {buttonView === ButtonVacancyCard.empMyVacancy || user?.department?.id === vacancy.department?.id
       && (<>
         {isPublishedVacancy
           ? (

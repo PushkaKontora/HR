@@ -11,7 +11,7 @@ function ModalMakeUnpublishVacancy() {
   const [isUnpublishModal, setIsUnpublishModal] = useState(isOpenUnpublishModalState);
   const vacancyID = useAppSelector((state) => state.vacancy.vacancyByID?.id);
   const isPublished = useAppSelector((state) => state.vacancy.isPublishedVacancy);
-  const idDepartment = useAppSelector((state) => state.general.user?.department.id);
+  const idDepartment = useAppSelector((state) => state.general.user?.department?.id);
   const offset = useAppSelector((state) => state.vacancy.paramsForGetVacancies.offset);
   const dispatch = useAppDispatch();
 
