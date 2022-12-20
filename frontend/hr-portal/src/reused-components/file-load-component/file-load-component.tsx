@@ -4,8 +4,6 @@ import {RESUME_FORMATS} from '../../const/approved-file-formats';
 import {useRef, useState} from 'react';
 import {ComponentParent} from './styled/styles';
 import {LoadButton} from '../load-button/load-button';
-import {toast} from 'react-toastify';
-import {useAppSelector} from '../../app/hooks';
 import {DeleteButton} from '../delete-button/delete-button';
 
 type FileLoadComponentProps = {

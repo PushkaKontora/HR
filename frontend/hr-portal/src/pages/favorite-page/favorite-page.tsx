@@ -87,7 +87,7 @@ export function FavoritePage() {
         {
           currentTabIndex == 0 &&
           <section style={{marginBottom: '128px'}}>
-              <VacancyList vacancies={favoriteVacancies} showPagination={false}/>
+            <VacancyList vacancies={favoriteVacancies} showPagination={false}/>
           </section>
         }
         {
