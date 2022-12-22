@@ -6,10 +6,11 @@ import {getCompetenciesAction} from '../../../service/async-actions/async-action
 export type CompetenciesSelectProps = {
   name: string,
   onChange: (e: any) => void,
-  selectedComps: string[]
+  selectedComps: string[],
+  width?: string
 }
 
-export function CompetenciesSelect({name, onChange, selectedComps}: CompetenciesSelectProps) {
+export function CompetenciesSelect({name, onChange, selectedComps, width}: CompetenciesSelectProps) {
   const dispatch = useAppDispatch();
 
   const comps = useAppSelector((state) => state.general.competencies);
@@ -39,6 +40,7 @@ export function CompetenciesSelect({name, onChange, selectedComps}: Competencies
       onChange={onChange}
       options={options}
       placeholder={'Выбрать компетенцию'}
-      selectedOptions={selectedComps}/>
+      selectedOptions={selectedComps}
+      width={width}/>
   );
 }

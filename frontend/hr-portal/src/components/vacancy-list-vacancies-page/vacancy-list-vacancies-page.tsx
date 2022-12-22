@@ -11,6 +11,12 @@ function VacancyListVacanciesPage() {
   const dispatch = useAppDispatch();
   const vacancies = useAppSelector((state) => state.vacancy.vacancies);
 
+  const refScroll = useRef<HTMLDivElement | null>(null);
+
+  const scroll = () => {
+    refScroll?.current?.scrollIntoView({behavior: 'smooth'});
+  };
+
   useLayoutEffect(() => {
     if (firstUpdate.current) {
       firstUpdate.current = false;
@@ -25,7 +31,8 @@ function VacancyListVacanciesPage() {
   return (
     <>
       <ModalRespondRequest/>
-      <VacancyList showPagination={true} vacancies={vacancies.items}/>
+      <div ref={refScroll}></div>
+      <VacancyList showPagination={true} vacancies={vacancies.items} onPageChange={scroll}/>
     </>
   );
 }

@@ -52,7 +52,7 @@ function LoginForm() {
           if (location.state) {
             navigate(location.state.prevLocation);
           } else {
-            navigate('/');
+            navigate(AuthRoutes.Vacancies);
           }
         }
       }
@@ -95,7 +95,6 @@ function LoginForm() {
   const onSubmit = (data: LoginFormData) => {
     dispatch(login(data));
     //.then(() => {redirect(location.state.prevLocation);});
-    console.log('Login submitted, awaiting...');
   };
 
   return (

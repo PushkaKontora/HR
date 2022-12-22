@@ -7,7 +7,7 @@ import UseEditor from '../../reused-components/text-editor/useEditor';
 import TabsSalary from '../../components/tabs-salary/tabs-salary';
 import {useEffect, useState} from 'react';
 import TabsRespondEditVacancy from '../../components/tabs-respond-edit-vacancy/tabs-respond-edit-vacancy';
-import {Link, useParams} from 'react-router-dom';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 import {
   getLastVacancyRequest,
   getVacancyByID,
@@ -20,7 +20,8 @@ import {refreshPageDetailsScreen} from '../../features/page/page-slice';
 import clockIcon from '../../assets/img/vacancy-card/clock.svg';
 import {getBackTimestampRussian} from '../../utils/times';
 import ModalRespondRequest from '../../components/modal-respond-request/modal-respond-request';
-import {setRequestDate} from '../../features/vacancy/vacancy-slice';
+import {setDepartmentParam, setRequestDate} from '../../features/vacancy/vacancy-slice';
+import {AuthRoutes} from '../../const/app-routes';
 
 function JobSearchDetailsScreen() {
   const params = useParams();
@@ -32,6 +33,12 @@ function JobSearchDetailsScreen() {
   const vacancyExperience = ExpectedExperienceNameString[vacancy?.expected_experience as keyof typeof ExpectedExperienceNameString];
   const [convertedContent, setConvertedContent] = useState('');
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const redirectToDepartment = () => {
+    dispatch(setDepartmentParam(vacancy?.department?.name));
+    navigate(`${AuthRoutes.Vacancies}`);
+  };
 
   useEffect(() => {
     if (prodId && vacancy === null) {
@@ -87,25 +94,31 @@ function JobSearchDetailsScreen() {
             </div>
             <div className="tabsInfo">
 
-              <div className="tabsItem">
-                <div className="tabs-image">
-                  <img src={clockIcon} alt="created"/>
-                </div>
-                <div className="tabs-text">
-                  {getBackTimestampRussian(vacancy?.published_at)}
-                </div>
-              </div>
+              {
+                vacancy?.published_at &&
+                  <div className="tabsItem">
+                    <div className="tabs-image">
+                      <img src={clockIcon} alt="created"/>
+                    </div>
+                    <div className="tabs-text">
+                      {getBackTimestampRussian(vacancy?.published_at)}
+                    </div>
+                  </div>
+              }
 
               <TabsSalary salary_from={vacancy?.salary_from} salary_to={vacancy?.salary_to} />
 
-              <div className="tabsItem">
-                <div className="tabs-image">
-                  <img src={experienceIcon} alt="experience"/>
-                </div>
-                <div className="tabs-text">
-                  {vacancyExperience}
-                </div>
-              </div>
+              {
+                vacancy?.expected_experience &&
+                  <div className="tabsItem">
+                    <div className="tabs-image">
+                      <img src={experienceIcon} alt="experience"/>
+                    </div>
+                    <div className="tabs-text">
+                      {vacancyExperience}
+                    </div>
+                  </div>
+              }
 
             </div>
 
@@ -129,9 +142,9 @@ function JobSearchDetailsScreen() {
               </div>
             </div>
             <div className="departmentInfo-viewAllVacancies navTabs">
-              <Link to={'/'} className="navTabs-btnItem navTabs-btnItem__department navTabs-btnItem__respond">
+              <button onClick={redirectToDepartment} className="navTabs-btnItem navTabs-btnItem__department navTabs-btnItem__respond">
                 Посмотреть вакансии
-              </Link>
+              </button>
             </div>
           </div>
         </div>

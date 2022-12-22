@@ -138,7 +138,7 @@ export function ResumeForm({submit}: ResumeFormProps) {
         <ResumeFieldLabel>Опыт работы</ResumeFieldLabel>
         <Controller
           control={control}
-          render={({field: {onChange, value}}) => <ExperienceSelect onChange={(val) => onChange(val.value)} controllerValue={value} name={'experience'} selectedValue={resume?.experience}/>}
+          render={({field: {onChange, value}}) => <ExperienceSelect onChange={(val) => onChange(val.value)} controllerValue={value} name={'experience'} selectedValue={resume?.experience} width={'300px'}/>}
           name={'experience'}/>
       </ResumeFieldContainer>
       <ResumeFieldContainer>
@@ -147,7 +147,7 @@ export function ResumeForm({submit}: ResumeFormProps) {
       </ResumeFieldContainer>
       <ResumeFieldContainer>
         <ResumeFieldLabel>Мои компетенции</ResumeFieldLabel>
-        <CompetencyList values={bufferComps} showDeleteButtons={true} onDelete={deleteComp} competencyComponent={ResumeTitle}/>
+        <CompetencyList values={bufferComps} showDeleteButtons={true} onDelete={deleteComp}/>
         <CompetenciesSelect name={'competencies_select'} onChange={onCompetencyChange} selectedComps={bufferComps}/>
       </ResumeFieldContainer>
     </form>

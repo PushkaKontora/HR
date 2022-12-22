@@ -43,7 +43,6 @@ function ModalCreateVacancy() {
         published: isPublishStatus,
         department_id: departmentID
       };
-      console.log(vacancyBody);
       dispatch(createVacancy({data: vacancyBody}))
         .then(() => {
           dispatch(getVacanciesForEmployer({isPublished: isPublishedVacancy, idDepartment: departmentID, offset: 0}))

@@ -87,7 +87,7 @@ function SignUpForm() {
           navigate(AuthRoutes.Vacancies);
         }
         else if (userStatus === UserStatus.employer) {
-          navigate('/');
+          navigate(AuthRoutes.Vacancies);
         }
       }
     }

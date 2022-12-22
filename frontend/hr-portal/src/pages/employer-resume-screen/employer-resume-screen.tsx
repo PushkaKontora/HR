@@ -23,11 +23,9 @@ function EmployerResumeScreen() {
     dispatch(getResumeList());
     dispatch(setTypeActionPagination(TypeActionPagination.RESUME_EMPLOYER));
 
-    dispatch(getVacancyWishlist(VacancyWishListSortBy.added_at_desc));
+    //dispatch(getVacancyWishlist(VacancyWishListSortBy.added_at_desc));
 
-    if (user?.permission === UserStatus.employer) {
-      dispatch(getResumeWishlist(ResumeWishListSortBy.added_at_desc));
-    }
+    dispatch(getResumeWishlist(ResumeWishListSortBy.added_at_desc));
   }, []);
 
 

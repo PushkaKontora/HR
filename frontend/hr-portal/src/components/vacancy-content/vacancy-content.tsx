@@ -11,6 +11,7 @@ import '../../styles/custom-select.scss';
 import {useEffect} from 'react';
 import {getVacancies} from '../../service/async-actions/async-actions-vacancy';
 import {getCorrectEndingsInVacancies} from '../../utils/times';
+import {useLocation, useParams} from 'react-router-dom';
 
 function VacancyContent() {
   const vacancies = useAppSelector((state) => state.vacancy.vacancies);

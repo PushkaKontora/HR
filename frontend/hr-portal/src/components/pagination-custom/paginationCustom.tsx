@@ -11,7 +11,8 @@ import {TypeActionPagination} from '../../const';
 import {getResumeList} from '../../service/async-actions/async-actions-resume';
 
 type PaginationCustomProps = {
-  itemList: any[]
+  itemList: any[],
+  onChange?: () => void
 };
 
 function PaginationCustom(props: PaginationCustomProps) {
@@ -51,7 +52,11 @@ function PaginationCustom(props: PaginationCustomProps) {
           <Pagination
             count={maxPageCount}
             page={currentPage}
-            onChange={(_, num) => dispatch(setOffsetParam(num))}
+            onChange={(_, num) => {
+              dispatch(setOffsetParam(num));
+              if (props.onChange)
+                props.onChange();
+            }}
             variant="outlined"
             shape="rounded"
 

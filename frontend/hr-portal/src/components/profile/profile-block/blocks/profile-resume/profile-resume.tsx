@@ -83,7 +83,7 @@ export function ProfileResume() {
       {text: 'Создать резюме', onClick: () => {
         setShowForm(true);
       }, showing: !(user?.resume) && !showForm},
-      {text: 'Сохранить черновик', showing: showForm, form: FORM_NAME},
+      {text: 'Сохранить', showing: showForm, form: FORM_NAME},
       {text: 'Отмена', onClick: () => {
         setShowForm(false);
       }, showing: showForm},

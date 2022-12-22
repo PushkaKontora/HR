@@ -40,7 +40,6 @@ function ModalEditVacancy() {
         salary_to: maxSalary,
         published: isPublishStatus
       };
-      console.log(vacancyBody);
       if (vacancyByID) {
         dispatch(putVacancyChanges({idVacancy: vacancyByID.id, data: vacancyBody}))
           .then(() => {

@@ -16,7 +16,8 @@ import {getResumeList} from '../../service/async-actions/async-actions-resume';
 
 type VacancyListProps = {
   vacancies: Vacancy[],
-  showPagination: boolean
+  showPagination: boolean,
+  onPageChange?: () => void
 }
 
 function VacancyList(props: VacancyListProps) {
@@ -35,9 +36,7 @@ function VacancyList(props: VacancyListProps) {
   useEffect(() => {
     let mounted = true;
 
-    if (mounted && typeActionPagination === TypeActionPagination.RESUME_EMPLOYER) {
-      dispatch(getVacancyWishlist(VacancyWishListSortBy.added_at_desc));
-    }
+    dispatch(getVacancyWishlist(VacancyWishListSortBy.added_at_desc));
 
     return () => {
       mounted = false;
@@ -54,7 +53,7 @@ function VacancyList(props: VacancyListProps) {
             })
           }
         </div>
-        {props.showPagination && <PaginationCustom itemList={vacancies.items}/>}
+        {props.showPagination && <PaginationCustom itemList={vacancies.items} onChange={props.onPageChange}/>}
       </div>
     </>
   );

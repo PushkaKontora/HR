@@ -21,6 +21,10 @@ function VacancyFilterOnDepartment() {
   });
 
   useEffect(() => {
+    dispatch(setDepartmentParam(department));
+  }, [departmentListShort]);
+
+  useEffect(() => {
     dispatch(getVacancies());
   }, [department]);
 
@@ -36,6 +40,7 @@ function VacancyFilterOnDepartment() {
         classNamePrefix="select"
         name=""
         options={departmentListShort}
+        value={departmentListShort.find((departmentItem) => department === departmentItem.label)}
         onChange={onHandlerFilterDepartment}
         placeholder="Выбрать департамент"
       />
