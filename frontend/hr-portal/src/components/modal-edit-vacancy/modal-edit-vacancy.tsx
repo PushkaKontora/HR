@@ -60,7 +60,6 @@ function ModalEditVacancy() {
     if (vacancyByID) {
 
       setNameVacancy(vacancyByID.name);
-      console.log(nameVacancy)
       if (vacancyByID?.salary_to) {
         setMaxSalary(vacancyByID?.salary_to);
       } else {
