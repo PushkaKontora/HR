@@ -3,7 +3,7 @@
     background: #FFFFFF;
     border: 0.5px solid #000000;
     border-radius: 10px;
-    z-index: 201;
+    z-index: 200;
 
     .select__value-container {
       padding-left: 16px;
@@ -38,7 +38,7 @@
   .select__menu {
     margin-top: -10px;
     padding-top: 10px;
-    z-index: 200;
+    z-index: 300;
     background: #FFFFFF;
     border: 0.5px solid #000000;
     border-radius: 0px 0px 10px 10px;
