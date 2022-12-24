@@ -103,6 +103,8 @@ const vacancySlice = createSlice({
   reducers: {
     setEditorTextVacancy(state, action) {
       if (action.payload === state.prevDescriptionVacancyBYid) {
+        state.isEditorVacancyFlag = false;
+        state.isStartRequestChangeVacancy = true;
         return;
       } else {
         state.editorTextVacancy = action.payload;

@@ -1,6 +1,6 @@
 import Modal from '../../reused-components/modal/modal';
 import React, {ChangeEvent, useEffect, useState} from 'react';
-import {DepartmentsShortVersions, setIsEditorVacancyFlag, setIsOpenEditVacancyModal, setIsStartRequestChangeVacancy, setSalaryMax, setSalaryMin, setStateEditVacancy} from '../../features/vacancy/vacancy-slice';
+import {DepartmentsShortVersions, setIsEditorVacancyFlag, setIsOpenEditVacancyModal, setIsStartRequestChangeVacancy} from '../../features/vacancy/vacancy-slice';
 import {useAppDispatch, useAppSelector} from '../../app/hooks';
 import './modal-edit-vacancy.scss';
 import '../../styles/btn-blue-disabled.scss';
@@ -28,6 +28,7 @@ function ModalEditVacancy() {
   const [experience, setExperience] = useState<ExpectedExperience>(ExpectedExperience.NO_EXPERIENCE);
   const [minSalary, setMinSalary] = useState<number | null>(null);
   const [maxSalary, setMaxSalary] = useState<number | null>(null);
+  const isEditorVacancyFlag = useAppSelector((state) => state.vacancy.isEditorVacancyFlag);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -57,7 +58,9 @@ function ModalEditVacancy() {
 
   useEffect(() => {
     if (vacancyByID) {
+
       setNameVacancy(vacancyByID.name);
+      console.log(nameVacancy)
       if (vacancyByID?.salary_to) {
         setMaxSalary(vacancyByID?.salary_to);
       } else {
