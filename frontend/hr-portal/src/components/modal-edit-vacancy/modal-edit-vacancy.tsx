@@ -165,6 +165,12 @@ function ModalEditVacancy() {
             className="basic-single"
             classNamePrefix="select"
             name=""
+            styles={{
+              control: (baseStyles, state) => ({
+                ...baseStyles,
+                width: '252px'
+              }),
+            }}
             options={expectedExperienceShortVersion}
             onChange={onHandlerChangeExpectedExperience}
             placeholder={ExpectedExperienceNameString[vacancyByID?.expected_experience as ExpectedExperience]}

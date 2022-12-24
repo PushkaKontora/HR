@@ -145,6 +145,12 @@ function ModalCreateVacancy() {
           <Select
             className="basic-single"
             classNamePrefix="select"
+            styles={{
+              control: (baseStyles, state) => ({
+                ...baseStyles,
+                width: '252px'
+              }),
+            }}
             name=""
             options={expectedExperienceShortVersion}
             onChange={onHandlerChangeExpectedExperience}

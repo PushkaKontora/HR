@@ -61,7 +61,7 @@ function VacancyCard(props: VacancyCardProps) {
           <TabsSalary salary_to={vacancy?.salary_to} salary_from={vacancy?.salary_from}/>
         </div>
       </div>
-      <div className="resumeCardItem vacancyCardItem__action">
+      <div className="vacancyCardItem vacancyCardItem__action">
         <div className="actionItem actionItem__department">
           <span>{vacancy.department.name}</span> {vacancy.department.leader.name} {vacancy.department.leader.surname}
         </div>

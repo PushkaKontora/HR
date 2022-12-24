@@ -138,7 +138,7 @@ export function ResumeForm({submit}: ResumeFormProps) {
         <ResumeFieldLabel>Опыт работы</ResumeFieldLabel>
         <Controller
           control={control}
-          render={({field: {onChange, value}}) => <ExperienceSelect onChange={(val) => onChange(val.value)} controllerValue={value} name={'experience'} selectedValue={resume?.experience} width={'300px'}/>}
+          render={({field: {onChange, value}}) => <ExperienceSelect onChange={(val) => onChange(val.value)} controllerValue={value} name={'experience'} selectedValue={resume?.experience} width={'191px'}/>}
           name={'experience'}/>
       </ResumeFieldContainer>
       <ResumeFieldContainer>

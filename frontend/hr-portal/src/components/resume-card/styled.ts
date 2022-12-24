@@ -30,6 +30,7 @@ export const Contacts = styled(XLargeRegular)`
   background-color: white;
   border-radius: 27px;
   padding: 18px 24px;
+  height: 54px;
   color: black;
 `;
 

@@ -59,6 +59,9 @@ export function getBackTimestampRussian(date: Date | null | undefined) {
     }
   }
 
+  if (timeName === TIMES_RU.recently) {
+    return `${TIMES_RU.recently}`;
+  }
   return `${num} ${timeName} ${TIMES_RU.back}`;
 }
 

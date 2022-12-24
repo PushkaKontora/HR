@@ -75,10 +75,16 @@ export function FavoritePage() {
         <img src={banner} style={{marginBottom: '24px'}}/>
         <HorizontalLine/>
         <SubHeader>
-          <FavoriteTabManager
-            tabNames={getTabsByUserStatus(user?.permission)}
-            clickHandler={onTabChange}/>
-          <h3 style={{flexGrow: 1, textAlign: 'right', whiteSpace: 'nowrap'}}>
+          {
+            user?.permission === UserStatus.employer &&
+            <>
+              <FavoriteTabManager
+                tabNames={getTabsByUserStatus(user?.permission)}
+                clickHandler={onTabChange}/>
+              <div style={{flexGrow: 2}}/>
+            </>
+          }
+          <h3 style={{whiteSpace: 'nowrap'}}>
             Добавлено&nbsp;
             {currentTabIndex == 0 && `${vacancyLength} вакансий`}
             {currentTabIndex == 1 && `${resumeLength} резюме`}
