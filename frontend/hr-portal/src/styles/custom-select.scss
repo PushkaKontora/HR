@@ -6,12 +6,21 @@
     z-index: 201;
     width: 100%;
 
+    .select__value-container {
+      padding-left: 16px;
+    }
+
     &--menu-is-open,
     &--is-focused {
       background: #F6F5F3;
       border: 0.5px solid #000000;
       border-radius: 10px;
       box-shadow: none;
+    }
+
+
+    .select__indicator {
+      padding-right: 14.56px;
     }
   }
 

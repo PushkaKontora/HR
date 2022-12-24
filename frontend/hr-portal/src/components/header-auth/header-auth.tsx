@@ -37,8 +37,12 @@ function HeaderAuth() {
         <HeaderNav/>
       </div>
       <div className="side-header">
-        <Link to={AuthRoutes.Favorite} className="header-nav-personal"><LikeIcon className="likes-icon"/></Link>
-        <Link to={AuthRoutes.Profile} className="header-nav-personal"><PersonalIcon className="personal-icon"/></Link>
+        <Link to={AuthRoutes.Favorite} className="header-nav-personal">
+          <LikeIcon className="likes-icon"/>
+        </Link>
+        <Link to={AuthRoutes.Profile} className="header-nav-personal">
+          <PersonalIcon className="personal-icon"/>
+        </Link>
         <div
           className="header-nav-personal header-nav-personal__exit"
           onClick={handlerClickLogout}
