@@ -147,8 +147,8 @@ export function ResumeForm({submit}: ResumeFormProps) {
       </ResumeFieldContainer>
       <ResumeFieldContainer>
         <ResumeFieldLabel>Мои компетенции</ResumeFieldLabel>
-        <CompetencyList values={bufferComps} showDeleteButtons={true} onDelete={deleteComp}/>
         <CompetenciesSelect name={'competencies_select'} onChange={onCompetencyChange} selectedComps={bufferComps}/>
+        <CompetencyList values={bufferComps} showDeleteButtons={true} onDelete={deleteComp}/>
       </ResumeFieldContainer>
     </form>
   );

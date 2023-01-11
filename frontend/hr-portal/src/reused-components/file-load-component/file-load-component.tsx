@@ -5,6 +5,7 @@ import {useRef, useState} from 'react';
 import {ComponentParent} from './styled/styles';
 import {LoadButton} from '../load-button/load-button';
 import {DeleteButton} from '../delete-button/delete-button';
+import {ClickableResumeTitle} from '../resume-title-clickable/resume-title-clickable';
 
 type FileLoadComponentProps = {
   fieldName: string,
@@ -36,9 +37,14 @@ export function FileLoadComponent({fieldName, initFileName, register, onUpdate, 
 
   return (
     <ComponentParent>
-      {fileName && <ResumeTitle>{fileName}</ResumeTitle>}
+      {
+        !fileName &&
+          <ResumeTitle>
+            файл не выбран
+          </ResumeTitle>}
+      {fileName &&
+          <ClickableResumeTitle item={fileName} showDeleteButtons onDelete={deleteFile}/>}
       <FileLoadInput register={register} formats={RESUME_FORMATS} onFileChange={update} inputRef={fileRef} name={fieldName}/>
-      {fileName && <DeleteButton onClick={deleteFile}/>}
       <LoadButton onClick={openFileDialog}/>
     </ComponentParent>
   );

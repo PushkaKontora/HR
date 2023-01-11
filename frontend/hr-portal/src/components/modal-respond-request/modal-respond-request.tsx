@@ -86,7 +86,7 @@ function ModalRespondRequest() {
         <div className="respondModalItem respondModalItem__content">
           <div className="title">Отправить отклик на вакансию</div>
           <div className="content">
-            <div className="itemContent">
+            <div className="itemContent" style={{marginBottom: '16px'}}>
               <div className="titleItem">
                 Вакансия
               </div>

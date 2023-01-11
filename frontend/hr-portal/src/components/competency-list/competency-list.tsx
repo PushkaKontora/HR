@@ -1,9 +1,6 @@
-import {ResumeTitle} from '../styled/resume/resume-title';
 import {CompetencyFlexContainer} from '../styled/values/competency-flex-container';
-import {ReactComponentElement, useEffect, useState} from 'react';
-import deleteIcon from '../../assets/icons/delete-rounded.svg';
-import {Icon} from './styles';
-import {StyledComponent} from 'styled-components';
+import {useEffect, useState} from 'react';
+import {ClickableResumeTitle} from '../../reused-components/resume-title-clickable/resume-title-clickable';
 
 export type CompetencyListProps = {
   values: string[],
@@ -23,14 +20,11 @@ export function CompetencyList({values, showDeleteButtons, onDelete}: Competency
       {
         valuesState.map((item, idx) => {
           return (
-            <ResumeTitle style={{marginRight: '8px'}} key={idx}>
-              <div>{item}</div>
-              {showDeleteButtons && <button type={'button'} onClick={() => {
-                if (onDelete) onDelete(idx);
-              }}>
-                <Icon src={deleteIcon}/>
-              </button>}
-            </ResumeTitle>);
+            <ClickableResumeTitle key={idx} item={item} showDeleteButtons={showDeleteButtons} onDelete={() => {
+              if (onDelete)
+                onDelete(idx);
+            }
+            }/>);
         })
       }
     </CompetencyFlexContainer>

@@ -82,8 +82,7 @@ function SignUpForm() {
     let mounted = true;
 
     if (mounted) {
-      if (userStatus !== UserStatus.noAuth) {
-        if (userStatus === UserStatus.user) {
+      if (userStatus !== UserStatus.noAuth) {        if (userStatus === UserStatus.user) {
           navigate(AuthRoutes.Vacancies);
         }
         else if (userStatus === UserStatus.employer) {
