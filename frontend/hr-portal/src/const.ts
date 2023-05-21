@@ -16,7 +16,7 @@ export enum ExpectedExperience {
   MORE_THAN_SIX_YEARS = 'more_than_six_years'
 }
 
-export const ExpectedExperienceNameString = {
+export const ExpectedExperienceNameString: {[index: string]: string} = {
   [ExpectedExperience.NO_EXPERIENCE]: 'Нет опыта',
   [ExpectedExperience.FROM_ONE_TO_THREE_YEARS]: 'От 1 года до 3 лет',
   [ExpectedExperience.FROM_THREE_TO_SIX_YEARS]: 'От 3 до 6 лет',
