@@ -5,7 +5,7 @@ WORKDIR /app
 RUN apk update && \
     apk add make
 
-COPY Pipfile* .
+COPY Pipfile* ./
 
 RUN pip install pipenv && \
     pipenv install --system --deploy --ignore-pipfile
