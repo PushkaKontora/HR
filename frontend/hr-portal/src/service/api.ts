@@ -1,4 +1,4 @@
-import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
+import axios, {AxiosError, InternalAxiosRequestConfig, AxiosResponse} from 'axios';
 import {getToken} from './token-manager';
 import {SHOWN_STATUSES} from '../const/errors';
 import {processErrorHandle} from './error-handle';
@@ -7,7 +7,7 @@ import {ServerError, StandartError, UnprocessableEntityError} from '../types/err
 import {store} from '../app/store';
 import {setLoading} from '../features/general/general-slice';
 
-const BACKEND_URL = 'http://127.0.0.1:8000';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const TIMEOUT = 5000;
 
 export const createApi = () => {
@@ -19,7 +19,7 @@ export const createApi = () => {
   );
 
   api.interceptors.request.use(
-    (config: AxiosRequestConfig) => {
+    (config: InternalAxiosRequestConfig<any>) => {
       const token = getToken();
 
       if (token) {

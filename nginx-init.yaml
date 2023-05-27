@@ -1,0 +1,20 @@
+#cloud-config
+users:
+  - name: peroovy
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - ${SSH_KEY}
+
+packages:
+  - docker.io
+
+runcmd:
+  - docker login --username oauth --password ${YC_TOKEN} cr.yandex
+  - docker pull cr.yandex/${REGISTRY_ID}/nginx
+  - [docker, run,
+     -e, APP_HOST=${APP_HOST},
+     -p, 80:80,
+     cr.yandex/${REGISTRY_ID}/nginx
+    ]

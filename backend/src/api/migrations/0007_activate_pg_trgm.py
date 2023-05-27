@@ -9,4 +9,4 @@ class Migration(migrations.Migration):
         ("api", "0006_rename_favorite_fields_to_favourite_in_users"),
     ]
 
-    operations = [TrigramExtension()]
+    operations = []

@@ -1,15 +1,15 @@
-FROM python:3.10-slim-buster
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
+FROM python:3.10-alpine3.17
 
 WORKDIR /app
 
-COPY Pipfile .
-RUN apt-get update && \
-    apt-get install make && \
-    pip install pipenv && \
-    pipenv install --clear
+RUN apk update && \
+    apk add make
 
-EXPOSE 8000
+COPY Pipfile* .
+
+RUN pip install pipenv && \
+    pipenv install --system --deploy --ignore-pipfile
 
 COPY . .
+
+CMD ["make", "migrate", "run"]

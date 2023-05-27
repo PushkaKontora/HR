@@ -11,16 +11,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddIndex(
-            model_name="vacancy",
-            index=django.contrib.postgres.indexes.GinIndex(
-                fields=["name"], name="name_idx", opclasses=["gin_trgm_ops"]
-            ),
-        ),
-        migrations.AddIndex(
-            model_name="vacancy",
-            index=django.contrib.postgres.indexes.GinIndex(
-                fields=["description"], name="description_idx", opclasses=["gin_trgm_ops"]
-            ),
-        ),
     ]

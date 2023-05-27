@@ -1,0 +1,27 @@
+#cloud-config
+users:
+  - name: peroovy
+    groups: sudo
+    lock_passwd: false
+    passwd: $6$rounds=4096$jW2RHPZ.sZczfKxP$GC7jrGvTngq6.st2Pwkq01hTKdohyBY5BJQ.BfCF3VpKa.0h7zX87oVN..vvQ.1.cRZq.ze6Zju3XVwhmFVb//
+
+packages:
+  - docker.io
+  - make
+
+runcmd:
+  - docker login --username oauth --password ${YC_TOKEN} cr.yandex
+  - docker pull cr.yandex/${REGISTRY_ID}/app
+  - [docker, run,
+     -e, POSTGRES_DB=${POSTGRES_DB},
+     -e, POSTGRES_USER=${POSTGRES_USER},
+     -e, POSTGRES_PASSWORD=${POSTGRES_PASSWORD},
+     -e, POSTGRES_HOST=${POSTGRES_HOST},
+     -e, POSTGRES_PORT=${POSTGRES_PORT},
+     -e, AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID},
+     -e, AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY},
+     -e, AWS_STORAGE_BUCKET_NAME=${AWS_STORAGE_BUCKET_NAME},
+     -e, AWS_S3_ENDPOINT_URL=${AWS_S3_ENDPOINT_URL},
+     -p, 8000:8000,
+     cr.yandex/${REGISTRY_ID}/app
+    ]

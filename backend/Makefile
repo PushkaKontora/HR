@@ -1,41 +1,44 @@
 dev:
-	pipenv run python src/manage.py runserver
+	python src/manage.py runserver
+
+pshell:
+	PIPENV_DONT_LOAD_ENV=1 pipenv shell
 
 run:
-	cd src && pipenv run gunicorn -c config/gunicorn.conf.py config.wsgi:application
+	cd src && gunicorn config.wsgi:application -w 2 --bind :8000
 
 lint:
-	pipenv run isort . & \
-	pipenv run flake8 --config setup.cfg & \
-	pipenv run black --config pyproject.toml .
+	isort . & \
+	flake8 --config setup.cfg & \
+	black --config pyproject.toml .
 
 check:
-	pipenv run isort --check --diff .
-	pipenv run flake8 --config setup.cfg
-	pipenv run black --check --config pyproject.toml .
+	isort --check --diff .
+	flake8 --config setup.cfg
+	black --check --config pyproject.toml .
 
 migration:
-	pipenv run python src/manage.py makemigrations -n ${n}
+	python src/manage.py makemigrations -n ${n}
 
 migrate:
-	pipenv run python src/manage.py migrate ${o}
+	python src/manage.py migrate ${o}
 
 # Tests
 
 test:
-	cd src && pipenv run pytest --disable-warnings
+	cd src && pytest --disable-warnings
 
 unit:
-	cd src && pipenv run pytest -m unit --disable-warnings
+	cd src && pytest -m unit --disable-warnings
 
 smoke:
-	cd src && pipenv run pytest -m smoke --disable-warnings
+	cd src && pytest -m smoke --disable-warnings
 
 integration:
-	cd src && pipenv run pytest -m integration --disable-warnings
+	cd src && pytest -m integration --disable-warnings
 
 
 # Only dev management commands
 
 initvacancies:
-	pipenv run python src/manage.py initvacancies
+	python src/manage.py initvacancies

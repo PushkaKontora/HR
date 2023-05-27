@@ -127,22 +127,22 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Media
 
-if DEBUG:
-    MEDIA_URL = "http://localhost:8000/media/"
-    MEDIA_ROOT = os.path.join(BASE_DIR.parent, "media/")
-    INSTALLED_APPS += ["django_cleanup.apps.CleanupConfig"]
-else:
-    DEFAULT_FILE_STORAGE = "api.storage.TimeoutS3Boto3Storage"
+# if DEBUG:
+#     MEDIA_URL = "http://localhost:8000/media/"
+#     MEDIA_ROOT = os.path.join(BASE_DIR.parent, "media/")
+#     INSTALLED_APPS += ["django_cleanup.apps.CleanupConfig"]
+# else:
+DEFAULT_FILE_STORAGE = "api.storage.TimeoutS3Boto3Storage"
 
-    AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", str)
-    AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", str)
-    AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", str)
-    AWS_S3_ENDPOINT_URL = env("AWS_S3_ENDPOINT_URL", str)
-    AWS_QUERYSTRING_EXPIRE = timedelta(days=1).total_seconds()
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID", str)
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY", str)
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", str)
+AWS_S3_ENDPOINT_URL = env("AWS_S3_ENDPOINT_URL", str)
+AWS_QUERYSTRING_EXPIRE = timedelta(days=1).total_seconds()
 
-    S3_NETWORK_CONNECTION_TIMEOUT_SECONDS = env("S3_NETWORK_CONNECTION_TIMEOUT_SECONDS", int)
-    S3_NETWORK_READ_TIMEOUT_SECONDS = env("S3_NETWORK_READ_TIMEOUT_SECONDS", int)
-    S3_NETWORK_RETRY_COUNT = env("S3_NETWORK_RETRY_COUNT", int)
+S3_NETWORK_CONNECTION_TIMEOUT_SECONDS = env("S3_NETWORK_CONNECTION_TIMEOUT_SECONDS", int)
+S3_NETWORK_READ_TIMEOUT_SECONDS = env("S3_NETWORK_READ_TIMEOUT_SECONDS", int)
+S3_NETWORK_RETRY_COUNT = env("S3_NETWORK_RETRY_COUNT", int)
 
 # Authentication
 
@@ -208,24 +208,3 @@ LOGS_PATH = os.path.join(BASE_DIR.parent, "logs")
 LOG_ROTATION = "00:00"
 LOG_COMPRESSION = "zip"
 LOG_FORMAT = "[{extra[request_id]}][{time:YYYY-MM-DD HH:mm:ss}][{name}:{function}] {message}"
-
-if not DEBUG:
-    logger.remove()
-
-    logger.add(
-        TelegramNotifier(env("LOGGING_TELEGRAM_BOT_TOKEN", str), env("LOGGING_TELEGRAM_CHAT_ID", int)),
-        level=logging.ERROR,
-        format=LOG_FORMAT,
-        diagnose=False,
-        enqueue=True,
-    )
-
-logger.add(
-    os.path.join(LOGS_PATH, "api.log"),
-    level=logging.INFO if not DEBUG else logging.DEBUG,
-    format=LOG_FORMAT,
-    rotation=LOG_ROTATION,
-    compression=LOG_COMPRESSION,
-    diagnose=False,
-    enqueue=True,
-)

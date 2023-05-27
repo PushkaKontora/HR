@@ -10,16 +10,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveIndex(
-            model_name="resume",
-            name="desired_job_idx",
-        ),
-        migrations.RemoveIndex(
-            model_name="vacancy",
-            name="name_idx",
-        ),
-        migrations.RemoveIndex(
-            model_name="vacancy",
-            name="description_idx",
-        ),
     ]
