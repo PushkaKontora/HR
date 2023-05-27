@@ -19,6 +19,9 @@ jobs:
     - name: Build image
       run: make builddev
 
+    - name: Install dev dependencies
+      run: pipenv install --system --dev --ignore-pipfile
+
     - name: Check code
       run: make checkdev
 
